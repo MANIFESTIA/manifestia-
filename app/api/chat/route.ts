@@ -1,6 +1,11 @@
-import { google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText } from 'ai';
 import { ProfileManager } from '@/lib/user-profile-manager';
+
+// Google Provider'ı bizim API anahtarımızla yapılandır
+const google = createGoogleGenerativeAI({
+    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY || '',
+});
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
