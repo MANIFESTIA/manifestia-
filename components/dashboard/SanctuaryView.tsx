@@ -75,129 +75,129 @@ export default function SanctuaryView() {
             </header>
 
             <main className="p-6 space-y-8">
-                {view === 'sanctuary' && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-                        {/* Hero / Daily Energy */}
-                        <div className="text-center py-6 relative">
-                            {/* Energy Ring */}
-                            <div className="relative w-48 h-48 mx-auto flex items-center justify-center">
-                                {/* Dış Halka */}
-                                <div className="absolute inset-0 rounded-full border-2 border-white/5"></div>
-                                {/* Dönen Neon Halka */}
-                                <div className="absolute inset-0 rounded-full border-t-2 border-l-2 border-manifest-secondary shadow-[0_0_20px_rgba(236,72,153,0.5)] animate-spin-slow" style={{ animationDuration: '8s' }}></div>
-                                <div className="absolute inset-2 rounded-full border-r-2 border-b-2 border-manifest-primary shadow-[0_0_20px_rgba(168,85,247,0.5)] animate-spin-slow" style={{ animationDuration: '12s', animationDirection: 'reverse' }}></div>
+                import EnergyRing from '@/components/dashboard/EnergyRing'; // Import
 
-                                <div className="z-10 bg-black/20 backdrop-blur-xl w-36 h-36 rounded-full flex flex-col items-center justify-center border border-white/10">
-                                    <span className="text-xs text-manifest-muted uppercase tracking-widest mb-1">Enerji</span>
-                                    <span className="text-4xl font-light text-white text-glow">88%</span>
-                                </div>
-                            </div>
+                // ... (user context imports)
 
-                            <h2 className="mt-6 text-2xl font-serif text-white/90">
-                                Merhaba, {user?.name || "Ruh"}
-                            </h2>
-                            <p className="text-sm text-manifest-muted mt-1 italic max-w-xs mx-auto">
-                                "{dailyMessage}"
-                            </p>
+                export default function SanctuaryView() {
+    // ... (hooks)
 
-                            <div className="mt-6 flex justify-center gap-4">
-                                <button
-                                    onClick={handlePlayMessage}
-                                    className={`flex items-center gap-2 px-5 py-2 rounded-full transition-all duration-300 backdrop-blur-md ${isPlaying ? 'bg-manifest-secondary/80 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'bg-white/5 hover:bg-white/10 text-manifest-primary border border-manifest-primary/30'}`}
-                                >
-                                    {isPlaying ? <Square className="w-4 h-4 fill-current" /> : <Volume2 className="w-4 h-4" />}
-                                    <span className="text-xs font-medium">{isPlaying ? 'Durdur' : 'Dinle'}</span>
-                                </button>
-                            </div>
-                        </div>
+    return (
+                <div className="min-h-screen text-manifest-text pb-24 font-sans relative overflow-hidden">
+                    {/* ... (background & header) */}
 
-                        {/* Store Cards (Rituals) */}
-                        <section className="space-y-4">
-                            <div className="flex justify-between items-end px-2">
-                                <h2 className="text-lg font-medium text-white/80">Ritüeller</h2>
-                                <span className="text-xs text-manifest-secondary cursor-pointer hover:text-white transition">Tümünü Gör</span>
-                            </div>
-                            <div className="flex gap-4 overflow-x-auto pb-6 hide-scrollbar snap-x px-2">
-                                <div
-                                    onClick={() => setActiveRitual('abundance-777')}
-                                    className="glass-card min-w-[180px] p-5 rounded-2xl snap-start cursor-pointer group relative overflow-hidden"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/10 group-hover:border-manifest-primary/50 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all">
-                                        🕯️
+                    <main className="p-6 space-y-8">
+                        {view === 'sanctuary' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                                {/* Hero / Daily Energy */}
+                                <div className="flex flex-col items-center py-6 relative">
+                                    <EnergyRing percentage={88} />
+
+                                    <h2 className="mt-8 text-2xl font-serif text-white/90 text-center">
+                                        Merhaba, {user?.name || "Ruh"}
+                                    </h2>
+                                    <p className="text-sm text-manifest-muted mt-2 italic max-w-xs mx-auto text-center">
+                                        "{dailyMessage}"
+                                    </p>
+
+                                    <div className="mt-6 flex justify-center gap-4">
+                                        <button
+                                            onClick={handlePlayMessage}
+                                            className={`flex items-center gap-2 px-5 py-2 rounded-full transition-all duration-300 backdrop-blur-md ${isPlaying ? 'bg-manifest-secondary/80 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'bg-white/5 hover:bg-white/10 text-manifest-primary border border-manifest-primary/30'}`}
+                                        >
+                                            {isPlaying ? <Square className="w-4 h-4 fill-current" /> : <Volume2 className="w-4 h-4" />}
+                                            <span className="text-xs font-medium">{isPlaying ? 'Durdur' : 'Dinle'}</span>
+                                        </button>
                                     </div>
-                                    <h3 className="font-medium text-base text-white group-hover:text-manifest-primary transition-colors">777 Mucizesi</h3>
-                                    <p className="text-xs text-manifest-muted mt-1">Bolluk frekansını aktif et.</p>
                                 </div>
 
-                                <div
-                                    onClick={() => setActiveRitual('love-444')}
-                                    className="glass-card min-w-[180px] p-5 rounded-2xl snap-start cursor-pointer group relative overflow-hidden"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/10 group-hover:border-manifest-secondary/50 group-hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] transition-all">
-                                        💖
+                                {/* Store Cards (Rituals) */}
+                                <section className="space-y-4">
+                                    <div className="flex justify-between items-end px-2">
+                                        <h2 className="text-lg font-medium text-white/80">Ritüeller</h2>
+                                        <span className="text-xs text-manifest-secondary cursor-pointer hover:text-white transition">Tümünü Gör</span>
                                     </div>
-                                    <h3 className="font-medium text-base text-white group-hover:text-manifest-secondary transition-colors">Aşk Çekimi</h3>
-                                    <p className="text-xs text-manifest-muted mt-1">Ruh eşini hayatına çağır.</p>
-                                </div>
+                                    <div className="flex gap-4 overflow-x-auto pb-6 hide-scrollbar snap-x px-2">
+                                        <div
+                                            onClick={() => setActiveRitual('abundance-777')}
+                                            className="glass-card min-w-[180px] p-5 rounded-2xl snap-start cursor-pointer group relative overflow-hidden"
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/10 group-hover:border-manifest-primary/50 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all">
+                                                🕯️
+                                            </div>
+                                            <h3 className="font-medium text-base text-white group-hover:text-manifest-primary transition-colors">777 Mucizesi</h3>
+                                            <p className="text-xs text-manifest-muted mt-1">Bolluk frekansını aktif et.</p>
+                                        </div>
 
-                                <div
-                                    className="glass-card min-w-[180px] p-5 rounded-2xl snap-start cursor-pointer group relative overflow-hidden opacity-70 grayscale"
-                                >
-                                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/10">
-                                        🌙
+                                        <div
+                                            onClick={() => setActiveRitual('love-444')}
+                                            className="glass-card min-w-[180px] p-5 rounded-2xl snap-start cursor-pointer group relative overflow-hidden"
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/10 group-hover:border-manifest-secondary/50 group-hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] transition-all">
+                                                💖
+                                            </div>
+                                            <h3 className="font-medium text-base text-white group-hover:text-manifest-secondary transition-colors">Aşk Çekimi</h3>
+                                            <p className="text-xs text-manifest-muted mt-1">Ruh eşini hayatına çağır.</p>
+                                        </div>
+
+                                        <div
+                                            className="glass-card min-w-[180px] p-5 rounded-2xl snap-start cursor-pointer group relative overflow-hidden opacity-70 grayscale"
+                                        >
+                                            <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/10">
+                                                🌙
+                                            </div>
+                                            <h3 className="font-medium text-base text-white">Dolunay</h3>
+                                            <p className="text-xs text-manifest-muted mt-1">Yakında açılacak.</p>
+                                        </div>
                                     </div>
-                                    <h3 className="font-medium text-base text-white">Dolunay</h3>
-                                    <p className="text-xs text-manifest-muted mt-1">Yakında açılacak.</p>
-                                </div>
-                            </div>
-                        </section>
-                    </motion.div>
-                )}
+                                </section>
+                            </motion.div>
+                        )}
 
-                {view === 'guide' && <ChatInterface />}
-                {view === 'tribe' && <TribeView />}
-            </main>
+                        {view === 'guide' && <ChatInterface />}
+                        {view === 'tribe' && <TribeView />}
+                    </main>
 
-            {/* Modals */}
-            {activeRitual && <RitualPlayer ritualId={activeRitual} onClose={() => setActiveRitual(null)} />}
-            {showAuraCamera && <AuraView onClose={() => setShowAuraCamera(false)} />}
-            {showTarot && <TarotView onClose={() => setShowTarot(false)} />}
-            {showJournal && <JournalView onClose={() => setShowJournal(false)} />}
+                    {/* Modals */}
+                    {activeRitual && <RitualPlayer ritualId={activeRitual} onClose={() => setActiveRitual(null)} />}
+                    {showAuraCamera && <AuraView onClose={() => setShowAuraCamera(false)} />}
+                    {showTarot && <TarotView onClose={() => setShowTarot(false)} />}
+                    {showJournal && <JournalView onClose={() => setShowJournal(false)} />}
 
-            {/* Profile Settings Modal */}
-            {showProfile && (
-                <ProfileSettings
-                    onClose={() => setShowProfile(false)}
-                    onOpenJournal={() => {
-                        setShowProfile(false);
-                        setShowJournal(true);
-                    }}
-                />
-            )}
+                    {/* Profile Settings Modal */}
+                    {showProfile && (
+                        <ProfileSettings
+                            onClose={() => setShowProfile(false)}
+                            onOpenJournal={() => {
+                                setShowProfile(false);
+                                setShowJournal(true);
+                            }}
+                        />
+                    )}
 
-            {/* Navigation Bar */}
-            <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-panel rounded-full p-2 flex justify-between items-center z-50 shadow-2xl backdrop-blur-xl">
-                <button
-                    onClick={() => setView('sanctuary')}
-                    className={`p-3 rounded-full transition-all duration-300 ${view === 'sanctuary' ? 'bg-manifest-primary/20 text-white shadow-[0_0_15px_rgba(168,85,247,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
-                >
-                    <Wind className="w-6 h-6" />
-                </button>
-                <button
-                    onClick={() => setView('guide')}
-                    className={`p-3 rounded-full transition-all duration-300 ${view === 'guide' ? 'bg-manifest-secondary/20 text-white shadow-[0_0_15px_rgba(236,72,153,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
-                >
-                    <MessageCircle className="w-6 h-6" />
-                </button>
-                <button
-                    onClick={() => setView('tribe')}
-                    className={`p-3 rounded-full transition-all duration-300 ${view === 'tribe' ? 'bg-amber-500/20 text-white shadow-[0_0_15px_rgba(245,158,11,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
-                >
-                    <Users className="w-6 h-6" />
-                </button>
-            </nav>
-        </div>
-    );
+                    {/* Navigation Bar */}
+                    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-panel rounded-full p-2 flex justify-between items-center z-50 shadow-2xl backdrop-blur-xl">
+                        <button
+                            onClick={() => setView('sanctuary')}
+                            className={`p-3 rounded-full transition-all duration-300 ${view === 'sanctuary' ? 'bg-manifest-primary/20 text-white shadow-[0_0_15px_rgba(168,85,247,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
+                        >
+                            <Wind className="w-6 h-6" />
+                        </button>
+                        <button
+                            onClick={() => setView('guide')}
+                            className={`p-3 rounded-full transition-all duration-300 ${view === 'guide' ? 'bg-manifest-secondary/20 text-white shadow-[0_0_15px_rgba(236,72,153,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
+                        >
+                            <MessageCircle className="w-6 h-6" />
+                        </button>
+                        <button
+                            onClick={() => setView('tribe')}
+                            className={`p-3 rounded-full transition-all duration-300 ${view === 'tribe' ? 'bg-amber-500/20 text-white shadow-[0_0_15px_rgba(245,158,11,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
+                        >
+                            <Users className="w-6 h-6" />
+                        </button>
+                    </nav>
+                </div>
+                );
 }
