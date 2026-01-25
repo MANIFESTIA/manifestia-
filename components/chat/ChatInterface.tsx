@@ -85,6 +85,10 @@ export default function ChatInterface() {
     const { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
         api: '/api/chat',
         body: { data: user }, // Kullanıcı profilini gönder
+        onError: (error) => {
+            console.error("Chat API Error:", error);
+            alert("Bağlantı Hatası: " + error.message);
+        },
         onFinish: (message: Message) => {
             // Otomatik okuma opsiyonel olabilir
             // speak(message.content, selectedPersona); 
