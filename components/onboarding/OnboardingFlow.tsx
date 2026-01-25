@@ -70,10 +70,8 @@ export default function OnboardingFlow() {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden">
-            {/* Arka Plan Efektleri (Global background üzerine ekstra katman) */}
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] z-0"></div>
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-manifest-primary/20 rounded-full blur-[120px] animate-pulse-slow"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-manifest-secondary/20 rounded-full blur-[120px] animate-pulse-slow delay-1000"></div>
+            {/* Arka Plan Efektleri (Hafif Nebula Katmanı) */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-manifest-primary/10 rounded-full blur-[150px] pointer-events-none animate-pulse-slow"></div>
 
             <AnimatePresence mode="wait">
                 {step === 0 && (
@@ -160,36 +158,48 @@ export default function OnboardingFlow() {
                             <p className="text-manifest-muted font-light text-sm">Doğum bilgilerini girerek enerjini keşfet.</p>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="bg-black/20 p-4 rounded-xl border border-white/5 flex items-center gap-4 group focus-within:border-manifest-primary/50 focus-within:bg-black/30 transition-all">
-                                <Sun className="text-manifest-primary w-6 h-6 group-focus-within:text-white group-focus-within:scale-110 transition-all" />
-                                <input
-                                    type="date"
-                                    value={formData.birthDate}
-                                    onChange={(e) => updateField('birthDate', e.target.value)}
-                                    className="bg-transparent w-full outline-none text-manifest-text font-light"
-                                />
+                        <div className="space-y-5">
+                            {/* Doğum Tarihi */}
+                            <div className="space-y-1">
+                                <label className="text-sm font-medium text-manifest-muted/80 ml-1 block text-left">Doğum Tarihi</label>
+                                <div className="bg-black/20 p-4 rounded-xl border border-white/5 flex items-center gap-4 group focus-within:border-manifest-primary/50 focus-within:bg-black/30 transition-all hover:border-white/10">
+                                    <Sun className="text-manifest-primary w-5 h-5 group-focus-within:text-white group-focus-within:scale-110 transition-all" />
+                                    <input
+                                        type="date"
+                                        value={formData.birthDate}
+                                        onChange={(e) => updateField('birthDate', e.target.value)}
+                                        className="bg-transparent w-full outline-none text-white font-light text-lg"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="bg-black/20 p-4 rounded-xl border border-white/5 flex items-center gap-4 group focus-within:border-manifest-secondary/50 focus-within:bg-black/30 transition-all">
-                                <Moon className="text-manifest-secondary w-6 h-6 group-focus-within:text-white group-focus-within:scale-110 transition-all" />
-                                <input
-                                    type="time"
-                                    value={formData.birthTime}
-                                    onChange={(e) => updateField('birthTime', e.target.value)}
-                                    className="bg-transparent w-full outline-none text-manifest-text font-light"
-                                />
+                            {/* Doğum Saati */}
+                            <div className="space-y-1">
+                                <label className="text-sm font-medium text-manifest-muted/80 ml-1 block text-left">Doğum Saati</label>
+                                <div className="bg-black/20 p-4 rounded-xl border border-white/5 flex items-center gap-4 group focus-within:border-manifest-secondary/50 focus-within:bg-black/30 transition-all hover:border-white/10">
+                                    <Moon className="text-manifest-secondary w-5 h-5 group-focus-within:text-white group-focus-within:scale-110 transition-all" />
+                                    <input
+                                        type="time"
+                                        value={formData.birthTime}
+                                        onChange={(e) => updateField('birthTime', e.target.value)}
+                                        className="bg-transparent w-full outline-none text-white font-light text-lg"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="bg-black/20 p-4 rounded-xl border border-white/5 flex items-center gap-4 group focus-within:border-manifest-accent/50 focus-within:bg-black/30 transition-all">
-                                <MapPin className="text-manifest-accent w-6 h-6 group-focus-within:text-white group-focus-within:scale-110 transition-all" />
-                                <input
-                                    type="text"
-                                    placeholder="Doğum Yeri (Şehir)"
-                                    value={formData.birthCity}
-                                    onChange={(e) => updateField('birthCity', e.target.value)}
-                                    className="bg-transparent w-full outline-none text-manifest-text placeholder:text-manifest-muted/50 font-light"
-                                />
+                            {/* Doğum Yeri */}
+                            <div className="space-y-1">
+                                <label className="text-sm font-medium text-manifest-muted/80 ml-1 block text-left">Doğum Yeri</label>
+                                <div className="bg-black/20 p-4 rounded-xl border border-white/5 flex items-center gap-4 group focus-within:border-manifest-accent/50 focus-within:bg-black/30 transition-all hover:border-white/10">
+                                    <MapPin className="text-manifest-accent w-5 h-5 group-focus-within:text-white group-focus-within:scale-110 transition-all" />
+                                    <input
+                                        type="text"
+                                        placeholder="Şehir (örn. İstanbul)"
+                                        value={formData.birthCity}
+                                        onChange={(e) => updateField('birthCity', e.target.value)}
+                                        className="bg-transparent w-full outline-none text-white placeholder:text-manifest-muted/40 font-light text-lg"
+                                    />
+                                </div>
                             </div>
                         </div>
 
