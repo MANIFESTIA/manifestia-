@@ -3,6 +3,7 @@ export interface UserProfile {
     birthDate: string;
     birthTime: string;
     birthCity: string;
+    sign?: string; // Zodiac Sign (e.g., Akrep, İkizler)
     deviceToken?: string; // For PWA push notifications later
 }
 
