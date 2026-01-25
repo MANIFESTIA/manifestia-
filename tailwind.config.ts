@@ -15,14 +15,14 @@ const config: Config = {
           background: "#050A18", // Deep dark blue/black
           surface: "#0F1629",     // Card background
           surfaceHighlight: "#1E293B",
-          
+
           // Accents
           primary: "#FFD700",     // Gold (Star Dust)
           primaryDim: "#B8860B",
           secondary: "#9D4EDD",   // Purple (Ethereal)
           secondaryDim: "#5A189A",
           accent: "#22D3EE",      // Cyan (Energy)
-          
+
           // Text
           text: "#F1F5F9",
           muted: "#94A3B8",
@@ -40,6 +40,10 @@ const config: Config = {
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        spin: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
         },
         fadeInUp: {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
