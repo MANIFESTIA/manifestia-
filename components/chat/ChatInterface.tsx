@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useChat, Message } from 'ai/react';
+import { useChat, Message } from '@ai-sdk/react';
 import { useVoice } from '@/hooks/useVoice';
 import { VoicePersona } from '@/lib/voice/voice-service';
 import { Mic, MicOff, Send, Sparkles, Volume2, Square, Globe, Settings } from 'lucide-react';
@@ -162,8 +162,8 @@ export default function ChatInterface() {
                             className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                             <div className={`relative max-w-[85%] rounded-2xl p-4 shadow-lg ${m.role === 'user'
-                                    ? 'bg-manifest-primary/20 text-white rounded-tr-sm border border-manifest-primary/30'
-                                    : 'bg-manifest-surface text-manifest-text rounded-tl-sm border border-white/10'
+                                ? 'bg-manifest-primary/20 text-white rounded-tr-sm border border-manifest-primary/30'
+                                : 'bg-manifest-surface text-manifest-text rounded-tl-sm border border-white/10'
                                 }`}>
                                 <p className="leading-relaxed text-sm md:text-base font-light whitespace-pre-wrap">{m.content}</p>
 
