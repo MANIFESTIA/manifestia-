@@ -6,6 +6,7 @@ import { UserProfile } from '@/types';
 interface UserContextType {
     user: UserProfile | null;
     saveUser: (data: UserProfile) => void;
+    logout: () => void;
     isOnboarded: boolean;
 }
 
@@ -29,8 +30,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('manifestia_user', JSON.stringify(data));
     };
 
+    const logout = () => {
+        setUser(null);
+        localStorage.removeItem('manifestia_user');
+    };
+
     return (
-        <UserContext.Provider value={{ user, saveUser, isOnboarded: !!user }}>
+        <UserContext.Provider value={{ user, saveUser, logout, isOnboarded: !!user }}>
             {!loading && children}
         </UserContext.Provider>
     );

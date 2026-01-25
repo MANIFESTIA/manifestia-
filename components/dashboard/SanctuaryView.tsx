@@ -10,6 +10,7 @@ import AuraView from '@/components/aura/AuraView';
 import TarotView from '@/components/tarot/TarotView';
 import TribeView from '@/components/social/TribeView';
 import JournalView from '@/components/journal/JournalView';
+import ProfileSettings from '@/components/dashboard/ProfileSettings'; // Import
 import { useCosmicWatcher } from '@/hooks/useCosmicWatcher';
 
 export default function SanctuaryView() {
@@ -20,6 +21,7 @@ export default function SanctuaryView() {
     const [showAuraCamera, setShowAuraCamera] = useState(false);
     const [showTarot, setShowTarot] = useState(false);
     const [showJournal, setShowJournal] = useState(false);
+    const [showProfile, setShowProfile] = useState(false); // New State
 
     const { testNotification } = useCosmicWatcher();
 
@@ -64,7 +66,7 @@ export default function SanctuaryView() {
                         <Camera className="w-5 h-5" />
                     </button>
                     <div
-                        onClick={() => setShowJournal(true)}
+                        onClick={() => setShowProfile(true)}
                         className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center border border-white/20 ring-1 ring-white/10 cursor-pointer hover:scale-105 transition backdrop-blur-sm"
                     >
                         <span className="text-sm font-medium text-white">{user?.name?.charAt(0)}</span>
@@ -163,6 +165,17 @@ export default function SanctuaryView() {
             {showAuraCamera && <AuraView onClose={() => setShowAuraCamera(false)} />}
             {showTarot && <TarotView onClose={() => setShowTarot(false)} />}
             {showJournal && <JournalView onClose={() => setShowJournal(false)} />}
+
+            {/* Profile Settings Modal */}
+            {showProfile && (
+                <ProfileSettings
+                    onClose={() => setShowProfile(false)}
+                    onOpenJournal={() => {
+                        setShowProfile(false);
+                        setShowJournal(true);
+                    }}
+                />
+            )}
 
             {/* Navigation Bar */}
             <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-panel rounded-full p-2 flex justify-between items-center z-50 shadow-2xl backdrop-blur-xl">
