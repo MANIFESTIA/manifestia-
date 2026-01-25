@@ -22,7 +22,7 @@ export const RITUALS: RitualDefinition[] = [
         title: '777 Bolluk Mührü',
         productId: 'citrine-777',
         frequencyName: '528Hz Mucize Frekansı',
-        frequencyUrl: '/sounds/528hz-ambient.mp3', // Kullanıcı bu dosyayı eklemeli
+        frequencyUrl: '/sounds/528hz-ambient.mp3',
         intention: 'Bolluk ve Bereket',
         steps: [
             {
@@ -51,7 +51,7 @@ export const RITUALS: RitualDefinition[] = [
                 title: 'Mühürleme Sessizliği',
                 description: 'Enerjinin oturması için bekle.',
                 text: "Şimdi seni enerjinle baş başa bırakıyorum. Gözlerini açma ve bu frekansın hücrelerine işlemesine izin ver.",
-                duration: 180 // 3 dakika sessizlik
+                duration: 180
             }
         ]
     },
@@ -90,6 +90,158 @@ export const RITUALS: RitualDefinition[] = [
                 description: 'Derinleşme zamanı.',
                 text: "Sessizliğin içindeki cevabı dinle.",
                 duration: 180
+            }
+        ]
+    },
+    {
+        id: 'moon-ritual',
+        title: 'Dolunay Arınması',
+        productId: 'moonstone-000',
+        frequencyName: '417Hz Değişim Frekansı',
+        frequencyUrl: '/sounds/417hz-ambient.mp3',
+        intention: 'Arınma ve Bırakma',
+        steps: [
+            {
+                id: 'preparation',
+                title: 'Ay Işığı',
+                description: 'Ay taşını alnına (3. Gözüne) dokundur.',
+                text: "Ayın gümüş ışığı odayı dolduruyor. Zihnindeki tüm karmaşayı bu ışığa teslim etmeye hazır mısın {name}?",
+                duration: 15
+            },
+            {
+                id: 'cleansing',
+                title: 'Gelgit Etkisi',
+                description: 'Duygularını serbest bırak.',
+                text: "Denizlerin kabarması gibi, içindeki bastırılmış duyguların yüzeye çıkmasına izin ver. Onları yargılama, sadece izle ve akıp gitmelerine izin ver.",
+                duration: 30
+            },
+            {
+                id: 'charging',
+                title: 'Yeni Başlangıç',
+                description: 'Boşalan yere ışığı doldur.',
+                text: "Eskiyi bıraktın. Şimdi tekrar et: Hayatımın kontrolü bende. Geçmişi şifalandırıyor, geleceği kucaklıyorum. Mühürlendi.",
+                duration: 20
+            },
+            {
+                id: 'sealing',
+                title: 'Mühürleme',
+                description: 'Sessizlikte kal.',
+                text: "Ruhun şifalanırken sessizce bekle.",
+                duration: 120
+            }
+        ]
+    },
+    {
+        id: 'protection-shield',
+        title: 'Koruma Kalkanı',
+        productId: 'obsidian-999',
+        frequencyName: '396Hz Kök Çakra',
+        frequencyUrl: '/sounds/396hz-ambient.mp3',
+        intention: 'Korunma ve Güç',
+        steps: [
+            {
+                id: 'preparation',
+                title: 'Köklenme',
+                description: 'Ayaklarını yere sağlam bas.',
+                text: "Kendini dev bir çınar ağacı gibi hisset. Köklerin yerin derinliklerine iniyor. Güvendesin.",
+                duration: 15
+            },
+            {
+                id: 'cleansing',
+                title: 'Obsidyen Duvarı',
+                description: 'Etrafında siyah bir kalkan imgele.',
+                text: "Etrafında obsidyen taşından örülmüş, aşılamaz bir enerji duvarı hayal et. Hiçbir negatif titreşim bu duvardan geçemez.",
+                duration: 25
+            },
+            {
+                id: 'charging',
+                title: 'Güç İlanı',
+                description: 'Sınırlarını çiz.',
+                text: "Tekrar et: Enerjim sadece bana aittir. İznim olmadan kimse alanıma giremez. Ben gücüm. Korunuyorum.",
+                duration: 20
+            },
+            {
+                id: 'sealing',
+                title: 'Mühürleme',
+                description: 'Gücünü hisset.',
+                text: "Bu kalkan gün boyu seninle olacak.",
+                duration: 60
+            }
+        ]
+    },
+    {
+        id: 'career-success',
+        title: 'Kariyer ve Başarı',
+        productId: 'tigerseye-888',
+        frequencyName: '888Hz Başarı Frekansı',
+        frequencyUrl: '/sounds/888hz-ambient.mp3',
+        intention: 'Odak ve Başarı',
+        steps: [
+            {
+                id: 'preparation',
+                title: 'Hedef Belirleme',
+                description: 'Gözlerini kapat ve zirveyi hayal et.',
+                text: "Zihninde olmak istediğin en yüksek noktayı canlandır. Oradaki sen nasıl görünüyor? Nasıl hissediyor?",
+                duration: 20
+            },
+            {
+                id: 'cleansing',
+                title: 'Kaplan Gözü',
+                description: 'Cesaretini topla.',
+                text: "Kaplan Gözü taşının altın rengi hareleri, içindeki erteleme ve korku bulutlarını dağıtıyor. Harekete geçmeye hazırsın.",
+                duration: 20
+            },
+            {
+                id: 'charging',
+                title: 'Zafer Kodlaması',
+                description: 'Potansiyelini kabul et.',
+                text: "Söyle: Potansiyelimi gerçekleştirmek için gereken her şeye sahibim. Başarı benim doğal hakkım. 8-8-8. Mühürlendi.",
+                duration: 20
+            },
+            {
+                id: 'sealing',
+                title: 'Mühürleme',
+                description: 'Vizyonu sabitle.',
+                text: "Bu vizyon artık senin gerçeğin.",
+                duration: 90
+            }
+        ]
+    },
+    {
+        id: 'self-love',
+        title: 'Öz Sevgi',
+        productId: 'rosequartz-111',
+        frequencyName: '528Hz Sevgi Frekansı',
+        frequencyUrl: '/sounds/528hz-ambient.mp3',
+        intention: 'Kendini Kabul',
+        steps: [
+            {
+                id: 'preparation',
+                title: 'Kendine Dönüş',
+                description: 'Ellerini kendine sarılacak şekilde çaprazla.',
+                text: "{name}, bu an sadece senin için. Kendine şefkatli bir kucaklama ver.",
+                duration: 15
+            },
+            {
+                id: 'cleansing',
+                title: 'Pembe Işık',
+                description: 'Kalp çakranı yumuşat.',
+                text: "Kalbinden yayılan yumuşak pembe bir ışığın tüm bedenini sardığını hisset. Kendine karşı tüm eleştirilerin bu ışıkta eriyip gidiyor.",
+                duration: 25
+            },
+            {
+                id: 'charging',
+                title: 'Ayna Egzersizi',
+                description: 'Kendini onurlandır.',
+                text: "Tekrar et: Olduğum halimle tam ve yeterliyim. Kendimi seviyorum, kendimi onaylıyorum. Ben bir mucizeyim.",
+                duration: 20
+            },
+            {
+                id: 'sealing',
+                title: 'Mühürleme',
+                description: 'Sevgiyi demle.',
+                text: "Bu sevgi hissi, senin doğal halin.",
+                duration: 90
             }
         ]
     }

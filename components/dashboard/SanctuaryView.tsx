@@ -13,6 +13,8 @@ import JournalView from '@/components/journal/JournalView';
 import ProfileSettings from '@/components/dashboard/ProfileSettings';
 import EnergyRing from '@/components/dashboard/EnergyRing';
 import { useCosmicWatcher } from '@/hooks/useCosmicWatcher';
+import RitualCard from '@/components/ritual/RitualCard';
+import { RITUALS } from '@/lib/rituals';
 
 export default function SanctuaryView() {
     const { user } = useUser();
@@ -103,43 +105,17 @@ export default function SanctuaryView() {
                         {/* Store Cards (Rituals) */}
                         <section className="space-y-4">
                             <div className="flex justify-between items-end px-2">
-                                <h2 className="text-lg font-medium text-white/80">Ritüeller</h2>
+                                <h2 className="text-lg font-medium text-white/80">Ritüel Kartları</h2>
                                 <span className="text-xs text-manifest-secondary cursor-pointer hover:text-white transition">Tümünü Gör</span>
                             </div>
                             <div className="flex gap-4 overflow-x-auto pb-6 hide-scrollbar snap-x px-2">
-                                <div
-                                    onClick={() => setActiveRitual('abundance-777')}
-                                    className="glass-card min-w-[180px] p-5 rounded-2xl snap-start cursor-pointer group relative overflow-hidden"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/10 group-hover:border-manifest-primary/50 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all">
-                                        🕯️
-                                    </div>
-                                    <h3 className="font-medium text-base text-white group-hover:text-manifest-primary transition-colors">777 Mucizesi</h3>
-                                    <p className="text-xs text-manifest-muted mt-1">Bolluk frekansını aktif et.</p>
-                                </div>
-
-                                <div
-                                    onClick={() => setActiveRitual('love-444')}
-                                    className="glass-card min-w-[180px] p-5 rounded-2xl snap-start cursor-pointer group relative overflow-hidden"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/10 group-hover:border-manifest-secondary/50 group-hover:shadow-[0_0_15px_rgba(236,72,153,0.3)] transition-all">
-                                        💖
-                                    </div>
-                                    <h3 className="font-medium text-base text-white group-hover:text-manifest-secondary transition-colors">Aşk Çekimi</h3>
-                                    <p className="text-xs text-manifest-muted mt-1">Ruh eşini hayatına çağır.</p>
-                                </div>
-
-                                <div
-                                    className="glass-card min-w-[180px] p-5 rounded-2xl snap-start cursor-pointer group relative overflow-hidden opacity-70 grayscale"
-                                >
-                                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center text-2xl mb-4 border border-white/10">
-                                        🌙
-                                    </div>
-                                    <h3 className="font-medium text-base text-white">Dolunay</h3>
-                                    <p className="text-xs text-manifest-muted mt-1">Yakında açılacak.</p>
-                                </div>
+                                {RITUALS.map(ritual => (
+                                    <RitualCard
+                                        key={ritual.id}
+                                        ritual={ritual}
+                                        onClick={() => setActiveRitual(ritual.id)}
+                                    />
+                                ))}
                             </div>
                         </section>
                     </motion.div>
