@@ -1,9 +1,11 @@
 "use client";
 import React, { useState } from 'react';
 import { useUser } from '@/lib/UserContext';
-import { MessageCircle, Wind, Sparkles, Volume2, Square, Camera, Users } from 'lucide-react';
+import { MessageCircle, Wind, Sparkles, Volume2, Square, Camera, Users, RotateCw } from 'lucide-react';
+import { useCosmicGuidance } from '@/hooks/useCosmicGuidance';
 import { useVoice } from '@/hooks/useVoice';
 import { motion } from 'framer-motion';
+import Antigravity from '@/components/ui/Antigravity';
 import ChatInterface from '@/components/chat/ChatInterface';
 import RitualPlayer from '@/components/ritual/RitualPlayer';
 import AuraView from '@/components/aura/AuraView';
@@ -28,7 +30,13 @@ export default function SanctuaryView() {
 
     const { testNotification } = useCosmicWatcher();
 
-    const dailyMessage = "Evren bugün sana bolluk kapılarını açıyor. Niyetini mühürle ve ışığa adım at. " + (user?.name || "Ruh") + ", mucizeler seninle.";
+    // Dynamic Guidance Hook
+    const { message, loading, refresh } = useCosmicGuidance({
+        name: user?.name,
+        sign: user?.sign
+    });
+
+    const dailyMessage = message || "Evrenin sessizliğini dinle...";
 
     const handlePlayMessage = () => {
         if (isPlaying) {
@@ -42,9 +50,22 @@ export default function SanctuaryView() {
         <div className="min-h-screen text-manifest-text pb-24 font-sans relative overflow-hidden">
 
             {/* Nebula Effect (Arka Plan Hareketli Işık) */}
-            <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[10%] left-[20%] w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] animate-pulse-slow"></div>
-                <div className="absolute bottom-[20%] right-[10%] w-80 h-80 bg-pink-600/10 rounded-full blur-[100px] animate-pulse-slow delay-1000"></div>
+            {/* Nebula Effect (Arka Plan Hareketli Işık) */}
+            <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[#050A18]">
+                {/* 3D Background */}
+                <div className="absolute inset-0 opacity-80">
+                    <Antigravity
+                        count={150}
+                        magnetRadius={15}
+                        ringRadius={12}
+                        waveSpeed={0.5}
+                        color="#A855F7" // Manifest Secondary
+                        particleSize={1.5}
+                    />
+                </div>
+                {/* Fallback gradients for depth */}
+                <div className="absolute top-[10%] left-[20%] w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] animate-pulse-slow pointer-events-none"></div>
+                <div className="absolute bottom-[20%] right-[10%] w-80 h-80 bg-pink-600/10 rounded-full blur-[100px] animate-pulse-slow delay-1000 pointer-events-none"></div>
             </div>
 
             {/* Header */}
@@ -87,11 +108,28 @@ export default function SanctuaryView() {
                             <h2 className="mt-8 text-2xl font-serif text-white/90 text-center">
                                 Merhaba, {user?.name || "Ruh"}
                             </h2>
-                            <p className="text-sm text-manifest-muted mt-2 italic max-w-xs mx-auto text-center">
-                                "{dailyMessage}"
-                            </p>
+                            <div className="mt-2 min-h-[60px] flex flex-col items-center justify-center">
+                                {loading ? (
+                                    <div className="flex items-center gap-2 text-manifest-muted animate-pulse">
+                                        <Sparkles className="w-4 h-4" />
+                                        <span className="text-xs">Yıldızlar fısıldıyor...</span>
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-manifest-muted italic max-w-xs mx-auto text-center animate-in fade-in slide-in-from-bottom-2 duration-700">
+                                        "{dailyMessage}"
+                                    </p>
+                                )}
+                            </div>
 
-                            <div className="mt-6 flex justify-center gap-4">
+                            <div className="mt-4 flex justify-center gap-3">
+                                <button
+                                    onClick={refresh}
+                                    disabled={loading}
+                                    className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-manifest-muted hover:text-white transition disabled:opacity-50"
+                                    title="Yeni Mesaj"
+                                >
+                                    <RotateCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                                </button>
                                 <button
                                     onClick={handlePlayMessage}
                                     className={`flex items-center gap-2 px-5 py-2 rounded-full transition-all duration-300 backdrop-blur-md ${isPlaying ? 'bg-manifest-secondary/80 text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'bg-white/5 hover:bg-white/10 text-manifest-primary border border-manifest-primary/30'}`}
