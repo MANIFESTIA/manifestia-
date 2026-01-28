@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useChat, Message } from '@ai-sdk/react';
 import { useVoice } from '@/hooks/useVoice';
 import { VoicePersona } from '@/lib/voice/voice-service';
-import { Mic, MicOff, Send, Sparkles, Volume2, Square, Globe, Settings } from 'lucide-react';
+import { Mic, MicOff, Send, Sparkles, Volume2, Square, Globe, Settings, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/lib/UserContext';
 import VoiceSettings from '@/components/settings/VoiceSettings';
@@ -60,8 +60,11 @@ const useSpeechToText = () => {
     return { isListening, transcript, startListening, stopListening, setTranscript };
 };
 
+interface ChatInterfaceProps {
+    onBack?: () => void;
+}
 
-export default function ChatInterface() {
+export default function ChatInterface({ onBack }: ChatInterfaceProps) {
     const { user } = useUser();
     const { speak, stop: stopVoice, isPlaying: isVoicePlaying } = useVoice();
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -131,6 +134,18 @@ export default function ChatInterface() {
             />
 
             {/* Header / Ayarlar Butonu */}
+            {onBack && (
+                <div className="absolute top-0 left-0 p-4 z-10">
+                    <button
+                        onClick={onBack}
+                        className="p-2 rounded-full bg-manifest-surface border border-white/5 text-manifest-muted hover:text-white transition-all shadow-lg backdrop-blur-md"
+                        title="Geri Dön"
+                    >
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
+                </div>
+            )}
+
             <div className="absolute top-0 right-0 p-4 z-10">
                 <button
                     onClick={() => setIsSettingsOpen(true)}

@@ -33,11 +33,23 @@ const getGradient = (id: string) => {
     }
 };
 
+const getGlowClasses = (id: string) => {
+    switch (id) {
+        case 'abundance-777': return 'hover:shadow-[0_0_20px_rgba(252,211,77,0.6)] hover:border-amber-400/50';
+        case 'love-444': return 'hover:shadow-[0_0_20px_rgba(244,114,182,0.6)] hover:border-pink-400/50';
+        case 'moon-ritual': return 'hover:shadow-[0_0_20px_rgba(216,180,254,0.6)] hover:border-purple-400/50';
+        case 'protection-shield': return 'hover:shadow-[0_0_20px_rgba(96,165,250,0.6)] hover:border-blue-400/50';
+        case 'career-success': return 'hover:shadow-[0_0_20px_rgba(52,211,153,0.6)] hover:border-emerald-400/50';
+        case 'self-love': return 'hover:shadow-[0_0_20px_rgba(253,164,175,0.6)] hover:border-rose-400/50';
+        default: return 'hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:border-white/50';
+    }
+};
+
 export default function RitualCard({ ritual, onClick }: RitualCardProps) {
     return (
         <div
             onClick={onClick}
-            className="relative min-w-[140px] w-[140px] h-[180px] rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex flex-col items-center justify-center gap-4 cursor-pointer group hover:scale-105 transition-all duration-300 hover:border-white/20 hover:bg-white/10 overflow-hidden snap-start"
+            className={`relative min-w-[140px] w-[140px] h-[180px] rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex flex-col items-center justify-center gap-4 cursor-pointer group hover:scale-105 transition-all duration-300 hover:bg-white/10 overflow-hidden snap-start ${getGlowClasses(ritual.id)}`}
         >
             {/* Arka Plan Glow */}
             <div className={`absolute inset-0 bg-gradient-to-b ${getGradient(ritual.id)} opacity-30 group-hover:opacity-60 transition-opacity`}></div>

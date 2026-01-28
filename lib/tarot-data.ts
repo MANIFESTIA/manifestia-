@@ -1,32 +1,164 @@
 export interface TarotCard {
     id: number;
     name: string;
-    englishName: string; // API promptu için
-    keywords: string[];
-    image: string; // Placeholder or path
+    englishName: string;
+    meaning: string;
+    themeColor: string; // Hex for neon glow
 }
 
 export const MAJOR_ARCANA: TarotCard[] = [
-    { id: 0, name: "Joker", englishName: "The Fool", keywords: ["Başlangıç", "Masumiyet", "Özgürlük"], image: "/tarot/0_fool.jpg" },
-    { id: 1, name: "Büyücü", englishName: "The Magician", keywords: ["Yetenek", "İrade", "Tezahür"], image: "/tarot/1_magician.jpg" },
-    { id: 2, name: "Azize", englishName: "The High Priestess", keywords: ["Sezgi", "Gizem", "Bilinçaltı"], image: "/tarot/2_priestess.jpg" },
-    { id: 3, name: "İmparatoriçe", englishName: "The Empress", keywords: ["Bolluk", "Doğa", "Anaçlık"], image: "/tarot/3_empress.jpg" },
-    { id: 4, name: "İmparator", englishName: "The Emperor", keywords: ["Otorite", "Yapı", "Disiplin"], image: "/tarot/4_emperor.jpg" },
-    { id: 5, name: "Aziz", englishName: "The Hierophant", keywords: ["Gelenek", "İnanç", "Öğreti"], image: "/tarot/5_hierophant.jpg" },
-    { id: 6, name: "Aşıklar", englishName: "The Lovers", keywords: ["Aşk", "Uyum", "Seçim"], image: "/tarot/6_lovers.jpg" },
-    { id: 7, name: "Savaş Arabası", englishName: "The Chariot", keywords: ["Zafer", "İrade", "İlerleme"], image: "/tarot/7_chariot.jpg" },
-    { id: 8, name: "Güç", englishName: "Strength", keywords: ["Cesaret", "Sabır", "Şefkat"], image: "/tarot/8_strength.jpg" },
-    { id: 9, name: "Ermiş", englishName: "The Hermit", keywords: ["İçe Dönüş", "Rehberlik", "Yalnızlık"], image: "/tarot/9_hermit.jpg" },
-    { id: 10, name: "Kader Çarkı", englishName: "Wheel of Fortune", keywords: ["Değişim", "Şans", "Döngü"], image: "/tarot/10_wheel.jpg" },
-    { id: 11, name: "Adalet", englishName: "Justice", keywords: ["Hakikat", "Denge", "Karma"], image: "/tarot/11_justice.jpg" },
-    { id: 12, name: "Asılan Adam", englishName: "The Hanged Man", keywords: ["Fedakarlık", "Yeni Bakış", "Bekleyiş"], image: "/tarot/12_hanged.jpg" },
-    { id: 13, name: "Ölüm", englishName: "Death", keywords: ["Dönüşüm", "Bitiş", "Yeniden Doğuş"], image: "/tarot/13_death.jpg" },
-    { id: 14, name: "Denge", englishName: "Temperance", keywords: ["Uyum", "Sabır", "İyileşme"], image: "/tarot/14_temperance.jpg" },
-    { id: 15, name: "Şeytan", englishName: "The Devil", keywords: ["Bağımlılık", "Maddiyat", "Gölge"], image: "/tarot/15_devil.jpg" },
-    { id: 16, name: "Yıkılan Kule", englishName: "The Tower", keywords: ["Ani Değişim", "Uyanış", "Yıkım"], image: "/tarot/16_tower.jpg" },
-    { id: 17, name: "Yıldız", englishName: "The Star", keywords: ["Umut", "İlham", "Huzur"], image: "/tarot/17_star.jpg" },
-    { id: 18, name: "Ay", englishName: "The Moon", keywords: ["İllüzyon", "Korku", "Rüyalar"], image: "/tarot/18_moon.jpg" },
-    { id: 19, name: "Güneş", englishName: "The Sun", keywords: ["Mutluluk", "Başarı", "Canlılık"], image: "/tarot/19_sun.jpg" },
-    { id: 20, name: "Mahkeme", englishName: "Judgement", keywords: ["Uyanış", "Çağrı", "Arınma"], image: "/tarot/20_judgement.jpg" },
-    { id: 21, name: "Dünya", englishName: "The World", keywords: ["Tamamlanma", "Bütünlük", "Yolculuk"], image: "/tarot/21_world.jpg" },
+    {
+        id: 0,
+        name: "Mecnun",
+        englishName: "The Fool",
+        meaning: "Yeni başlangıçlar, risk almak, saflık, potansiyel.",
+        themeColor: "#22D3EE" // Cyan
+    },
+    {
+        id: 1,
+        name: "Büyücü",
+        englishName: "The Magician",
+        meaning: "Beceri, yaratım gücü, potansiyel, ustalık.",
+        themeColor: "#A855F7" // Purple
+    },
+    {
+        id: 2,
+        name: "Azize",
+        englishName: "The High Priestess",
+        meaning: "Sezgi, gizem, bilinçaltı, içsel bilgi.",
+        themeColor: "#818CF8" // Indigo
+    },
+    {
+        id: 3,
+        name: "İmparatoriçe",
+        englishName: "The Empress",
+        meaning: "Bereket, doğurganlık, dişil enerji, yaratıcılık.",
+        themeColor: "#F472B6" // Pink
+    },
+    {
+        id: 4,
+        name: "İmparator",
+        englishName: "The Emperor",
+        meaning: "Otorite, düzen, eril güç, yapı, liderlik.",
+        themeColor: "#EF4444" // Red
+    },
+    {
+        id: 5,
+        name: "Aziz",
+        englishName: "The Hierophant",
+        meaning: "Gelenekler, inançlar, ruhsal rehberlik, bilgelik.",
+        themeColor: "#FBBF24" // Amber
+    },
+    {
+        id: 6,
+        name: "Aşıklar",
+        englishName: "The Lovers",
+        meaning: "Seçimler, uyum, ilişkiler, tutku.",
+        themeColor: "#F43F5E" // Rose
+    },
+    {
+        id: 7,
+        name: "Araba",
+        englishName: "The Chariot",
+        meaning: "İrade, zafer, kontrolü ele alma, ilerleme.",
+        themeColor: "#34D399" // Emerald
+    },
+    {
+        id: 8,
+        name: "Güç",
+        englishName: "Strength",
+        meaning: "Sabır, içsel güç, şefkatli kontrol, cesaret.",
+        themeColor: "#F59E0B" // Orange
+    },
+    {
+        id: 9,
+        name: "Ermiş",
+        englishName: "The Hermit",
+        meaning: "İç gözlem, yalnızlık, bilgelik arayışı, rehberlik.",
+        themeColor: "#60A5FA" // Blue
+    },
+    {
+        id: 10,
+        name: "Kader Çarkı",
+        englishName: "Wheel of Fortune",
+        meaning: "Şans, kaderin değişimi, döngüler, sürprizler.",
+        themeColor: "#D946EF" // Fuchsia
+    },
+    {
+        id: 11,
+        name: "Adalet",
+        englishName: "Justice",
+        meaning: "Hak, hukuk, sebep-sonuç ilişkisi, denge.",
+        themeColor: "#10B981" // Green
+    },
+    {
+        id: 12,
+        name: "Asılan Adam",
+        englishName: "The Hanged Man",
+        meaning: "Fedakarlık, duraklama, farklı bakış açısı, teslimiyet.",
+        themeColor: "#8B5CF6" // Violet
+    },
+    {
+        id: 13,
+        name: "Ölüm",
+        englishName: "Death",
+        meaning: "Sonlanmalar, dönüşüm, yeniden doğuş, bitişler.",
+        themeColor: "#94A3B8" // Slate
+    },
+    {
+        id: 14,
+        name: "Denge",
+        englishName: "Temperance",
+        meaning: "Ölçülü olmak, uyum, sabır, simya.",
+        themeColor: "#2DD4BF" // Teal
+    },
+    {
+        id: 15,
+        name: "Şeytan",
+        englishName: "The Devil",
+        meaning: "Bağlılıklar, tutku, gölge yanlar, illüzyon.",
+        themeColor: "#DC2626" // Dark Red
+    },
+    {
+        id: 16,
+        name: "Yıkılan Kule",
+        englishName: "The Tower",
+        meaning: "Ani değişim, sarsıcı gerçekler, yıkım, uyanış.",
+        themeColor: "#EA580C" // Burnt Orange
+    },
+    {
+        id: 17,
+        name: "Yıldız",
+        englishName: "The Star",
+        meaning: "Umut, ilham, şifa, iyimserlik, huzur.",
+        themeColor: "#67E8F9" // Cyan-light
+    },
+    {
+        id: 18,
+        name: "Ay",
+        englishName: "The Moon",
+        meaning: "Yanılsamalar, korkular, belirsizlik, sezgi.",
+        themeColor: "#C084FC" // Purple-light
+    },
+    {
+        id: 19,
+        name: "Güneş",
+        englishName: "The Sun",
+        meaning: "Başarı, mutluluk, netlik, neşe, canlılık.",
+        themeColor: "#FACC15" // Yellow
+    },
+    {
+        id: 20,
+        name: "Mahkeme",
+        englishName: "Judgement",
+        meaning: "Uyanış, karar verme, yüzleşme, çağrı.",
+        themeColor: "#FB923C" // Orange-light
+    },
+    {
+        id: 21,
+        name: "Dünya",
+        englishName: "The World",
+        meaning: "Tamamlanma, bütünlük, başarıyla bitiriş, evren.",
+        themeColor: "#4ADE80" // Green-light
+    }
 ];

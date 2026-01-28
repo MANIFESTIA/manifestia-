@@ -12,7 +12,13 @@ export default function Home() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null; // Prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-manifest-background text-manifest-text">
+        <div className="animate-pulse">Yükleniyor...</div>
+      </div>
+    );
+  }
 
   if (!isOnboarded) {
     return <OnboardingFlow />;

@@ -3,6 +3,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/lib/UserContext';
 import { LogOut, X, User, BookOpen, Star } from 'lucide-react';
+import BadgesDisplay from '@/components/gamification/BadgesDisplay';
 
 interface ProfileSettingsProps {
     onClose: () => void;
@@ -62,6 +63,12 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
                     </div>
                 </div>
 
+
+                {/* Badges Section */}
+                <div className="mb-8">
+                    <BadgesDisplay />
+                </div>
+
                 {/* Actions */}
                 <div className="space-y-3">
                     <button
@@ -96,7 +103,7 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
                     <p className="text-[10px] text-manifest-muted/40 uppercase tracking-widest">Manifestia v0.1</p>
                 </div>
 
-            </motion.div>
-        </div>
+            </motion.div >
+        </div >
     );
 }

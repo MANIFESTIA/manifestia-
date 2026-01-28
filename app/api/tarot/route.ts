@@ -1,47 +1,33 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { generateReading } from '@/lib/tarot-content';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+export async function POST(req: Request) {
+    let cardName = '';
 
-export async function POST(req: NextRequest) {
     try {
-        const { cardName, intention, userSign } = await req.json();
+        const body = await req.json();
+        cardName = body.cardName;
+        const { userSign } = body;
 
-        if (!cardName) {
-            return NextResponse.json({ error: 'Kart bilgisi gerekli' }, { status: 400 });
-        }
+        // "Cosmic Oracle Engine" - Yerel ve Anlık Üretim
+        // API gecikmesi veya maliyeti olmadan, binlerce varyasyon.
+        const reading = generateReading(cardName, userSign);
 
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        // Yapay bir düşünme süresi ekleyelim (daha gerçekçi hissettirsin)
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const prompt = `
-        Sen mistik bir Tarot okuyucususun. Bir kullanıcın şu kartı çekti: "${cardName}".
-        
-        Bağlam:
-        - Kullanıcının Niyeti: "${intention || 'Genel Rehberlik'}"
-        - Kullanıcının Burcu: "${userSign || 'Bilinmiyor'}"
-        
-        Görevin:
-        Bu kartı, kullanıcının burcu ve niyetiyle harmanlayarak kısaca yorumla.
-        
-        Aşağıdaki JSON formatında yanıt ver (Markdown yok, sadece JSON):
-        {
-            "interpretation": "Burada kartın anlamı ve kullanıcıya özel mesajın olacak (Max 3 cümle). Mistik ve bilge bir ton kullan.",
-            "affirmation": "Kullanıcının gün boyu tekrar etmesi gereken kısa, güçlü bir olumlama cümlesi.",
-            "suggestion": "Bu enerjiyi dengelemek veya yükseltmek için kısa bir doğal taş veya ritüel önerisi (Örn: Ametist taşı ile meditasyon)."
-        }
-        `;
-
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-
-        const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-        const analysis = JSON.parse(cleanText);
-
-        return NextResponse.json(analysis);
-
+        return NextResponse.json(reading);
     } catch (error) {
-        console.error('Tarot yorumlama hatası:', error);
-        return NextResponse.json({ error: 'Kartların fısıltısı duyulamadı.' }, { status: 500 });
+        console.error('Tarot yorumlama hatası (Sistem Mock Cevap Döndürüyor):', error);
+
+        // MOCK BACKUP RESPONSE
+        // Eğer API çalışmazsa bu cevap döner, böylece kullanıcı asla hata görmez.
+        const mockResponse = {
+            interpretation: `Kartların bilgeliği şu an evrensel akışla bütünleşiyor. ${cardName || 'Bu kart'}, senin için derin bir dönüşümün habercisi. İçsel gücüne güven ve akışta kal.`,
+            affirmation: "Evrenin sonsuz olasılıklarına kendimi açıyorum.",
+            suggestion: "Bu enerjiyi mühürlemek için derin bir nefes al ve niyetini tekrarla."
+        };
+
+        return NextResponse.json(mockResponse);
     }
 }

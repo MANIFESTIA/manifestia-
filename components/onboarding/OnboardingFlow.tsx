@@ -21,21 +21,27 @@ export default function OnboardingFlow() {
 
     const handleNext = () => {
         if (step === 2) {
-            // Doğum bilgileri girildi, hesaplamaya geç
+            // Doğum bilgileri girildi, Niyet seçimine geç
             setStep(3);
         } else if (step === 3) {
-            // Bu adım useEffect ile otomatik tetiklenecek
+            // Niyet seçildi, Ses rehberine geç
+            setStep(4);
         } else if (step === 4) {
-            // Kullanıcı mesajı okudu, kaydet ve bitir
+            // Ses seçildi, Hesaplamaya geç
+            setStep(5);
+        } else if (step === 5) {
+            // Bu adım useEffect ile otomatik tetiklenecek (Hesaplama)
+        } else if (step === 6) {
+            // Sonuç görüldü, kaydet ve bitir
             saveUser(formData as UserProfile);
         } else {
             setStep(prev => prev + 1);
         }
     };
 
-    // Step 3 (Hesaplama) tetiklendiğinde API'ye git
+    // Step 5 (Hesaplama) tetiklendiğinde API'ye git
     useEffect(() => {
-        if (step === 3) {
+        if (step === 5) {
             const fetchCosmicMessage = async () => {
                 setLoading(true);
                 try {
@@ -48,14 +54,12 @@ export default function OnboardingFlow() {
 
                     if (result.message) {
                         setCosmicMessage(result.message);
-                        // Mesaj geldi, biraz bekleyip göster (loading efekti için)
-                        setTimeout(() => setStep(4), 2000);
+                        setTimeout(() => setStep(6), 2500); // Biraz daha uzun beklet heyecan artsın
                     }
                 } catch (error) {
                     console.error("Cosmic connection error:", error);
-                    // Hata olursa varsayılan bir mesajla devam et
                     setCosmicMessage("Yıldızlar şu an sessiz, ancak enerjin evrene ulaştı.");
-                    setStep(4);
+                    setStep(6);
                 } finally {
                     setLoading(false);
                 }
@@ -64,9 +68,38 @@ export default function OnboardingFlow() {
         }
     }, [step, formData]);
 
-    const updateField = (field: keyof UserProfile, value: string) => {
+    const updateField = (field: keyof UserProfile, value: string | string[]) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
+
+    const toggleIntent = (intent: string) => {
+        const current = formData.intents || [];
+        if (current.includes(intent)) {
+            updateField('intents', current.filter(i => i !== intent));
+        } else {
+            if (current.length < 3) {
+                updateField('intents', [...current, intent]);
+            }
+        }
+    };
+
+    // INTENT DATA
+    const intents = [
+        { id: 'love', label: 'Aşk & İlişkiler', icon: '❤️', desc: 'Ruh eşini ve sevgiyi çek.' },
+        { id: 'abundance', label: 'Bolluk & Bereket', icon: '💰', desc: 'Maddi ve manevi zenginlik.' },
+        { id: 'protection', label: 'Korunma', icon: '🛡️', desc: 'Negatif enerjilerden arın.' },
+        { id: 'clarity', label: 'Zihinsel Berraklık', icon: '🧠', desc: 'Kararlarında net ol.' },
+        { id: 'awakening', label: 'Ruhsal Uyanış', icon: '✨', desc: 'İçindeki gücü keşfet.' },
+        { id: 'career', label: 'Kariyer & Başarı', icon: '🚀', desc: 'Hedeflerine hızla ulaş.' },
+    ];
+
+    // VOICE DATA
+    const voices = [
+        { id: 'A', name: 'Mistik Rehber', k: 'Mist', color: 'from-purple-500 to-indigo-500' },
+        { id: 'B', name: 'Doğa Ana', k: 'Gaia', color: 'from-green-500 to-emerald-500' },
+        { id: 'C', name: 'Kozmik Bilge', k: 'Cosmos', color: 'from-blue-500 to-cyan-500' },
+        { id: 'D', name: 'Ateş Ruhu', k: 'Fire', color: 'from-red-500 to-orange-500' },
+    ];
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden">
@@ -74,6 +107,7 @@ export default function OnboardingFlow() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-manifest-primary/10 rounded-full blur-[150px] pointer-events-none animate-pulse-slow"></div>
 
             <AnimatePresence mode="wait">
+                {/* STEP 0: INTRO */}
                 {step === 0 && (
                     <motion.div
                         key="intro"
@@ -107,6 +141,7 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
+                {/* STEP 1: NAME */}
                 {step === 1 && (
                     <motion.div
                         key="name"
@@ -145,20 +180,27 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
+                {/* STEP 2: BIRTH DATA */}
                 {step === 2 && (
                     <motion.div
                         key="birth"
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -50 }}
-                        className="w-full max-w-md z-10 space-y-6 glass-panel p-8 rounded-3xl mx-4"
+                        className="w-full max-w-md z-10 space-y-6 glass-panel p-8 rounded-3xl mx-4 relative overflow-hidden"
                     >
+                        {/* Yıldız Haritası Animasyon Arka Planı (Sadece bu adımda) */}
+                        <div className="absolute inset-0 opacity-10 pointer-events-none">
+                            <div className="absolute top-10 left-10 w-32 h-32 border border-white/20 rounded-full animate-spin-slow" style={{ animationDuration: '20s' }}></div>
+                            <div className="absolute bottom-10 right-10 w-48 h-48 border border-white/10 rounded-full animate-spin-slow" style={{ animationDuration: '30s' }}></div>
+                        </div>
+
                         <div className="text-center mb-2">
                             <h2 className="text-3xl font-serif text-white text-glow mb-2">Yıldız Haritan</h2>
                             <p className="text-manifest-muted font-light text-sm">Doğum bilgilerini girerek enerjini keşfet.</p>
                         </div>
 
-                        <div className="space-y-5">
+                        <div className="space-y-5 relative z-10">
                             {/* Doğum Tarihi */}
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-manifest-muted/80 ml-1 block text-left">Doğum Tarihi</label>
@@ -203,10 +245,112 @@ export default function OnboardingFlow() {
                             </div>
                         </div>
 
-                        <div className="flex justify-center pt-4">
+                        <div className="flex justify-center pt-4 relative z-10">
                             <button
                                 onClick={handleNext}
                                 disabled={!formData.birthDate || !formData.birthTime || !formData.birthCity}
+                                className="w-full py-4 bg-gradient-to-r from-manifest-primary to-manifest-secondary rounded-xl text-white font-medium hover:shadow-[0_0_20px_rgba(236,72,153,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+                            >
+                                <span>Devam Et</span>
+                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1" />
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* STEP 3: INTENT GRID (NEW) */}
+                {step === 3 && (
+                    <motion.div
+                        key="intents"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.05 }}
+                        className="w-full max-w-2xl z-10 space-y-6 glass-panel p-8 rounded-3xl mx-4"
+                    >
+                        <div className="text-center mb-6">
+                            <h2 className="text-3xl font-serif text-white text-glow mb-2">Niyetini Belirle</h2>
+                            <p className="text-manifest-muted font-light">Senin için hangileri önemli? (En fazla 3 seçim)</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {intents.map((intent) => {
+                                const isSelected = (formData.intents || []).includes(intent.id);
+                                return (
+                                    <button
+                                        key={intent.id}
+                                        onClick={() => toggleIntent(intent.id)}
+                                        className={`relative p-4 rounded-2xl border transition-all duration-300 flex flex-col items-center gap-3 group text-center
+                                            ${isSelected
+                                                ? 'bg-manifest-primary/20 border-manifest-primary shadow-[0_0_15px_rgba(168,85,247,0.3)]'
+                                                : 'bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/20'}`}
+                                    >
+                                        <div className="text-4xl filter drop-shadow-md group-hover:scale-110 transition-transform">{intent.icon}</div>
+                                        <div>
+                                            <div className={`font-medium ${isSelected ? 'text-white' : 'text-white/80'}`}>{intent.label}</div>
+                                            <div className="text-[10px] text-white/40 mt-1 leading-tight">{intent.desc}</div>
+                                        </div>
+                                        {isSelected && <div className="absolute top-2 right-2 text-manifest-primary"><Sparkles className="w-3 h-3" /></div>}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <div className="flex justify-center pt-4">
+                            <button
+                                onClick={handleNext}
+                                disabled={!(formData.intents && formData.intents.length > 0)}
+                                className="w-full py-4 bg-gradient-to-r from-manifest-primary to-manifest-secondary rounded-xl text-white font-medium hover:shadow-[0_0_20px_rgba(236,72,153,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
+                            >
+                                <span>Devam Et</span>
+                                <ChevronRight className="w-5 h-5 group-hover:translate-x-1" />
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* STEP 4: VOICE GUIDE (NEW) */}
+                {step === 4 && (
+                    <motion.div
+                        key="guide"
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        className="w-full max-w-md z-10 space-y-6 glass-panel p-8 rounded-3xl mx-4"
+                    >
+                        <div className="text-center mb-6">
+                            <h2 className="text-3xl font-serif text-white text-glow mb-2">Rehberini Seç</h2>
+                            <p className="text-manifest-muted font-light">Yolculuğunda sana kim eşlik etsin?</p>
+                        </div>
+
+                        <div className="space-y-3">
+                            {voices.map((bg) => (
+                                <button
+                                    key={bg.id}
+                                    onClick={() => updateField('voiceGuide', bg.id)}
+                                    className={`w-full p-4 rounded-xl border flex items-center justify-between transition-all group
+                                        ${formData.voiceGuide === bg.id
+                                            ? `bg-gradient-to-r ${bg.color} border-transparent text-white shadow-lg`
+                                            : 'bg-black/20 border-white/5 hover:bg-white/5 text-white/70'}`}
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-serif font-bold text-lg
+                                             ${formData.voiceGuide === bg.id ? 'bg-white/20 text-white' : 'bg-white/5 text-white/40'}`}>
+                                            {bg.k[0]}
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="font-bold">{bg.name}</div>
+                                            <div className="text-xs opacity-70">Rehber {bg.id}</div>
+                                        </div>
+                                    </div>
+                                    {formData.voiceGuide === bg.id && <Sparkles className="w-5 h-5" />}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-center pt-4">
+                            <button
+                                onClick={handleNext}
+                                disabled={!formData.voiceGuide}
                                 className="w-full py-4 bg-gradient-to-r from-manifest-primary to-manifest-secondary rounded-xl text-white font-medium hover:shadow-[0_0_20px_rgba(236,72,153,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
                             >
                                 <span>Analizi Başlat</span>
@@ -216,7 +360,9 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {step === 3 && (
+
+                {/* STEP 5: CALCULATING (Old Step 3) */}
+                {step === 5 && (
                     <motion.div
                         key="calculating"
                         initial={{ opacity: 0 }}
@@ -240,7 +386,8 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {step === 4 && (
+                {/* STEP 6: RESULT (Old Step 4) */}
+                {step === 6 && (
                     <motion.div
                         key="result"
                         initial={{ opacity: 0, scale: 0.9 }}

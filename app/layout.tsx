@@ -1,13 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { UserProvider } from "@/lib/UserContext";
+import NotificationManager from "@/components/notifications/NotificationManager";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Manifestia | Kozmik Yolculuk",
   description: "Yapay zeka destekli spiritüel rehberiniz.",
   manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
   themeColor: "#0F0F12",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0", // Mobilde zoom'u engelle (Native hissi için)
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -18,10 +25,11 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+
       </head>
       <body className="antialiased bg-manifest-background text-manifest-text">
         <UserProvider>
+          <NotificationManager />
           {children}
         </UserProvider>
       </body>
