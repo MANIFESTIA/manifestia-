@@ -1,39 +1,27 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status
-set -e
+# Update and Upgrade
+echo "Updating system..."
+sudo apt-get update
+sudo apt-get upgrade -y
 
-echo "Starting Server Setup..."
+# Install Essentials
+echo "Installing essentials..."
+sudo apt-get install -y curl git nginx certbot python3-certbot-nginx build-essential
 
-# 1. Update System
-echo "Updating system packages..."
-sudo apt update && sudo apt upgrade -y
+# Install Node.js 20
+echo "Installing Node.js 20..."
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
 
-# 2. Install Essentials
-echo "Installing Git, Curl, Unzip..."
-sudo apt install -y git curl unzip
-
-# 3. Install Node.js (Latest LTS)
-echo "Installing Node.js..."
-curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-sudo apt install -y nodejs
-
-# Verify Node installation
-node -v
-npm -v
-
-# 4. Install PM2 (Process Manager)
+# Install PM2
 echo "Installing PM2..."
 sudo npm install -g pm2
 
-# 5. Install Nginx
-echo "Installing Nginx..."
-sudo apt install -y nginx
-
-# 6. Configure Firewall (UFW)
-echo "Configuring Firewall..."
+# Setup Firewall (UFW)
+echo "Configuring firewall..."
 sudo ufw allow OpenSSH
 sudo ufw allow 'Nginx Full'
 sudo ufw --force enable
 
-echo "Setup Complete! You can now run the deploy script."
+echo "Server Setup Complete! Node $(node -v) and NPM $(npm -v) installed."

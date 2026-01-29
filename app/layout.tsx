@@ -4,7 +4,7 @@ import NotificationManager from "@/components/notifications/NotificationManager"
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Manifestia | Kozmik Yolculuk",
+  title: "TheManifest | Kozmik Yolculuk",
   description: "Yapay zeka destekli spiritüel rehberiniz.",
   manifest: "/manifest.json",
 };

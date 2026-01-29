@@ -71,7 +71,7 @@ export default function LoginPage() {
             >
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-300 mb-2">
-                        Manifestia'ya Giriş
+                        TheManifest'e Giriş
                     </h1>
                     <p className="text-gray-400 text-sm">
                         Kozmik yolculuğuna devam etmek için giriş yap.

@@ -125,7 +125,7 @@ export default function OnboardingFlow() {
                         </motion.div>
 
                         <div>
-                            <h1 className="text-5xl md:text-6xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-200 to-amber-200 text-glow mb-4">Manifestia</h1>
+                            <h1 className="text-5xl md:text-6xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-200 to-amber-200 text-glow mb-4">TheManifest</h1>
                             <p className="text-manifest-muted text-xl font-light">Evrenden sana bir mesaj var ✨</p>
                         </div>
 

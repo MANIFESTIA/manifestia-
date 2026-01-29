@@ -18,7 +18,7 @@ export default function NotificationManager() {
                 const permission = await Notification.requestPermission();
                 if (permission === 'granted') {
                     // Send an immediate welcome notification (optional)
-                    new Notification("Manifestia", {
+                    new Notification("TheManifest", {
                         body: "Evrenin mesajlarını almaya hazırsın. 🌌",
                         icon: '/favicon.ico'
                     });

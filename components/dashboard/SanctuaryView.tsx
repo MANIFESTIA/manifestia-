@@ -58,7 +58,7 @@ export default function SanctuaryView() {
             <header className="p-6 flex justify-between items-center sticky top-0 z-40 transition-all duration-300">
                 <div className="glass-panel px-4 py-2 rounded-full flex items-center gap-2 backdrop-blur-md">
                     <h1 className="text-xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-200 to-amber-200 text-glow">
-                        Manifestia
+                        TheManifest
                     </h1>
                 </div>
 

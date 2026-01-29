@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (to: string, subject: string, html: string) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Manifestia" <${process.env.SMTP_FROM}>`, // sender address
+      from: `"TheManifest" <${process.env.SMTP_FROM}>`, // sender address
       to, // list of receivers
       subject, // Subject line
       html, // html body

@@ -1,6 +1,6 @@
 {
-  "name": "Manifestia",
-  "short_name": "Manifestia",
+  "name": "TheManifest",
+  "short_name": "TheManifest",
   "description": "Kozmik enerjini keşfet, ritüellerle yüksel.",
   "start_url": "/",
   "display": "standalone",

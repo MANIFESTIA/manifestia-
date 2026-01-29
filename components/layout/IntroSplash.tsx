@@ -68,7 +68,7 @@ export default function IntroSplash({ onComplete }: IntroSplashProps) {
                     >
                         <div className="absolute -inset-8 bg-indigo-500/10 blur-3xl rounded-full opacity-50 animate-pulse" />
                         <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-thin tracking-[0.15em] md:tracking-[0.2em] font-serif text-transparent bg-clip-text bg-gradient-to-b from-white via-indigo-200 to-indigo-900 drop-shadow-[0_0_15px_rgba(165,180,252,0.3)] max-w-[95vw] mx-auto break-words">
-                            MANIFESTIA
+                            THEMANIFEST
                         </h1>
                         <motion.div
                             className="absolute -right-2 -top-2 md:-right-4 md:-top-4"

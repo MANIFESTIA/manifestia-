@@ -1,49 +1,46 @@
 # Project Context & Handoff Checklist
 
-**Tarih:** 27.01.2026
-**Durum:** Aktif Geliştirme (Restoration & Feature Implementation)
+**Tarih:** 29.01.2026 (Son Güncelleme)
+**Durum:** Beklemede (AWS Hesap Onayı & Sunucu Kurulumu)
 
 ## 📌 Proje Özeti: Manifestia
-Manifestia, kullanıcıların spiritüel yolculuklarına rehberlik eden, AI destekli bir web uygulamasıdır. Next.js, Tailwind CSS ve Google Gemini AI kullanılarak geliştirilmektedir.
+Manifestia, kullanıcıların spiritüel yolculuklarına rehberlik eden, AI destekli bir web uygulamasıdır. AWS üzerinde host edilecektir.
 
-### 🛠 Teknik Yığın
-- **Framework:** Next.js 14+ (App Router)
-- **Styling:** Tailwind CSS, Framer Motion (Animasyonlar)
-- **AI:** Google Gemini (Tarot yorumları ve Kozmik Rehberlik için)
-- **3D/Visuals:** React Three Fiber (`Antigravity.tsx`), Lucide React (İkonlar)
+## 🚀 Son Yapılan Geliştirmeler (Auth & AWS)
+1.  **AWS Hesabı:**
+    - Hesap açıldı (Stockholm -> Frankfurt bölgesi ayarlandı).
+    - `manifestia-admin` IAM kullanıcısı oluşturuldu (Şifreler `.csv` olarak yedeklendi).
+    - **Durum:** Hesap aktivasyonu bekleniyor (24h süre).
 
-## 🔄 Son Yapılan Değişiklikler (Session Restore)
-1.  **Dosya Kurtarma:**
-    - `app/api/guidance/route.ts` (Kozmik Rehberlik API)
-    - `components/ui/Antigravity.tsx` (Arka plan efekti)
-    - `hooks/useCosmicGuidance.ts` (Frontend kancası)
-    - Bu dosyalar silinmişti, git geçmişinden geri getirildi.
-2.  **Entegrasyon:**
-    - `SanctuaryView.tsx` dosyasına `Antigravity` ve `useCosmicGuidance` tekrar eklendi.
-    - Mükerrer kodlar temizlendi.
-3.  **Sunucu:**
-    - Geliştirme sunucusu (`npm run dev`) çalışır duruma getirildi.
+2.  **Kimlik Doğrulama (Authentication):**
+    - **Backend:** `Register`, `Login`, `Forgot Password`, `Reset Password` API'leri yazıldı.
+    - **Frontend:** Tüm sayfalar (`/auth/*`) tasarlandı ve bağlandı.
+    - **Database:** Prisma (v5) ile PostgreSQL şeması (`User` modeli) hazırlandı.
+    - **Email:** Nodemailer + AWS SES altyapısı kuruldu (Mail gönderimi aktif).
 
-## 📋 Aktif Görevler (Yapılacaklar)
-Şu anki odak noktası Tarot özelliğinin kusursuz çalışması ve Kozmik Rehberlik modülünün test edilmesidir.
+3.  **Git & Versiyon Kontrolü:**
+    - Tüm değişiklikler `git commit` ile kaydedildi.
+    - Mesaj: `"feat: Implement full authentication system"`
 
-- [ ] **Tarot Modülü:**
-    - Kart çekme animasyonları çalışıyor mu?
-    - API yanıt veriyor mu? (Mock data mı dönüyor gerçek data mı?)
-- [ ] **Kozmik Rehberlik:**
-    - Ana ekranda "Günün Mesajı" görünüyor mu?
-    - `Antigravity` arka planı performanslı çalışıyor mu?
-- [ ] **Deployment:**
-    - Vercel kurulumu için hazırlık.
+## 📋 Sıradaki Adımlar (Yarın)
+AWS hesabı onaylandıktan sonra yapılacaklar:
+
+- [ ] **1. Sunucu Hazırlığı:**
+    - EC2 Instance başlat (Ubuntu).
+    - RDS (PostgreSQL) veritabanı oluştur.
+- [ ] **2. Kurulum:**
+    - GitHub'dan kodu sunucuya çek.
+    - `.env` ayarlarını yap.
+    - `npm run build` ve `pm2` ile uygulamayı başlat.
+    - Domain (Godaddy) yönlendirmesini yap.
 
 ## 📂 Önemli Dosya Yolları
-- **Ana Görünüm:** `components/dashboard/SanctuaryView.tsx`
-- **Tarot:** `components/tarot/TarotView.tsx` & `TarotCard.tsx`
-- **AI Logic:** `app/api/` altındaki route'lar.
-- **Global Store:** `lib/UserContext.tsx` (Kullanıcı adı, burcu vb.)
+- **Auth Sayfaları:** `app/auth/` (Login, Register, vb.)
+- **Auth API:** `app/api/auth/`
+- **Veritabanı Şeması:** `prisma/schema.prisma`
+- **Email Servisi:** `lib/email.ts`
 
-## 🚀 Nasıl Devam Edilir?
-Bu klasörü (`manifestia`) Workspace olarak eklediğinde:
-1.  `.env.local` dosyasında `GEMINI_API_KEY` olduğunu doğrula.
-2.  `npm run dev` komutuyla projeyi ayağa kaldır.
-3.  Kaldığın yerden (Tarot ve Rehberlik testleri) devam et.
+## 💬 Notlar
+- AWS MFA kurulumu ertelendi, daha sonra yapılabilir.
+- Vercel iptal edildi, tamamen AWS altyapısı kullanılıyor.
+- Kodların yedeği Git üzerinde güvende.
