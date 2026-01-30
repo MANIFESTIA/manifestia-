@@ -81,7 +81,7 @@ export default function IntroSplash({ onComplete, autoEnter = false }: IntroSpla
                             className="relative"
                         >
                             <div className="absolute -inset-8 bg-indigo-500/20 blur-3xl rounded-full opacity-60 animate-pulse" />
-                            <img src="/manifest-logo.png" alt="Manifest Logo" className="w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-[0_0_25px_rgba(251,191,36,0.5)] relative z-10" />
+                            <img src="/logo-ankh.png" alt="Manifest Logo" className="w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-[0_0_25px_rgba(251,191,36,0.5)] relative z-10" />
                         </motion.div>
 
                         {/* Title */}
