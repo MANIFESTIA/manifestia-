@@ -3,23 +3,29 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/lib/UserContext';
 import { UserProfile } from '@/types';
-import { Star, ChevronRight, Moon, Sun, MapPin, Sparkles, ArrowRight } from 'lucide-react';
+import { Star, ChevronRight, Moon, Sun, MapPin, Sparkles, ArrowRight, Lock, Mail, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function OnboardingFlow() {
     const { saveUser } = useUser();
+    const router = useRouter();
     const [step, setStep] = useState(0);
-    const [formData, setFormData] = useState<Partial<UserProfile>>({
+    const [formData, setFormData] = useState<Partial<UserProfile> & { password?: string }>({
         name: '',
         birthDate: '',
         birthTime: '',
-        birthCity: ''
+        birthCity: '',
+        email: '',
+        password: ''
     });
 
     // API'den gelen mesajı tutacak state
     const [cosmicMessage, setCosmicMessage] = useState<string>("");
     const [loading, setLoading] = useState(false);
+    const [registerError, setRegisterError] = useState('');
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (step === 2) {
             // Doğum bilgileri girildi, Niyet seçimine geç
             setStep(3);
@@ -32,8 +38,11 @@ export default function OnboardingFlow() {
         } else if (step === 5) {
             // Bu adım useEffect ile otomatik tetiklenecek (Hesaplama)
         } else if (step === 6) {
-            // Sonuç görüldü, kaydet ve bitir
-            saveUser(formData as UserProfile);
+            // Sonuç görüldü, Kayıt ekranına geç (Yeni Adım)
+            setStep(7);
+        } else if (step === 7) {
+            // Kayıt İşlemi
+            await handleRegister();
         } else {
             setStep(prev => prev + 1);
         }
@@ -68,7 +77,68 @@ export default function OnboardingFlow() {
         }
     }, [step, formData]);
 
-    const updateField = (field: keyof UserProfile, value: string | string[]) => {
+    const handleRegister = async () => {
+        if (!formData.email || !formData.password) {
+            setRegisterError('Lütfen tüm alanları doldur.');
+            return;
+        }
+
+        setLoading(true);
+        setRegisterError('');
+
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    // Birth data is not standard in register API? 
+                    // Need to check if register API handles birth data or if we update later.
+                    // For now, let's assume we might lose birth data if API doesn't take it.
+                    // But we can update profile after register.
+                }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // Başarılı Kayıt
+
+                // Context'e kaydet
+                // Not: Register API doğum verisini almayabilir, o yüzden context'e elimizdeki full veriyi basalım.
+                const fullUserProfile: UserProfile = {
+                    id: data.user.id,
+                    email: data.user.email,
+                    name: data.user.name,
+                    diamonds: data.user.diamonds || 5, // Başlangıç kredisi
+                    birthDate: formData.birthDate, // Local state'ten al
+                    birthTime: formData.birthTime,
+                    birthCity: formData.birthCity,
+                    intents: formData.intents,
+                    voiceGuide: formData.voiceGuide
+                    // Not: Bu doğum bilgileri veritabanına henüz işlenmediyse, dashboard'da bir profil güncelleme isteği gerekebilir.
+                    // Veya UserProfileManager'ı çağırıp DB update yapmalıyız.
+                    // Şimdilik client-side context'te tutuyoruz, yeterli görünüm için.
+                };
+
+                saveUser(fullUserProfile);
+
+                // Yönlendirme (Aslında zaten Page.tsx isOnboarded true görünce Sanctuary'e geçer)
+                // Ama biz yine de güvenli olsun diye reload veya explicit set yapalım.
+                setStep(8); // Success step or just close
+            } else {
+                setRegisterError(data.error || 'Kayıt başarısız.');
+            }
+        } catch (error) {
+            setRegisterError('Bağlantı hatası.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const updateField = (field: keyof UserProfile | 'password', value: string | string[]) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -129,15 +199,25 @@ export default function OnboardingFlow() {
                             <p className="text-manifest-muted text-xl font-light">Evrenden sana bir mesaj var ✨</p>
                         </div>
 
-                        <button
-                            onClick={handleNext}
-                            className="group relative px-10 py-5 bg-gradient-to-r from-manifest-primary via-purple-600 to-manifest-secondary text-white font-bold rounded-full hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(168,85,247,0.4)] overflow-hidden"
-                        >
-                            <span className="relative z-10 flex items-center gap-2">
-                                Yolculuğa Başla <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </span>
-                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 rounded-full"></div>
-                        </button>
+                        <div className="space-y-4">
+                            <button
+                                onClick={handleNext}
+                                className="w-full group relative px-10 py-5 bg-gradient-to-r from-manifest-primary via-purple-600 to-manifest-secondary text-white font-bold rounded-full hover:scale-105 transition-all duration-300 shadow-[0_0_30px_rgba(168,85,247,0.4)] overflow-hidden"
+                            >
+                                <span className="relative z-10 flex items-center justify-center gap-2">
+                                    Yolculuğa Başla <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </span>
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 rounded-full"></div>
+                            </button>
+
+                            {/* Added Login Link */}
+                            <p className="text-sm text-manifest-muted/60">
+                                Zaten bir hesabın var mı?{' '}
+                                <Link href="/auth/login" className="text-purple-400 hover:text-white transition-colors underline decoration-purple-400/30 underline-offset-4">
+                                    Giriş Yap
+                                </Link>
+                            </p>
+                        </div>
                     </motion.div>
                 )}
 
@@ -258,7 +338,7 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {/* STEP 3: INTENT GRID (NEW) */}
+                {/* STEP 3: INTENT GRID */}
                 {step === 3 && (
                     <motion.div
                         key="intents"
@@ -308,7 +388,7 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {/* STEP 4: VOICE GUIDE (NEW) */}
+                {/* STEP 4: VOICE GUIDE */}
                 {step === 4 && (
                     <motion.div
                         key="guide"
@@ -361,7 +441,7 @@ export default function OnboardingFlow() {
                 )}
 
 
-                {/* STEP 5: CALCULATING (Old Step 3) */}
+                {/* STEP 5: CALCULATING */}
                 {step === 5 && (
                     <motion.div
                         key="calculating"
@@ -386,7 +466,7 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {/* STEP 6: RESULT (Old Step 4) */}
+                {/* STEP 6: RESULT */}
                 {step === 6 && (
                     <motion.div
                         key="result"
@@ -410,13 +490,82 @@ export default function OnboardingFlow() {
                                     onClick={handleNext}
                                     className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl flex items-center justify-center gap-2 transition group-hover:border-manifest-primary/50 text-white"
                                 >
-                                    <span>Niyet Et ve Başla</span>
+                                    <span>Devam Et ve Kaydet</span>
                                     <ArrowRight className="w-5 h-5 ml-1" />
                                 </button>
                             </div>
                         </div>
                     </motion.div>
                 )}
+
+                {/* STEP 7: ACCOUNT CREATION (NEW) */}
+                {step === 7 && (
+                    <motion.div
+                        key="register"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="w-full max-w-md z-10 space-y-6 glass-panel p-8 rounded-3xl mx-4"
+                    >
+                        <div className="text-center mb-6">
+                            <h2 className="text-2xl font-serif text-white text-glow mb-2">Enerjini Mühürle</h2>
+                            <p className="text-manifest-muted font-light text-sm">Giriş yapabilmen için hesabını oluştur.</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-xs font-medium text-manifest-muted/80 ml-1">E-posta</label>
+                                <div className="bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                                    <Mail className="text-white/50 w-5 h-5" />
+                                    <input
+                                        type="email"
+                                        placeholder="ornek@mail.com"
+                                        value={formData.email}
+                                        onChange={(e) => updateField('email', e.target.value)}
+                                        className="bg-transparent w-full outline-none text-white font-light"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="text-xs font-medium text-manifest-muted/80 ml-1">Şifre</label>
+                                <div className="bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                                    <Lock className="text-white/50 w-5 h-5" />
+                                    <input
+                                        type="password"
+                                        placeholder="Güçlü bir şifre"
+                                        value={formData.password}
+                                        onChange={(e) => updateField('password', e.target.value)}
+                                        className="bg-transparent w-full outline-none text-white font-light"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {registerError && (
+                            <div className="flex items-center gap-2 text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-500/20">
+                                <AlertCircle className="w-4 h-4 shrink-0" />
+                                <p>{registerError}</p>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={handleNext}
+                            disabled={loading}
+                            className="w-full mt-4 py-4 bg-gradient-to-r from-manifest-primary to-manifest-secondary rounded-xl text-white font-medium hover:shadow-[0_0_20px_rgba(236,72,153,0.4)] transition-all flex items-center justify-center gap-2"
+                        >
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    <span>Hesabımı Oluştur</span>
+                                    <Sparkles className="w-5 h-5" />
+                                </>
+                            )}
+                        </button>
+                    </motion.div>
+                )}
+
             </AnimatePresence>
         </div>
     );

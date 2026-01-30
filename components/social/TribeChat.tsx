@@ -49,7 +49,7 @@ export default function TribeChat({ friend, onClose }: TribeChatProps) {
             id: Date.now(),
             text: inputText,
             sender: 'me',
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            time: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })
         };
 
         setMessages(prev => [...prev, newMessage]);
@@ -61,7 +61,7 @@ export default function TribeChat({ friend, onClose }: TribeChatProps) {
                 id: Date.now() + 1,
                 text: "Evren seni duyuyor! 🌌",
                 sender: 'them',
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                time: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' })
             };
             setMessages(prev => [...prev, reply]);
         }, 2000);
@@ -109,8 +109,8 @@ export default function TribeChat({ friend, onClose }: TribeChatProps) {
                     >
                         <div
                             className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.sender === 'me'
-                                    ? 'bg-manifest-primary text-white rounded-tr-none shadow-[0_4px_15px_rgba(168,85,247,0.3)]'
-                                    : 'bg-white/10 text-white rounded-tl-none border border-white/5'
+                                ? 'bg-manifest-primary text-white rounded-tr-none shadow-[0_4px_15px_rgba(168,85,247,0.3)]'
+                                : 'bg-white/10 text-white rounded-tl-none border border-white/5'
                                 }`}
                         >
                             {msg.text}

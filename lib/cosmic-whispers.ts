@@ -39,6 +39,13 @@ export const COSMIC_WHISPERS: CosmicMessage[] = [
     { id: 'x3', text: "Bir sayı, bir şarkı, bir kelime... Evren seninle konuşuyor.", category: 'mystery' },
     { id: 'x4', text: "Sezgilerine güven. Onlar senin en eski rehberindir.", category: 'mystery' },
     { id: 'x5', text: "Bazen kaybolmak, yeni bir yol bulmanın tek yoludur.", category: 'mystery' },
+
+    // NOTIFICATIONS (Call to Action)
+    { id: 'n1', text: "Yıldızlar hizalandı. Kartını seçtin mi? ✨", category: 'mystery' },
+    { id: 'n2', text: "Enerjin bugün çok yüksek hissediliyor. Gel bakalım. 🔮", category: 'motivation' },
+    { id: 'n3', text: "Merkür retrosu bitmiş olabilir ama senin hikayen yeni başlıyor. 🌠", category: 'motivation' },
+    { id: 'n4', text: "Manifest defterin seni bekliyor. Niyetini yazdın mı? ✍️", category: 'abundance' },
+    { id: 'n5', text: "Evrenin sana bir mesajı var. Duymak için tıkla. 🌌", category: 'mystery' }
 ];
 
 export const getRandomWhisper = (): CosmicMessage => {

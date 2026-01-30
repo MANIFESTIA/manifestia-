@@ -1,16 +1,13 @@
-"use client";
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useChat, Message } from '@ai-sdk/react';
 import { useVoice } from '@/hooks/useVoice';
 import { VoicePersona } from '@/lib/voice/voice-service';
-import { Mic, MicOff, Send, Sparkles, Volume2, Square, Globe, Settings, ArrowLeft } from 'lucide-react';
+import { Mic, MicOff, Send, Sparkles, Volume2, Square, Globe, Settings, ArrowLeft, Headphones, X, ArrowUp, AudioWaveform } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/lib/UserContext';
 import VoiceSettings from '@/components/settings/VoiceSettings';
 
 // --- STT Hook (Web Speech API) ---
-// Bu hook'u buraya dahil ediyoruz (şimdilik), ileride ayrı dosyaya taşıyabiliriz.
 const useSpeechToText = () => {
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState('');
@@ -20,7 +17,7 @@ const useSpeechToText = () => {
         if (typeof window !== 'undefined' && (window as any).webkitSpeechRecognition) {
             const SpeechRecognition = (window as any).webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
-            recognition.continuous = false;
+            recognition.continuous = false; // Turn off for auto-submit logic
             recognition.interimResults = false;
             recognition.lang = 'tr-TR';
 
@@ -39,23 +36,21 @@ const useSpeechToText = () => {
         }
     }, []);
 
-    const startListening = () => {
+    const startListening = useCallback(() => {
         if (recognitionRef.current) {
             try {
                 recognitionRef.current.start();
             } catch (e) {
-                console.warn("Already started");
+                // Already started
             }
-        } else {
-            alert("Tarayıcınız sesli komutu desteklemiyor.");
         }
-    };
+    }, []);
 
-    const stopListening = () => {
+    const stopListening = useCallback(() => {
         if (recognitionRef.current) {
             recognitionRef.current.stop();
         }
-    };
+    }, []);
 
     return { isListening, transcript, startListening, stopListening, setTranscript };
 };
@@ -69,11 +64,15 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
     const { speak, stop: stopVoice, isPlaying: isVoicePlaying } = useVoice();
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    // Voice Mode State
+    const [isVoiceMode, setIsVoiceMode] = useState(false);
+    const [voiceStatus, setVoiceStatus] = useState<'IDLE' | 'LISTENING' | 'PROCESSING' | 'SPEAKING'>('IDLE');
+
     // Ses Ayarları State
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [selectedPersona, setSelectedPersona] = useState<VoicePersona>('COSMIC_SAGE');
 
-    // LocalStorage'dan sesi yükle
+    // Load Persona
     useEffect(() => {
         const saved = localStorage.getItem('manifestia_voice_persona');
         if (saved) setSelectedPersona(saved as VoicePersona);
@@ -85,38 +84,89 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
     };
 
     // Vercel AI SDK
-    const { messages, input, handleInputChange, handleSubmit, setInput } = useChat({
+    const { messages, input, handleInputChange, handleSubmit, setInput, isLoading } = useChat({
         api: '/api/chat',
-        body: { data: user }, // Kullanıcı profilini gönder
+        body: { data: user },
         onError: (error) => {
             console.error("Chat API Error:", error);
-            alert("Bağlantı Hatası: " + error.message);
+            if (isVoiceMode) {
+                speak("Bir bağlantı hatası oluştu.", selectedPersona);
+                setVoiceStatus('IDLE');
+            }
         },
         onFinish: (message: Message) => {
-            // Otomatik okuma opsiyonel olabilir
-            // speak(message.content, selectedPersona); 
+            // Auto-speak in Voice Mode
+            if (isVoiceMode) {
+                setVoiceStatus('SPEAKING');
+                speak(message.content, selectedPersona);
+            }
         }
     });
 
     // STT Integration
     const { isListening, transcript, startListening, stopListening, setTranscript } = useSpeechToText();
 
-    // Ses kaydı bitince input'a yaz
+    // --- Voice Mode Logic Loop ---
+
+    // 1. Handle STT Result
     useEffect(() => {
         if (transcript) {
-            setInput((prev: string) => prev + (prev ? ' ' : '') + transcript);
-            setTranscript(''); // Temizle
+            if (isVoiceMode) {
+                // Voice Mode: Auto Submit
+                setInput(transcript);
+                setVoiceStatus('PROCESSING');
+                // Small delay to ensure state update before submit
+                setTimeout(() => {
+                    const formEvent = { preventDefault: () => { } } as any;
+                    handleSubmit(formEvent, { data: { ...user, content: transcript } });
+                    setTranscript('');
+                }, 100);
+            } else {
+                // Manual Mode: Append to input
+                setInput((prev) => prev + (prev ? ' ' : '') + transcript);
+                setTranscript('');
+            }
         }
-    }, [transcript, setInput]);
+    }, [transcript, isVoiceMode, user, handleSubmit, setInput, setTranscript]);
 
-    // Otomatik scroll
+    // 2. Handle Speaking End (Loop back to Listening)
+    // We need to track when 'isPlaying' goes from true to false while in VoiceMode
+    const wasPlayingRef = useRef(false);
+    useEffect(() => {
+        if (isVoiceMode) {
+            if (wasPlayingRef.current && !isVoicePlaying && voiceStatus === 'SPEAKING') {
+                // Finished speaking -> Start Listening again
+                setVoiceStatus('LISTENING');
+                startListening();
+            }
+        }
+        wasPlayingRef.current = isVoicePlaying;
+    }, [isVoicePlaying, isVoiceMode, voiceStatus, startListening]);
+
+    // 3. Start Cycle when entering Voice Mode
+    const toggleVoiceMode = () => {
+        if (!isVoiceMode) {
+            setIsVoiceMode(true);
+            setVoiceStatus('SPEAKING'); // Fake speaking state to allow "intro"
+            speak(`Merhaba ${user?.name || ''}, seni dinliyorum.`, selectedPersona);
+            // After speak finishes, loop above will catch it and start listening
+        } else {
+            setIsVoiceMode(false);
+            setVoiceStatus('IDLE');
+            stopVoice();
+            stopListening();
+        }
+    };
+
+    // Auto scroll
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
 
-    const handleMicClick = () => {
+    const handleMicClick = (e: React.MouseEvent) => {
+        e.preventDefault();
         if (isListening) {
             stopListening();
         } else {
@@ -125,7 +175,7 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-140px)] relative">
+        <div className="flex flex-col h-[calc(100vh-140px)] relative font-sans">
             <VoiceSettings
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
@@ -133,41 +183,88 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
                 onSelect={handleVoiceSelect}
             />
 
-            {/* Header / Ayarlar Butonu */}
-            {onBack && (
-                <div className="absolute top-0 left-0 p-4 z-10">
-                    <button
-                        onClick={onBack}
-                        className="p-2 rounded-full bg-manifest-surface border border-white/5 text-manifest-muted hover:text-white transition-all shadow-lg backdrop-blur-md"
-                        title="Geri Dön"
+            {/* Voice Mode Overlay */}
+            <AnimatePresence>
+                {isVoiceMode && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-6"
                     >
-                        <ArrowLeft className="w-5 h-5" />
-                    </button>
-                </div>
+                        <button
+                            onClick={toggleVoiceMode}
+                            className="absolute top-6 right-6 p-4 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                        >
+                            <X className="w-6 h-6 text-white" />
+                        </button>
+
+                        {/* Visualizer Orb */}
+                        <div className="relative w-48 h-48 flex items-center justify-center mb-12">
+                            <motion.div
+                                animate={{
+                                    scale: voiceStatus === 'SPEAKING' || isVoicePlaying ? [1, 1.2, 1] : 1,
+                                    opacity: 0.5
+                                }}
+                                transition={{ repeat: Infinity, duration: 1.5 }}
+                                className={`absolute inset-0 rounded-full blur-3xl ${voiceStatus === 'LISTENING' ? 'bg-red-500/40' :
+                                    voiceStatus === 'SPEAKING' ? 'bg-manifest-primary/40' :
+                                        'bg-blue-500/20'
+                                    }`}
+                            />
+                            <div className={`w-32 h-32 rounded-full flex items-center justify-center border-2 backdrop-blur-md transition-all duration-500 ${voiceStatus === 'LISTENING' ? 'border-red-400 bg-red-900/20' :
+                                voiceStatus === 'SPEAKING' ? 'border-manifest-primary bg-manifest-primary/20' :
+                                    'border-white/10 bg-white/5'
+                                }`}>
+                                {voiceStatus === 'LISTENING' ? (
+                                    <Mic className="w-12 h-12 text-red-400" />
+                                ) : (
+                                    <Sparkles className="w-12 h-12 text-manifest-primary animate-pulse" />
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="text-center space-y-4 max-w-md">
+                            <h3 className="text-2xl font-light text-white">
+                                {voiceStatus === 'LISTENING' ? 'Dinliyorum...' :
+                                    voiceStatus === 'PROCESSING' ? 'Düşünüyor...' :
+                                        voiceStatus === 'SPEAKING' ? 'Konuşuyor...' : 'Hazır'}
+                            </h3>
+                            <p className="text-white/40">
+                                {voiceStatus === 'LISTENING' ? transcript || "..." :
+                                    "Sohbeti sonlandırmak için kapat butonuna bas."}
+                            </p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Normal Link Header Buttons */}
+            {!isVoiceMode && (
+                <>
+                    {onBack && (
+                        <div className="absolute top-0 left-0 p-4 z-10">
+                            <button onClick={onBack} className="p-2 rounded-full bg-manifest-surface/50 border border-white/5 text-white/70 hover:text-white transition-all shadow-lg backdrop-blur-md">
+                                <ArrowLeft className="w-5 h-5" />
+                            </button>
+                        </div>
+                    )}
+                    <div className="absolute top-0 right-0 p-4 z-10">
+                        <button onClick={() => setIsSettingsOpen(true)} className="p-2 rounded-full bg-manifest-surface/50 border border-white/5 text-white/70 hover:text-white transition-all shadow-lg backdrop-blur-md">
+                            <Settings className="w-5 h-5" />
+                        </button>
+                    </div>
+                </>
             )}
 
-            <div className="absolute top-0 right-0 p-4 z-10">
-                <button
-                    onClick={() => setIsSettingsOpen(true)}
-                    className="p-2 rounded-full bg-manifest-surface border border-white/5 text-manifest-muted hover:text-manifest-primary hover:border-manifest-primary/30 transition-all shadow-lg backdrop-blur-md"
-                    title="Ses Ayarları"
-                >
-                    <Settings className="w-5 h-5" />
-                </button>
-            </div>
-
-            {/* Arka Plan Efekti */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-manifest-primary/10 rounded-full blur-[100px] animate-pulse-slow"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-manifest-secondary/10 rounded-full blur-[100px] animate-pulse-slow delay-1000"></div>
-            </div>
-
-            {/* Mesaj Listesi */}
-            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 hide-scrollbar pt-12">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 hide-scrollbar pt-16 pb-4">
                 {messages.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-50">
-                        <Sparkles className="w-12 h-12 text-manifest-primary/50" />
-                        <p className="font-serif italic text-lg">"Seni dinliyorum, {user?.name || 'Ruh'}..."</p>
+                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-2">
+                            <Sparkles className="w-8 h-8 text-manifest-primary/50" />
+                        </div>
+                        <p className="font-light text-lg">"Evren seni dinliyor..."</p>
                     </div>
                 )}
 
@@ -177,67 +274,86 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
                             key={m.id}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0 }}
                             className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
-                            <div className={`relative max-w-[85%] rounded-2xl p-4 shadow-lg ${m.role === 'user'
-                                ? 'bg-manifest-primary/20 text-white rounded-tr-sm border border-manifest-primary/30'
-                                : 'bg-manifest-surface text-manifest-text rounded-tl-sm border border-white/10'
+                            <div className={`relative max-w-[85%] rounded-3xl p-4 px-5 text-sm md:text-base leading-relaxed ${m.role === 'user'
+                                ? 'bg-[#2f2f2f] text-white rounded-br-sm'
+                                : 'bg-transparent text-white/90'
                                 }`}>
-                                <p className="leading-relaxed text-sm md:text-base font-light whitespace-pre-wrap">{m.content}</p>
-
                                 {m.role === 'assistant' && (
-                                    <button
-                                        onClick={() => isVoicePlaying ? stopVoice() : speak(m.content, selectedPersona)}
-                                        className="absolute -bottom-6 left-0 p-2 text-manifest-muted hover:text-manifest-primary transition-colors hover:bg-white/5 rounded-full"
-                                        title="Seslendir"
-                                    >
-                                        {isVoicePlaying ? <Square className="w-3 h-3 fill-current" /> : <Volume2 className="w-3 h-3" />}
-                                    </button>
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-manifest-primary to-blue-600 flex items-center justify-center absolute -left-10 top-0">
+                                        <Sparkles className="w-4 h-4 text-white" />
+                                    </div>
                                 )}
+                                <p className="whitespace-pre-wrap">{m.content}</p>
                             </div>
                         </motion.div>
                     ))}
+                    {isLoading && !isVoiceMode && (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                            <div className="ml-10 bg-transparent text-white/50 text-sm italic">
+                                Yazıyor...
+                            </div>
+                        </motion.div>
+                    )}
                 </AnimatePresence>
                 <div ref={scrollRef} />
             </div>
 
-            {/* Input Alanı (Energy Bar) */}
-            <div className="mt-4 relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl p-2 mx-2 mb-2 flex items-center shadow-2xl z-20">
-                {/* Mikrofon Butonu (Visualizer Effects) */}
-                <button
-                    onClick={handleMicClick}
-                    className={`p-3 rounded-full transition-all duration-300 relative group overflow-hidden ${isListening
-                        ? 'bg-red-500/20 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)]'
-                        : 'bg-white/5 text-manifest-muted hover:text-white hover:bg-white/10'
-                        }`}
-                >
-                    {isListening ? (
-                        <>
-                            <div className="absolute inset-0 bg-red-500/20 animate-ping rounded-full"></div>
-                            <MicOff className="w-5 h-5 relative z-10" />
-                        </>
-                    ) : (
-                        <Mic className="w-5 h-5 relative z-10" />
-                    )}
-                </button>
+            {/* ChatGPT Style Input Area */}
+            <div className="w-full px-4 pb-4 z-20">
+                <div className="flex items-end gap-4">
 
-                <form onSubmit={handleSubmit} className="flex-1 flex px-2 text-black">
-                    <input
-                        className="flex-1 bg-transparent border-none outline-none text-white placeholder-white/30 px-3 font-light text-sm md:text-base"
-                        value={input}
-                        onChange={handleInputChange}
-                        placeholder={isListening ? "Dinliyorum..." : "Evrene bir mesaj gönder..."}
-                        disabled={isListening}
-                    />
+                    {/* Input Pills Container */}
+                    <div className="flex-1 bg-[#2f2f2f] rounded-[26px] p-2 pl-4 flex items-center relative border border-white/5 transition-colors focus-within:border-white/10 shadow-lg group-hover:border-white/20">
+
+                        <input
+                            className="flex-1 bg-transparent border-none outline-none text-white placeholder-white/40 min-h-[44px] max-h-32 text-[16px] leading-[20px] font-normal"
+                            value={input}
+                            onChange={handleInputChange}
+                            placeholder="Evrene mesaj gönder..."
+                            disabled={isListening || isLoading}
+                        />
+
+                        {/* Right Side Icons */}
+                        <div className="flex items-center gap-2 pr-1 ml-2">
+                            {/* Listening Indicator / Mic Button */}
+                            {isListening ? (
+                                <button onClick={handleMicClick} className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center animate-pulse">
+                                    <div className="w-3 h-3 bg-red-500 rounded-full" />
+                                </button>
+                            ) : (
+                                !input.trim() && (
+                                    <button onClick={handleMicClick} className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-colors">
+                                        <Mic className="w-5 h-5" />
+                                    </button>
+                                )
+                            )}
+
+                            {/* Send Button (Arrow Up) */}
+                            <button
+                                onClick={(e) => input.trim() && handleSubmit(e as any)}
+                                disabled={!input.trim() || isLoading}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${input.trim()
+                                    ? 'bg-white text-black hover:bg-gray-200 shadow-lg scale-100'
+                                    : 'bg-white/5 text-white/10 cursor-default scale-95'
+                                    }`}
+                            >
+                                <ArrowUp className="w-5 h-5" strokeWidth={2.5} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* New Voice Mode Button - ChatGPT Style Waveform Icon */}
                     <button
-                        type="submit"
-                        disabled={!input.trim()}
-                        className="p-3 bg-manifest-primary text-manifest-background rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_15px_rgba(168,85,247,0.6)] transition-all duration-300 transform active:scale-95"
+                        onClick={toggleVoiceMode}
+                        className="w-[80px] h-[56px] rounded-full bg-[#2f2f2f] border border-white/10 hover:bg-white/5 flex items-center justify-center text-white transition-all shadow-xl hover:scale-105 active:scale-95 group relative overflow-hidden"
+                        title="Sesli Konuşma Modu"
                     >
-                        <Send className="w-5 h-5" />
+                        <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <AudioWaveform className="w-8 h-8 text-white/90 group-hover:text-white transition-colors" />
                     </button>
-                </form>
+                </div>
             </div>
         </div>
     );

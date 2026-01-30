@@ -12,6 +12,7 @@ export interface UserProfile {
     intents?: string[]; // Niyetler (min 1, max 3)
     voiceGuide?: string; // Seçilen rehber (A-J)
     diamonds?: number; // "Kozmik Işıltı" (Para birimi)
+    avatar?: string;
     streak?: {
         count: number;
         lastLoginDate: string;

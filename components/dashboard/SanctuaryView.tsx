@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '@/lib/UserContext';
-import { MessageCircle, Wind, Sparkles, Camera, Users, ShoppingBag, Bell, Flame } from 'lucide-react';
+import { MessageCircle, Wind, Sparkles, Users, ShoppingBag, Bell, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 // import Antigravity from '@/components/ui/Antigravity';
 import { useCosmicGuidance } from '@/hooks/useCosmicGuidance';
@@ -9,9 +9,8 @@ import { useCosmicGuidance } from '@/hooks/useCosmicGuidance';
 import ChatInterface from '@/components/chat/ChatInterface';
 import RitualPlayer from '@/components/ritual/RitualPlayer';
 import RitualBurning from '@/components/ritual/RitualBurning';
-import AuraView from '@/components/aura/AuraView';
 import TarotView from '@/components/tarot/TarotView';
-import TribeView from '@/components/social/TribeView';
+
 import JournalView from '@/components/journal/JournalView';
 import ProfileSettings from '@/components/dashboard/ProfileSettings';
 import EnergyRing from '@/components/dashboard/EnergyRing';
@@ -25,20 +24,36 @@ import DailyRewardPopup from '@/components/gamification/DailyRewardPopup';
 import WalletDisplay from '@/components/gamification/WalletDisplay';
 import StoreView from '@/components/store/StoreView';
 import TransactionHistoryModal from '@/components/economy/TransactionHistoryModal';
+import DailyCosmicRemedy from '@/components/dashboard/DailyCosmicRemedy';
+import DiamondShopModal from '@/components/store/DiamondShopModal';
+
+type ViewState = 'sanctuary' | 'guide' | 'market';
 
 export default function SanctuaryView() {
     const { user } = useUser();
-    const [view, setView] = useState<'sanctuary' | 'guide' | 'market' | 'tribe'>('sanctuary');
+
+    // Initialize view from localStorage if available, otherwise default to 'sanctuary'
+    const [view, setView] = useState<ViewState>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('manifestia_last_view');
+            // Validate saved view is one of the allowed types
+            if (saved === 'sanctuary' || saved === 'guide' || saved === 'market') {
+                return saved;
+            }
+        }
+        return 'sanctuary';
+    });
+
     const [activeRitual, setActiveRitual] = useState<string | null>(null);
     const [showRitualBurning, setShowRitualBurning] = useState(false);
-    const [showAuraCamera, setShowAuraCamera] = useState(false);
     const [showTarot, setShowTarot] = useState(false);
     const [showJournal, setShowJournal] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
+    const [showDiamondShop, setShowDiamondShop] = useState(false);
 
-    // Intro Splash State
+    // Intro Splash State - Overlay
     const [showIntro, setShowIntro] = useState(true);
 
     const { testNotification } = useCosmicWatcher();
@@ -49,6 +64,11 @@ export default function SanctuaryView() {
         sign: user?.sign || "Bilinmiyor"
     });
 
+    // Save view to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('manifestia_last_view', view);
+    }, [view]);
+
     return (
         <div className="min-h-screen text-manifest-text pb-28 font-sans relative overflow-hidden">
             {/* Daily Reward Popup is global */}
@@ -56,15 +76,18 @@ export default function SanctuaryView() {
 
             {/* Header */}
             <header className="p-6 flex justify-between items-center sticky top-0 z-40 transition-all duration-300">
-                <div className="glass-panel px-4 py-2 rounded-full flex items-center gap-2 backdrop-blur-md">
+                <div
+                    onClick={() => setView('sanctuary')}
+                    className="glass-panel px-4 py-2 rounded-full flex items-center gap-3 backdrop-blur-md cursor-pointer hover:scale-105 transition-transform"
+                >
                     <h1 className="text-xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-200 to-amber-200 text-glow">
                         TheManifest
                     </h1>
                 </div>
 
                 <div className="flex items-center gap-3 relative">
-                    {/* Wallet Display - Redirects to Market */}
-                    <WalletDisplay onClick={() => setView('market')} />
+                    {/* Wallet Display - Redirects to Market/Diamond Shop */}
+                    <WalletDisplay onClick={() => setShowDiamondShop(true)} />
 
                     {/* Notifications */}
                     <div className="relative">
@@ -127,13 +150,6 @@ export default function SanctuaryView() {
                                 <Flame className="w-6 h-6 text-orange-300" />
                                 <span className="text-xs text-white/70">Ritüel</span>
                             </button>
-                            <button
-                                onClick={() => setShowAuraCamera(true)}
-                                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition w-24"
-                            >
-                                <Camera className="w-6 h-6 text-purple-300" />
-                                <span className="text-xs text-white/70">Aura</span>
-                            </button>
                         </div>
 
                         {/* Cosmic Alert Widget REMOVED from here */}
@@ -159,6 +175,9 @@ export default function SanctuaryView() {
                             )}
                         </div>
 
+                        {/* Astro-Commerce Recommendation */}
+                        <DailyCosmicRemedy />
+
                         {/* Store Cards (Rituals) */}
                         <section className="space-y-4">
                             <div className="flex justify-between items-end px-2">
@@ -179,7 +198,7 @@ export default function SanctuaryView() {
                 )}
 
                 {view === 'guide' && <ChatInterface onBack={() => setView('sanctuary')} />}
-                {view === 'tribe' && <TribeView />}
+
                 {view === 'market' && (
                     <StoreView
                         onBack={() => setView('sanctuary')}
@@ -190,7 +209,6 @@ export default function SanctuaryView() {
 
             {/* Modals */}
             {activeRitual && <RitualPlayer ritualId={activeRitual} onClose={() => setActiveRitual(null)} />}
-            {showAuraCamera && <AuraView onClose={() => setShowAuraCamera(false)} />}
             {showRitualBurning && <RitualBurning onClose={() => setShowRitualBurning(false)} />}
             {showTarot && <TarotView onClose={() => setShowTarot(false)} />}
             {showJournal && <JournalView onClose={() => setShowJournal(false)} />}
@@ -206,6 +224,7 @@ export default function SanctuaryView() {
                 />
             )}
             {showHistory && <TransactionHistoryModal onClose={() => setShowHistory(false)} />}
+            {showDiamondShop && <DiamondShopModal onClose={() => setShowDiamondShop(false)} />}
 
             {/* Navigation Bar */}
             <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-panel rounded-full p-2 flex justify-between items-center z-50 shadow-2xl backdrop-blur-xl">
@@ -227,15 +246,10 @@ export default function SanctuaryView() {
                 >
                     <ShoppingBag className="w-6 h-6" />
                 </button>
-                <button
-                    onClick={() => setView('tribe')}
-                    className={`p-3 rounded-full transition-all duration-300 ${view === 'tribe' ? 'bg-amber-500/20 text-white shadow-[0_0_15px_rgba(245,158,11,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
-                >
-                    <Users className="w-6 h-6" />
-                </button>
+
             </nav>
-            {/* Intro Overlay */}
-            {showIntro && <IntroSplash onComplete={() => setShowIntro(false)} />}
+            {/* Intro Overlay - Concurennt Loading */}
+            {showIntro && <IntroSplash onComplete={() => setShowIntro(false)} autoEnter={true} />}
         </div>
     );
 }

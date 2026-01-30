@@ -12,6 +12,7 @@ model User {
   email            String    @unique
   name             String?
   password         String
+  avatar           String?   // Base64 Image
   
   // Core Economy
   diamonds         Int       @default(0) // Elmas Miktarı

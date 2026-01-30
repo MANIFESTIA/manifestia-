@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '@/lib/UserContext';
 import { ShoppingBag, Diamond, ArrowLeft, ExternalLink, Sparkles, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
-import DiamondShop from '@/components/economy/DiamondShop';
+
 
 interface Product {
     id: string;
@@ -112,14 +112,7 @@ export default function StoreView({ onBack, onShowHistory }: { onBack?: () => vo
                 </button>
             </div>
 
-            {/* Diamond Shop Section */}
-            <div className="mb-8">
-                <h3 className="text-lg font-serif text-white mb-4 flex items-center gap-2">
-                    <Diamond className="w-5 h-5 text-cyan-400" />
-                    Elmas Yükle
-                </h3>
-                <DiamondShop />
-            </div>
+
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

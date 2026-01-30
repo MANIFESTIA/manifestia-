@@ -18,8 +18,10 @@ export default function JournalView({ onClose }: { onClose: () => void }) {
         return new Intl.DateTimeFormat('tr-TR', {
             day: 'numeric',
             month: 'long',
+            weekday: 'long',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            timeZone: 'Europe/Istanbul'
         }).format(date);
     };
 

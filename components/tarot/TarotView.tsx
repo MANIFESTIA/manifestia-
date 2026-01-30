@@ -61,7 +61,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
     const { updateUser } = useUser();
 
     // Daily Free Check
-    const today = new Date().toLocaleDateString('tr-TR');
+    const today = new Date().toLocaleDateString('tr-TR', { timeZone: 'Europe/Istanbul' });
     const isFree = user?.lastTarotDate !== today;
 
     // Check Free Status on Reveal attempt

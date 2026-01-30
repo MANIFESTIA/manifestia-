@@ -30,7 +30,7 @@ export async function POST(req: Request) {
                 name,
                 email,
                 password: hashedPassword,
-                credits: 5, // Yeni üyelere hoşgeldin hediyesi 5 elmas
+                diamonds: 5, // Yeni üyelere hoşgeldin hediyesi 5 elmas
             },
         });
 

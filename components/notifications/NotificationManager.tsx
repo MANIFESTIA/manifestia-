@@ -46,17 +46,14 @@ export default function NotificationManager() {
         const checkAndSend = () => {
             if (Notification.permission !== 'granted') return;
 
-            const LAST_NOTIFICATION_KEY = 'manifestia_last_notification';
+            const LAST_NOTIFICATION_KEY = 'themanifest_last_notification';
             const lastTimeStr = localStorage.getItem(LAST_NOTIFICATION_KEY);
             const now = Date.now();
 
-            // 4 Hours in milliseconds = 4 * 60 * 60 * 1000 = 14,400,000
+            // 4 Hours in milliseconds = 4 * 60 * 60 * 1000
             // Adding variance: 4 to 5 hours.
-            // Random variance between 0 and 60 minutes
-            // Wait, we need a consistent target time for the *next* one.
-            // Better approach: When sending, set the 'next_scheduled_time'
 
-            const NEXT_SCHEDULE_KEY = 'manifestia_next_notification';
+            const NEXT_SCHEDULE_KEY = 'themanifest_next_notification';
             let nextTimeStr = localStorage.getItem(NEXT_SCHEDULE_KEY);
 
             if (!nextTimeStr) {
