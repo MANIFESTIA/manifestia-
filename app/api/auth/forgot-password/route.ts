@@ -41,14 +41,14 @@ export async function POST(req: Request) {
         // Email Gönder
         const emailHtml = `
       <h1>Şifre Sıfırlama İsteği</h1>
-      <p>Manifestia hesabınız için şifre sıfırlama isteği aldık.</p>
+      <p>TheManifest hesabınız için şifre sıfırlama isteği aldık.</p>
       <p>Şifrenizi sıfırlamak için aşağıdaki linke tıklayın:</p>
       <a href="${resetUrl}" style="background-color: #7c3aed; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Şifremi Sıfırla</a>
       <p>Bu isteği siz yapmadıysanız, bu maili görmezden gelebilirsiniz.</p>
       <p>Link 1 saat boyunca geçerlidir.</p>
     `;
 
-        const emailSent = await sendEmail(email, 'Manifestia Şifre Sıfırlama', emailHtml);
+        const emailSent = await sendEmail(email, 'TheManifest Şifre Sıfırlama', emailHtml);
 
         if (emailSent) {
             return NextResponse.json({ success: true, message: 'Sıfırlama bağlantısı e-posta adresinize gönderildi.' });

@@ -14,8 +14,9 @@ interface UserContextType {
     dailyReward: { show: boolean; amount: number; streak: number; badges?: string[]; items?: string[] } | null;
     closeDailyReward: () => void;
     // Economy Methods
-    purchaseDiamonds: (amount: number, cost: number) => void;
-    spendDiamonds: (amount: number, description: string) => boolean;
+    purchaseDiamonds: (amount: number, cost: number) => Promise<boolean>;
+    spendDiamonds: (amount: number, description: string) => Promise<boolean>;
+    purchaseProduct: (productId: string) => Promise<{ success: boolean; message?: string }>;
     updateUser: (data: Partial<UserProfile>) => void;
 }
 
@@ -27,204 +28,141 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [dailyReward, setDailyReward] = useState<{ show: boolean; amount: number; streak: number; badges?: string[]; items?: string[] } | null>(null);
 
     useEffect(() => {
-        // Load from localStorage on client mount
+        // Initial load from localStorage for speed
         const stored = localStorage.getItem('manifestia_user');
         if (stored) {
             try {
                 const parsedUser = JSON.parse(stored);
-                // Validate parsedUser structure if necessary
-                if (parsedUser && typeof parsedUser === 'object') {
+                if (parsedUser && parsedUser.id) {
                     setUser(parsedUser);
-                    checkDailyLogin(parsedUser);
-                } else {
-                    // Invalid data structure, reset
-                    localStorage.removeItem('manifestia_user');
+                    // Immediately sync with server
+                    syncUserWithServer(parsedUser.id);
                 }
             } catch (e) {
-                console.error("Failed to parse user data", e);
-                localStorage.removeItem('manifestia_user');
+                console.error("Failed to parse local user", e);
             }
         }
         setLoading(false);
     }, []);
 
-    const checkDailyLogin = (currentUser: UserProfile) => {
-        const today = new Date().toISOString().split('T')[0];
-        const lastLogin = currentUser.streak?.lastLoginDate;
+    const syncUserWithServer = async (userId: string) => {
+        try {
+            const res = await fetch('/api/user/me', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId })
+            });
+            const data = await res.json();
 
-        if (lastLogin === today) return;
+            if (data.success && data.user) {
+                // Determine if we need to show daily reward (logic moved to client check after sync or explicit call)
+                // For now, let's check daily login after sync
+                checkDailyLogin(data.user.id);
 
-        // Streak Calculation
-        let newStreak = (currentUser.streak?.count || 0);
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-        let isStreakBroken = false;
-
-        if (lastLogin === yesterdayStr) {
-            newStreak += 1;
-        } else {
-            // Streak is broken
-            // Future: Implement Freeze Logic here or in UI. For now, reset.
-            if (newStreak > 0) isStreakBroken = true;
-            newStreak = 1;
+                // Update local state without overwriting everything blindly if needed, 
+                // but sync usually means server is source of truth.
+                setUser(data.user);
+                localStorage.setItem('manifestia_user', JSON.stringify(data.user));
+            }
+        } catch (error) {
+            console.error("Sync failed:", error);
         }
+    };
 
-        // 7-Day Cycle & Milestone Logic
-        const cycleDay = ((newStreak - 1) % 7) + 1; // 1 to 7
-        let rewardAmount = 0;
+    const checkDailyLogin = async (userId: string) => {
+        try {
+            const res = await fetch('/api/gamification/daily-checkin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId })
+            });
+            const data = await res.json();
 
-        // Base Rewards (Hook Model)
-        switch (cycleDay) {
-            case 1: rewardAmount = 5; break;
-            case 2: rewardAmount = 10; break;
-            case 3: rewardAmount = 15; break;
-            case 4: rewardAmount = 20; break;
-            case 5: rewardAmount = 25; break;
-            case 6: rewardAmount = 30; break;
-            case 7: rewardAmount = 100; break; // Golden Day
+            if (data.success) {
+                // Show Reward Popup
+                setDailyReward({
+                    show: true,
+                    amount: data.reward,
+                    streak: data.streak,
+                    badges: data.badges, // Backend returns full list or new? API sends newBadges in response usually? 
+                    // My API implementation returns `badges: newBadges`. 
+                    items: []
+                });
+
+                // Update user diamonds locally to reflect immediate change
+                if (user) {
+                    const updated = { ...user, diamonds: data.newBalance, streak: { count: data.streak, lastLoginDate: new Date().toISOString().split('T')[0] } };
+                    setUser(updated);
+                    localStorage.setItem('manifestia_user', JSON.stringify(updated));
+                }
+            }
+        } catch (error) {
+            console.error("Daily check-in failed:", error);
         }
-
-        // Milestone Bonuses
-        let bonusAmount = 0;
-        let newBadges: string[] = [];
-        let newInventory: string[] = [];
-
-        if (newStreak === 10) {
-            bonusAmount += 150;
-            if (!currentUser.badges?.includes('seeker')) newBadges.push('seeker');
-        }
-        if (newStreak === 21) {
-            bonusAmount += 300;
-            if (!currentUser.inventory?.includes('coupon_10')) newInventory.push('coupon_10');
-        }
-        if (cycleDay === 7) {
-            if (!currentUser.badges?.includes('aura_master')) newBadges.push('aura_master');
-        }
-
-        const totalReward = rewardAmount + bonusAmount;
-
-        // Update User
-        const updatedUser: UserProfile = {
-            ...currentUser,
-            diamonds: (currentUser.diamonds || 0) + totalReward,
-            streak: {
-                count: newStreak,
-                lastLoginDate: today
-            },
-            badges: [...(currentUser.badges || []), ...newBadges],
-            inventory: [...(currentUser.inventory || []), ...newInventory]
-        };
-
-        saveUser(updatedUser);
-
-        setDailyReward({
-            show: true,
-            amount: totalReward,
-            streak: newStreak,
-            badges: newBadges,
-            items: newInventory
-        });
     };
 
     const addXp = (amount: number) => {
-        // XP System disabled temporarily
-        /*
-        if (!user) return;
-
-        const currentXp = (user.xp || 0) + amount;
-        let currentLevel = user.level || 1;
-
-        // Basit Level Formülü: Level * 1000 XP
-        // 1 -> 2: 1000 XP
-        // 2 -> 3: 2000 XP
-        const nextLevelThreshold = currentLevel * 1000;
-
-        if (currentXp >= nextLevelThreshold) {
-            currentLevel += 1;
-            // Level atlama animasyonu veya bildirimi eklenebilir
-        }
-
-        saveUser({
-            ...user,
-            xp: currentXp,
-            level: currentLevel
-        });
-        */
+        // XP impl later
     };
 
     const addDiamonds = (amount: number) => {
-        if (!user) return;
-        saveUser({
-            ...user,
-            diamonds: (user.diamonds || 0) + amount
-        });
+        // This is usually server side now via transactions.
+        // We can optimistically update or call an endpoint?
+        // For security, client shouldn't just "addDiamonds".
+        // Use purchaseDiamonds or specific actions.
+        console.warn("Client-side addDiamonds is deprecated. Use server actions.");
     };
 
-    const purchaseDiamonds = (amount: number, cost: number) => {
-        if (!user) return;
-
-        const newTransaction: any = {
-            id: Date.now().toString(),
-            amount: amount,
-            type: 'purchase',
-            description: `${amount} Elmas Paketi`,
-            date: Date.now()
-        };
-
-        const updatedUser = {
-            ...user,
-            diamonds: (user.diamonds || 0) + amount,
-            transactions: [newTransaction, ...(user.transactions || [])].slice(0, 50)
-        };
-        saveUser(updatedUser);
-    };
-
-    const spendDiamonds = (amount: number, description: string): boolean => {
-        if (!user) return false;
-
-        const currentBalance = user.diamonds || 0;
-        if (currentBalance < amount) return false;
-
-        const newTransaction: any = {
-            id: Date.now().toString(),
-            amount: -amount,
-            type: 'spend',
-            description: description,
-            date: Date.now()
-        };
-
-        const updatedUser = {
-            ...user,
-            diamonds: currentBalance - amount,
-            transactions: [newTransaction, ...(user.transactions || [])].slice(0, 50)
-        };
-        saveUser(updatedUser);
+    // Deprecated client-side method, kept for compatibility if needed
+    const purchaseDiamonds = async (amount: number, cost: number) => {
+        // Implement "Buy Diamonds" logic here if we have a real payment gateway.
+        // For now, this might just be a mock or "Buy with TL".
         return true;
+    };
+
+    const spendDiamonds = async (amount: number, description: string) => {
+        // This is generic spend. We should use specific endpoints.
+        return false;
+    };
+
+    const purchaseProduct = async (productId: string) => {
+        if (!user) return { success: false, message: 'Giriş yapmalısınız' };
+
+        try {
+            const res = await fetch('/api/store/purchase', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id, productId })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                // Update local balance
+                const updated = { ...user, diamonds: data.newBalance };
+                // We should also update inventory? 
+                // Best to re-sync user to get fresh inventory
+                syncUserWithServer(user.id);
+                return { success: true, message: data.message };
+            } else {
+                return { success: false, message: data.error };
+            }
+        } catch (error) {
+            return { success: false, message: 'Bağlantı hatası' };
+        }
     };
 
     const updateUser = (data: Partial<UserProfile>) => {
         if (!user) return;
-        saveUser({ ...user, ...data });
+        const updated = { ...user, ...data };
+        setUser(updated);
+        localStorage.setItem('manifestia_user', JSON.stringify(updated));
     };
 
     const closeDailyReward = () => setDailyReward(null);
 
     const saveUser = (data: UserProfile) => {
-        // Yeni kullanıcı varsayılanları
-        const userData = {
-            ...data,
-            diamonds: data.diamonds ?? 100, // Başlangıç hediyesi
-            xp: data.xp ?? 0,
-            level: data.level ?? 1,
-            streak: data.streak ?? { count: 0, lastLoginDate: '' },
-            badges: data.badges ?? [],
-            inventory: data.inventory ?? [],
-            transactions: data.transactions ?? []
-        };
-        setUser(userData);
-        localStorage.setItem('manifestia_user', JSON.stringify(userData));
+        setUser(data);
+        localStorage.setItem('manifestia_user', JSON.stringify(data));
     };
 
     const logout = () => {
@@ -244,6 +182,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             closeDailyReward,
             purchaseDiamonds,
             spendDiamonds,
+            purchaseProduct,
             updateUser
         }}>
             {!loading && children}

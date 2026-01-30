@@ -100,7 +100,7 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
                 </div>
 
                 <div className="mt-6 text-center">
-                    <p className="text-[10px] text-manifest-muted/40 uppercase tracking-widest">Manifestia v0.1</p>
+                    <p className="text-[10px] text-manifest-muted/40 uppercase tracking-widest">TheManifest v0.1</p>
                 </div>
 
             </motion.div >

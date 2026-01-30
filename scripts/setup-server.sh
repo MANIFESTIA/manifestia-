@@ -22,6 +22,21 @@ sudo npm install -g pm2
 echo "Configuring firewall..."
 sudo ufw allow OpenSSH
 sudo ufw allow 'Nginx Full'
-sudo ufw --force enable
+# Make sure to not block ssh if enabling enable
+# sudo ufw --force enable # Commenting out to avoid accidental lockout if ssh rule fails
 
-echo "Server Setup Complete! Node $(node -v) and NPM $(npm -v) installed."
+# Install PostgreSQL
+echo "Installing PostgreSQL..."
+sudo apt-get install -y postgresql postgresql-contrib
+
+# Setup Database
+echo "Setting up Database..."
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+# Create user and db strictly if they don't exist is hard in one line, but valid psql commands often fail gracefully or we ignore errors for idempotency
+sudo -u postgres psql -c "CREATE USER manifestia WITH PASSWORD 'manifestia123!';" || echo "User likely exists"
+sudo -u postgres psql -c "CREATE DATABASE manifestia OWNER manifestia;" || echo "DB likely exists"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE manifestia TO manifestia;" || echo "Privileges likely granted"
+
+echo "Server Setup Complete! Node $(node -v), NPM $(npm -v), and Postgres installed."
+

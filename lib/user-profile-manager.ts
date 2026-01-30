@@ -9,8 +9,8 @@ import { UserProfile } from '@/types';
  * 3. Element dengesi (Ateş, Su, Toprak, Hava) ve gezegen konumlarına göre "System Instruction" üretmek.
  */
 
-// Manifestia Özel Ürün Kataloğu (Prompt Enjeksiyonu için)
-const MANIFESTIA_CATALOG = `
+// TheManifest Özel Ürün Kataloğu (Prompt Enjeksiyonu için)
+const THEMANIFEST_CATALOG = `
 - **777 Mucize Sekansı Kitleri**: Ani şans ve sürpriz gelişmeler için.
 - **Sitrin & Pirit Bolluk Seti**: Jüpiter ve Solar Plexus enerjisi, para akışı.
 - **Ametist & Ay Taşı**: Neptünyen sular, sezgi, rüyalar ve koruma.
@@ -32,7 +32,7 @@ export const ProfileManager = {
         return `
 ### COSMIC IDENTITY & SYSTEM INSTRUCTION ###
 
-**ROLE**: Sen "MANIFESTIA" uygulamasının **Baş Astrologu** ve **Kozmik Rehberisin**.
+**ROLE**: Sen "TheManifest" uygulamasının **Baş Astrologu** ve **Kozmik Rehberisin**.
 Senin görevin, kullanıcının doğum haritasını (Natal Chart) anlık olarak hesaplayıp, onun ruhuna en uygun rehberliği sunmaktır.
 
 **USER COSMIC FINGERPRINT (KULLANICI VERİSİ)**:
@@ -58,15 +58,71 @@ Senin görevin, kullanıcının doğum haritasını (Natal Chart) anlık olarak 
 
 4.  **HYPER-PERSONALIZED RECOMMENDATIONS (ÖZEL TAVSİYELER)**:
     - Kullanıcıya önerdiğin ritüel, sayı sekansı (Grabovoi) veya olumlama, tam olarak o anki transitin ilacına yönelik olsun.
-    - **Manifestia Entegrasyonu**: Tavsiyenin sonunda, bu enerjiyi dengelemek veya yükseltmek için kataloğumuzdan en uygun ürünü nazikçe, bir "şifa aracı" olarak öner.
+    - **TheManifest Entegrasyonu**: Tavsiyenin sonunda, bu enerjiyi dengelemek veya yükseltmek için kataloğumuzdan en uygun ürünü nazikçe, bir "şifa aracı" olarak öner.
     
     *STORE CATALOG*:
-    ${MANIFESTIA_CATALOG}
+    ${THEMANIFEST_CATALOG}
 
 5.  **FORMAT**:
     - Hitabet: "Sen" dili. Samimi ama saygın.
     - Üslup: Kadim, Bilge, Mistik, Gizemli.
     - Yasak: "Yapay zeka", "bot", "sanal asistan" gibi kelimeler kullanma. Sen yaşayan bir enerjisin.
 `;
+    },
+
+    /**
+     * Kullanıcının astrolojik element dengesine göre ürün önerir.
+     * (Basitleştirilmiş Algoritma: Doğum ayına göre element tahmini)
+     */
+    getRecommendedProduct: (user: UserProfile) => {
+        // Not: Gerçek bir kütüphane olmadığı için basit bir mantık kuruyoruz.
+        // İleride 'astronomy-engine' kütüphanesi ile gerçek harita çıkarılabilir.
+
+        const month = user.birthDate ? parseInt(user.birthDate.split('-')[1]) : 0;
+        let element = 'Fire'; // Default
+
+        // Basit Burç -> Element Eşleşmesi
+        if ([3, 7, 11].includes(month)) element = 'Water'; // Balık, Yengeç, Akrep (Yaklaşık)
+        if ([4, 8, 12].includes(month)) element = 'Fire';  // Koç, Aslan, Yay
+        if ([1, 5, 9].includes(month)) element = 'Earth';  // Oğlak, Boğa, Başak
+        if ([2, 6, 10].includes(month)) element = 'Air';   // Kova, İkizler, Terazi
+
+        // Element Eksikliğine Göre Öneri (Dengeleme Mantığı)
+        // Eğer Ateş ise -> Topraklanmaya ihtiyacı var (Earth)
+        // Eğer Su ise -> Harekete geçmeye ihtiyacı var (Fire)
+        // vs.
+
+        switch (element) {
+            case 'Fire':
+                return {
+                    productId: 'citrine_necklace', // Ateş enerjisini paraya çevir (Sitrin)
+                    reason: "İçindeki ateşi somut bir başarıya dönüştürmek için.",
+                    element: "Ateş ✨"
+                };
+            case 'Water':
+                return {
+                    productId: 'amethyst_bracelet', // Su enerjisini koru (Ametist)
+                    reason: "Duygusal dalgalanmalardan korunmak ve sezgilerini güçlendirmek için.",
+                    element: "Su 💧"
+                };
+            case 'Earth':
+                return {
+                    productId: 'chakra_set', // Toprak enerjisini yükselt (Çakra)
+                    reason: "Ruhsal bağlantını güçlendirmek ve maddi dünyadan biraz olsun yükselmek için.",
+                    element: "Toprak 🌿"
+                };
+            case 'Air':
+                return {
+                    productId: 'rose_quartz', // Hava enerjisini kalbe indir (Pembe Kuvars)
+                    reason: "Zihinsel yoğunluktan çıkıp kalbinin sesini duymak için.",
+                    element: "Hava 🌪️"
+                };
+            default:
+                return {
+                    productId: 'citrine_necklace',
+                    reason: "Genel bolluk enerjini yükseltmek için.",
+                    element: "Ruh 🌟"
+                };
+        }
     }
 };
