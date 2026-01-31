@@ -14,6 +14,7 @@ import { MAJOR_ARCANA } from '@/lib/tarot-data';
 interface TarotCardProps {
     name?: string;
     isRevealed?: boolean;
+    isReversed?: boolean; // New prop
     onClick?: () => void;
     className?: string;
     style?: React.CSSProperties;
@@ -22,6 +23,7 @@ interface TarotCardProps {
 export default function TarotCard({
     name,
     isRevealed = false,
+    isReversed = false,
     onClick,
     className = "",
     style
@@ -30,9 +32,6 @@ export default function TarotCard({
     // Kart verisini bul (Renk ve ID için)
     const cardData = MAJOR_ARCANA.find(c => c.name === name || c.englishName === name);
     const themeColor = cardData?.themeColor || "#D4AF37";
-
-    // --- ARKA YÜZ: SAF REF IMAGE (NO TEXT) ---
-
 
     // --- ÖN YÜZ: DYNAMIC CUSTOM IMAGES Or ICONS ---
     const CardFront = () => {
@@ -70,9 +69,18 @@ export default function TarotCard({
             "death": "/tarot-cards/death.png", "ölüm": "/tarot-cards/death.png",
             // 14 - Temperance
             "temperance": "/tarot-cards/temperance.png", "denge": "/tarot-cards/temperance.png",
-
+            // 15 - The Devil
+            "devil": "/tarot-cards/the-devil.png", "şeytan": "/tarot-cards/the-devil.png",
+            // 16 - The Tower
+            "tower": "/tarot-cards/the-tower.png", "kule": "/tarot-cards/the-tower.png",
             // 17 - The Star
             "star": "/tarot-cards/the-star.png", "yıldız": "/tarot-cards/the-star.png",
+            // 18 - The Moon
+            "moon": "/tarot-cards/the-moon.png", "ay": "/tarot-cards/the-moon.png",
+            // 19 - The Sun
+            "sun": "/tarot-cards/the-sun.png", "güneş": "/tarot-cards/the-sun.png",
+            // 20 - Judgement
+            "judgement": "/tarot-cards/judgement.png", "mahkeme": "/tarot-cards/judgement.png",
             // 21 - The World
             "world": "/tarot-cards/the-world.png", "dünya": "/tarot-cards/the-world.png"
         };
@@ -116,7 +124,9 @@ export default function TarotCard({
         return (
             <div className={`w-full h-full bg-[#080510] rounded-xl relative flex flex-col overflow-hidden shadow-inner ${imageSrc ? '' : 'border-2'}`}
                 style={{
-                    borderColor: imageSrc ? 'transparent' : themeColor
+                    borderColor: imageSrc ? 'transparent' : themeColor,
+                    // Eğer kart ters ise 180 derece döndür
+                    transform: isReversed ? 'rotate(180deg)' : 'none'
                 }}>
 
                 {/* Image varsa onu göster, yoksa standart arka plan ve ikon */}
@@ -127,8 +137,6 @@ export default function TarotCard({
                             alt={name}
                             className="w-full h-full object-cover scale-105"
                         />
-                        {/* Hafif overlay text okunurluğu için */}
-                        {/* <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" /> */}
                     </div>
                 ) : (
                     <>

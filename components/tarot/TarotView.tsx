@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MAJOR_ARCANA, TarotCard as TarotCardType } from '@/lib/tarot-data';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, RefreshCw, X, Stars, Diamond } from 'lucide-react';
+import { Sparkles, RefreshCw, X, Stars, Diamond, History, Layers } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { useCosmicMemory } from '@/hooks/useCosmicMemory';
 import TarotCard from './TarotCard';
@@ -56,6 +56,12 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
     const [shuffledDeck, setShuffledDeck] = useState<TarotCardType[]>(MAJOR_ARCANA);
     const { saveTarot } = useCosmicMemory();
 
+    // New States
+    const [spreadType, setSpreadType] = useState<'single' | 'three_card'>('single');
+    const [selectedCards, setSelectedCards] = useState<TarotCardType[]>([]);
+    const [showHistory, setShowHistory] = useState(false);
+    const [history, setHistory] = useState<any[]>([]); // Type definiton can be improved later
+
     // Paywall State
     const [showPaywall, setShowPaywall] = useState(false);
     const { updateUser } = useUser();
@@ -98,30 +104,90 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
         }
     };
 
-    // Shuffling Sesi efekti için ref (İleride eklenebilir)
+    // Shuffling Logic
+    const shuffleIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const [energyLevel, setEnergyLevel] = useState(0); // 0 to 100
+    const [isHolding, setIsHolding] = useState(false);
 
-    // Otomatik Akış
+    const startShuffling = () => {
+        setIsHolding(true);
+        // Start rapid shuffling visual and energy charge
+        shuffleIntervalRef.current = setInterval(() => {
+            // Shuffle
+            setShuffledDeck(prev => {
+                const newDeck = [...prev];
+                // Swap random elements
+                const i = Math.floor(Math.random() * newDeck.length);
+                const j = Math.floor(Math.random() * newDeck.length);
+                [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
+                return newDeck;
+            });
+
+            // Charge Energy
+            setEnergyLevel(prev => {
+                if (prev >= 100) return 100;
+                return prev + 2; // Charge speed
+            });
+        }, 50);
+    };
+
+    const stopShuffling = () => {
+        setIsHolding(false);
+        if (shuffleIntervalRef.current) clearInterval(shuffleIntervalRef.current);
+
+        // If fully charged, proceed
+        if (energyLevel >= 100) {
+            // Apply Reversed Status Randomly (e.g. 30% chance) before setting spread
+            const deckWithReversed = shuffledDeck.map(c => ({
+                ...c,
+                isReversed: Math.random() < 0.3
+            }));
+            setShuffledDeck(deckWithReversed);
+            setStep('spread');
+        } else {
+            // Reset if not fully charged or maybe just pause? Let's decrease slowly or keep it?
+            // Let's decrease for game feel
+            const decay = setInterval(() => {
+                setEnergyLevel(prev => {
+                    if (prev <= 0) {
+                        clearInterval(decay);
+                        return 0;
+                    }
+                    return prev - 5;
+                });
+            }, 50);
+        }
+    };
+
+    // Auto flow from Intro to Shuffling prompt
     useEffect(() => {
         if (step === 'intro') {
             const timer = setTimeout(() => setStep('shuffling'), 2000);
             return () => clearTimeout(timer);
         }
-        if (step === 'shuffling') {
-            // Shuffle Logic (Fisher-Yates)
-            const shuffled = [...MAJOR_ARCANA];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            setShuffledDeck(shuffled);
-
-            const timer = setTimeout(() => setStep('spread'), 3500);
-            return () => clearTimeout(timer);
-        }
     }, [step]);
 
     const handlePickCard = async (card: TarotCardType) => {
-        setSelectedCard(card);
+        // Prevent duplicate selection
+        if (selectedCards.find(c => c.id === card.id)) return;
+
+        const newSelection = [...selectedCards, card];
+        setSelectedCards(newSelection);
+
+        // If Single Card Mode
+        if (spreadType === 'single') {
+            processReading([card]);
+        }
+        // If Three Card Mode
+        else {
+            if (newSelection.length === 3) {
+                processReading(newSelection);
+            }
+        }
+    };
+
+    const processReading = async (cards: TarotCardType[]) => {
+        setSelectedCard(cards[0]); // For visual anchor during loading
         setStep('revealing');
 
         try {
@@ -130,9 +196,15 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    cardName: card.englishName,
+                    cardName: cards[0].englishName, // Legacy fallback
+                    cards: cards.map(c => ({
+                        name: c.englishName,
+                        isReversed: c.isReversed
+                    })), // Send objects with reversed status
                     intention: 'Genel Rehberlik',
-                    userSign: user?.sign || 'Bilinmiyor'
+                    userSign: user?.sign || 'Bilinmiyor',
+                    userId: user?.id,
+                    spreadType
                 })
             });
 
@@ -141,26 +213,19 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
             const result = await response.json();
             setReading(result);
 
-            // Auto-Save (Included in Service)
-            saveTarot({
-                cardName: card.name,
-                interpretation: result.interpretation,
-                affirmation: result.affirmation,
-                suggestion: result.suggestion
-            });
+            // Auto-Save (Included in Service - Front-end side backup logic removed as API handles it now)
+            // But we keep local state update for 'CosmicMemory' hook if needed, but redundant now.
 
             setTimeout(() => setStep('reading'), 3000); // Reveal animasyonu süresi
 
         } catch (e) {
             console.error("Tarot API Hatası:", e);
-            // Fallback (Yedek) Cevap - Hata olsa bile akış bozulmasın
             const fallbackResult = {
-                interpretation: "Yıldızların mesajı şu an sisli, ancak içindeki rehber sana en doğru yolu gösterecektir. Kartın enerjisine odaklan ve kalbinin sesini dinle.",
+                interpretation: "Yıldızların mesajı şu an sisli, ancak içindeki rehber sana en doğru yolu gösterecektir.",
                 affirmation: "Benim gücüm içimdeki sessizlikte saklı.",
                 suggestion: "Biraz sessiz kalıp niyetine odaklanman iyi gelebilir."
             };
             setReading(fallbackResult);
-            // Yine de kaydetmeyi deneyebiliriz veya geçebiliriz
             setTimeout(() => setStep('reading'), 3000);
         }
     };
@@ -180,10 +245,42 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                         <h2 className="text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 to-cyan-200 tracking-[0.2em]">
                             Kader Portalı
                         </h2>
-                        <p className="text-[9px] md:text-[10px] text-white/40 uppercase tracking-widest hidden sm:block">Yıldızların fısıltısı, kartların sessizliğinde yankılanıyor.</p>
+                        <div className="flex gap-2 text-[9px] md:text-[10px] uppercase tracking-widest mt-1">
+                            <button
+                                onClick={() => setSpreadType('single')}
+                                className={`px-2 py-0.5 rounded transition ${spreadType === 'single' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white/80'}`}
+                            >
+                                Tek Kart
+                            </button>
+                            <button
+                                onClick={() => setSpreadType('three_card')}
+                                className={`px-2 py-0.5 rounded transition ${spreadType === 'three_card' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white/80'}`}
+                            >
+                                3 Kart
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
+                    <button
+                        onClick={async () => {
+                            if (!showHistory && user?.id) {
+                                try {
+                                    const res = await fetch(`/api/tarot?userId=${user.id}`);
+                                    const data = await res.json();
+                                    setHistory(data);
+                                } catch (e) {
+                                    console.error(e);
+                                }
+                            }
+                            setShowHistory(!showHistory);
+                        }}
+                        className="p-2 rounded-full hover:bg-white/10 transition text-white/60 hover:text-white"
+                        title="Geçmiş Fallarım"
+                    >
+                        <History className="w-5 h-5" />
+                    </button>
+
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
                         <Diamond className="w-4 h-4 text-cyan-400 fill-cyan-400/20" />
                         <span className="text-sm font-bold text-cyan-100 font-mono">{user?.diamonds || 0}</span>
@@ -196,6 +293,50 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                     </button>
                 </div>
             </div>
+
+            {/* History Sidebar/Modal Overlay */}
+            <AnimatePresence>
+                {showHistory && (
+                    <motion.div
+                        initial={{ x: '100%' }}
+                        animate={{ x: 0 }}
+                        exit={{ x: '100%' }}
+                        className="absolute right-0 top-0 bottom-0 w-full md:w-96 bg-[#080510]/95 backdrop-blur-xl border-l border-white/10 z-[60] p-6 overflow-y-auto shadow-2xl"
+                    >
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-serif text-white">Geçmiş Fallar</h3>
+                            <button onClick={() => setShowHistory(false)}><X className="text-white/50 hover:text-white" /></button>
+                        </div>
+                        <div className="space-y-4">
+                            {history.length === 0 ? (
+                                <p className="text-white/40 text-sm italic">Henüz kaydedilmiş bir falın yok.</p>
+                            ) : (
+                                history.map((h: any) => (
+                                    <div key={h.id} className="p-4 bg-white/5 rounded-xl border border-white/5 hover:border-purple-500/30 transition">
+                                        <div className="flex justify-between text-xs text-white/40 mb-2">
+                                            <span>{new Date(h.createdAt).toLocaleDateString()}</span>
+                                            <span className="uppercase">{h.spreadType}</span>
+                                        </div>
+                                        {/* Handle legacy or new JSON structure */}
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-14 bg-white/10 rounded overflow-hidden">
+                                                {/* Simple placeholder for card image in history */}
+                                                {(Array.isArray(h.cards) ? h.cards : []).map((c: any, i: number) => (
+                                                    i === 0 && <div key={i} className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url('/tarot-cards/${c.name}.jpg')` }}></div>
+                                                ))}
+                                            </div>
+                                            <div>
+                                                <p className="text-white font-serif text-sm">{(Array.isArray(h.cards) && h.cards[0]?.name) || 'Bilinmiyor'}</p>
+                                                <p className="text-white/60 text-xs line-clamp-2 mt-1">{h.interpretation.substring(0, 100)}...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Main Stage */}
             <div className="flex-1 relative flex items-center justify-center w-full h-full perspective-1000 overflow-hidden">
@@ -221,61 +362,74 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                         </motion.div>
                     )}
 
-                    {/* 2. SHUFFLING: COSMIC VORTEX (Optimized) */}
+                    {/* 2. SHUFFLING: INTERACTIVE ENERGY CHARGE */}
                     {step === 'shuffling' && (
                         <motion.div
                             key="shuffle"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            className="relative w-full h-full flex items-center justify-center perspective-1000"
+                            exit={{ opacity: 0, scale: 1.2, filter: "blur(10px)" }}
+                            className="relative w-full h-full flex flex-col items-center justify-center perspective-1000 z-10"
+                            onMouseDown={startShuffling}
+                            onMouseUp={stopShuffling}
+                            onTouchStart={startShuffling}
+                            onTouchEnd={stopShuffling}
+                            // Prevent context menu on hold
+                            onContextMenu={(e) => e.preventDefault()}
                         >
-                            {/* Simplified Vortex - Reduced count and complexity */}
-                            {[...Array(6)].map((_, i) => (
-                                <motion.div
-                                    key={i}
-                                    className="absolute w-32 h-48 border border-white/10 rounded-xl bg-gradient-to-br from-[#1a103c] to-[#0f0a1e]"
-                                    initial={{
-                                        x: 0,
-                                        y: 0,
-                                        scale: 0.8,
-                                        opacity: 0,
-                                        rotate: 0
-                                    }}
-                                    animate={{
-                                        x: [
-                                            Math.sin(i * 60) * 80,
-                                            Math.cos(i * 60) * 120,
-                                            Math.sin(i * 60) * 80
-                                        ],
-                                        y: [
-                                            Math.cos(i * 60) * 80,
-                                            Math.sin(i * 60) * 120,
-                                            Math.cos(i * 60) * 80
-                                        ],
-                                        rotate: [0, 180, 360],
-                                        scale: [0.8, 1, 0.8],
-                                        opacity: [0.5, 1, 0.5],
-                                    }}
-                                    transition={{
-                                        duration: 2.5,
-                                        repeat: Infinity,
-                                        ease: "easeInOut",
-                                        delay: i * 0.2
-                                    }}
-                                >
-                                    <TarotCard className="w-full h-full shadow-[0_0_15px_rgba(168,85,247,0.3)] opacity-90" />
-                                </motion.div>
-                            ))}
+                            {/* Central Deck Pile */}
+                            <div className="relative w-48 h-72 md:w-64 md:h-96 cursor-pointer group">
+                                {/* Glow behind deck */}
+                                <div className={`absolute inset-0 bg-purple-500 rounded-xl blur-[50px] transition-all duration-300 ${isHolding ? 'opacity-80 scale-110' : 'opacity-20 scale-90'}`}></div>
 
-                            {/* Central Energy Core - Static Blur */}
-                            <div className="absolute w-24 h-24 bg-white/10 blur-[40px] rounded-full animate-pulse"></div>
+                                {/* Stacked Cards Animation */}
+                                {shuffledDeck.slice(0, 5).map((card, i) => (
+                                    <motion.div
+                                        key={i} // Use simple index force re-render
+                                        className="absolute inset-0 border border-white/10 rounded-xl bg-gradient-to-br from-[#1a103c] to-[#0f0a1e] shadow-2xl origin-center"
+                                        animate={isHolding ? {
+                                            x: Math.random() * 40 - 20,
+                                            y: Math.random() * 40 - 20,
+                                            rotate: Math.random() * 20 - 10,
+                                            scale: 1.05
+                                        } : {
+                                            x: i * 2,
+                                            y: -i * 2,
+                                            rotate: i * 1,
+                                            scale: 1
+                                        }}
+                                        transition={{ duration: 0.1 }}
+                                    >
+                                        <TarotCard className="w-full h-full opacity-90" />
+                                    </motion.div>
+                                ))}
 
-                            <div className="absolute bottom-20 md:bottom-32 w-full text-center z-20">
-                                <p className="text-xl font-serif text-white/80 animate-pulse tracking-[0.2em] font-light">
-                                    KARTLAR KARIŞTIRILIYOR
-                                </p>
+                                {/* Instruction Overlay (fades out when holding) */}
+                                <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${isHolding ? 'opacity-0' : 'opacity-100'}`}>
+                                    <div className="bg-black/60 backdrop-blur-sm p-4 rounded-xl border border-white/10 text-center">
+                                        <Sparkles className="w-8 h-8 text-white mx-auto mb-2 animate-pulse" />
+                                        <p className="text-white text-sm font-bold tracking-widest">ENERJİNİ YÜKLE</p>
+                                        <p className="text-white/60 text-xs mt-1">Kartlara Dokun ve Basılı Tut</p>
+                                    </div>
+                                </div>
                             </div>
+
+                            {/* Energy Bar Container */}
+                            <div className="mt-12 w-64 md:w-80 h-2 bg-white/10 rounded-full overflow-hidden border border-white/5 relative shadow-[0_0_20px_black]">
+                                {/* Filled Bar */}
+                                <motion.div
+                                    className="h-full bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 relative"
+                                    style={{ width: `${energyLevel}%` }}
+                                >
+                                    {/* Shining effect on bar */}
+                                    <div className="absolute top-0 right-0 h-full w-4 bg-white/50 blur-[4px]"></div>
+                                </motion.div>
+                            </div>
+
+                            <p className="mt-4 text-xs font-mono text-purple-300/60 uppercase tracking-[0.2em] animate-pulse">
+                                {energyLevel < 100 ? `${Math.floor(energyLevel)}% KOZMİK ENERJİ` : "ENERJİ MAKSİMUM - BIRAK!"}
+                            </p>
+
                         </motion.div>
                     )}
 
@@ -290,7 +444,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                         >
                             <div className="absolute top-10 md:top-20 w-full text-center z-20 pointer-events-none px-4">
                                 <p className="text-xl md:text-2xl font-light text-white/90 tracking-widest drop-shadow-md">
-                                    {isFree ? 'GÜNLÜK ÜCRETSİZ FAL' : 'KOZMİK BAĞLANTI (5 💎)'}
+                                    {spreadType === 'single' ? 'TEK KART SORGUSU' : `3 KART: GEÇMİŞ, ŞİMDİ, GELECEK (${selectedCards.length}/3)`}
                                 </p>
                                 <p className="text-[10px] md:text-xs text-purple-300/60 uppercase tracking-[0.2em] mt-2">
                                     {isFree ? 'Kaderin seninle konuşmak istiyor.' : 'Yıldızların rehberliği için bedel ödenmeli.'}
@@ -408,11 +562,19 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                                         {/* Yorum */}
                                         <div className="relative">
                                             <Stars className="w-6 h-6 md:w-8 md:h-8 text-purple-500/50 absolute -top-3 -left-3 md:-top-4 md:-left-4" />
-                                            <h2 className="text-3xl font-serif text-white mb-4 hidden md:block">
-                                                {selectedCard.name}
-                                            </h2>
-                                            <p className="text-base md:text-lg leading-relaxed font-light text-gray-300 italic pl-4 md:pl-6 border-l-2 border-purple-500/30">
-                                                "{reading.interpretation}"
+                                            <div className="relative">
+                                                {/* Reversed Badge */}
+                                                {selectedCard.isReversed && (
+                                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-500/20 border border-red-500/40 text-red-200 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest z-10 font-bold whitespace-nowrap">
+                                                        TERS YÖN (BLOKAJ)
+                                                    </div>
+                                                )}
+                                                <h2 className={`text-3xl font-serif text-white mb-4 hidden md:block ${selectedCard.isReversed ? 'text-red-200' : ''}`}>
+                                                    {selectedCard.name}
+                                                </h2>
+                                            </div>
+                                            <p className="text-base md:text-lg leading-relaxed font-light text-gray-300 italic pl-4 md:pl-6 border-l-2 border-purple-500/30 whitespace-pre-line">
+                                                {reading.interpretation}
                                             </p>
                                         </div>
 
@@ -447,6 +609,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                                                     setStep('shuffling');
                                                     setReading(null);
                                                     setSelectedCard(null);
+                                                    setSelectedCards([]);
                                                 }}
                                                 className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-medium tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group text-sm md:text-base"
                                             >

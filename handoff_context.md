@@ -1,46 +1,37 @@
 # Project Context & Handoff Checklist
 
-**Tarih:** 29.01.2026 (Son Güncelleme)
-**Durum:** Beklemede (AWS Hesap Onayı & Sunucu Kurulumu)
+**Tarih:** 30.01.2026 (Son Güncelleme)
+**Durum:** Canlı (Live) - UI ve Branding İyileştirmeleri
 
 ## 📌 Proje Özeti: Manifestia
-Manifestia, kullanıcıların spiritüel yolculuklarına rehberlik eden, AI destekli bir web uygulamasıdır. AWS üzerinde host edilecektir.
+Manifestia, kullanıcıların spiritüel yolculuklarına rehberlik eden, AI destekli bir web uygulamasıdır. GitHub üzerinden Vercel/AWS Pipeline ile otomatik deploy olmaktadır.
 
-## 🚀 Son Yapılan Geliştirmeler (Auth & AWS)
-1.  **AWS Hesabı:**
-    - Hesap açıldı (Stockholm -> Frankfurt bölgesi ayarlandı).
-    - `manifestia-admin` IAM kullanıcısı oluşturuldu (Şifreler `.csv` olarak yedeklendi).
-    - **Durum:** Hesap aktivasyonu bekleniyor (24h süre).
+## 🚀 Son Yapılan Geliştirmeler (UI & Branding)
+1.  **Chat Arayüzü (UI Polish):**
+    - Sohbet barı sola hizalandı, genişlik sınırı kaldırıldı.
+    - Sesli asistan butonu büyütüldü (80px), ayrıldı ve sağa alındı.
+    - İkon: `AudioWaveform` (Ses dalgası) olarak güncellendi.
+    - Stil: ChatGPT benzeri, daha modern ve ferah bir görünüm sağlandı.
 
-2.  **Kimlik Doğrulama (Authentication):**
-    - **Backend:** `Register`, `Login`, `Forgot Password`, `Reset Password` API'leri yazıldı.
-    - **Frontend:** Tüm sayfalar (`/auth/*`) tasarlandı ve bağlandı.
-    - **Database:** Prisma (v5) ile PostgreSQL şeması (`User` modeli) hazırlandı.
-    - **Email:** Nodemailer + AWS SES altyapısı kuruldu (Mail gönderimi aktif).
+2.  **Branding (Marka Kimliği):**
+    - **Intro Splash Logo:** Giriş ekranındaki dönen yıldız, yeni yüklenen **Ankh** sembolü ile değiştirildi.
+    - **Favicon & App Icon:** Tarayıcı sekmesindeki ve uygulama ikonu yeni **Ankh** logosu ile güncellendi.
 
-3.  **Git & Versiyon Kontrolü:**
-    - Tüm değişiklikler `git commit` ile kaydedildi.
-    - Mesaj: `"feat: Implement full authentication system"`
+3.  **Deployment:**
+    - Tüm değişiklikler `main` branch'ine push edildi (`git push origin main`).
+    - Vercel/AWS otomatik build sürecindedir.
 
 ## 📋 Sıradaki Adımlar (Yarın)
-AWS hesabı onaylandıktan sonra yapılacaklar:
-
-- [ ] **1. Sunucu Hazırlığı:**
-    - EC2 Instance başlat (Ubuntu).
-    - RDS (PostgreSQL) veritabanı oluştur.
-- [ ] **2. Kurulum:**
-    - GitHub'dan kodu sunucuya çek.
-    - `.env` ayarlarını yap.
-    - `npm run build` ve `pm2` ile uygulamayı başlat.
-    - Domain (Godaddy) yönlendirmesini yap.
+- [ ] **1. Doğrulama:**
+    - Canlı sitede (telefonda) yapılan ikon ve UI değişikliklerinin önbellek temizlendikten sonra görüldüğünün teyidi.
+- [ ] **2. Yeni Özellikler:**
+    - Kullanıcının isteği üzerine yeni özelliklerin (Tarot, Ritüel vb.) geliştirilmesine devam edilecek.
 
 ## 📂 Önemli Dosya Yolları
-- **Auth Sayfaları:** `app/auth/` (Login, Register, vb.)
-- **Auth API:** `app/api/auth/`
-- **Veritabanı Şeması:** `prisma/schema.prisma`
-- **Email Servisi:** `lib/email.ts`
+- **Chat UI:** `components/chat/ChatInterface.tsx`
+- **Intro Splash:** `components/layout/IntroSplash.tsx`
+- **Assets:** `public/logo-ankh.png`, `public/icon.png`, `app/icon.png`
 
 ## 💬 Notlar
-- AWS MFA kurulumu ertelendi, daha sonra yapılabilir.
-- Vercel iptal edildi, tamamen AWS altyapısı kullanılıyor.
-- Kodların yedeği Git üzerinde güvende.
+- Canlı sitede değişikliklerin görünmesi tarayıcı önbelleğine (Cache/Service Worker) bağlı olarak gecikebilir.
+- Kodlar GitHub'da günceldir.

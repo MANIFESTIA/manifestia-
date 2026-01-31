@@ -4,6 +4,7 @@ export interface TarotCard {
     englishName: string;
     meaning: string;
     themeColor: string; // Hex for neon glow
+    isReversed?: boolean; // New status
 }
 
 export const MAJOR_ARCANA: TarotCard[] = [
