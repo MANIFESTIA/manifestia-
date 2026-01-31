@@ -33,7 +33,8 @@ jobs:
             npx prisma generate
             
             # Veritabanı değişikliklerini uygula (Opsiyonel ama önerilir, dikkatli kullanılmalı)
-            # npx prisma db push 
+            # Veritabanı değişikliklerini uygula
+            npx prisma db push --accept-data-loss 
             
             # Projeyi derle
             npm run build
