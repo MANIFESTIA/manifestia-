@@ -1,0 +1,42 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Proje klasörüne git (Klasör ismini sunucudaki ile aynı olduğundan emin ol)
+            cd /home/ubuntu/manifestia-
+            
+            # Güncellemeleri çek
+            git pull origin main
+            
+            # Bağımlılıkları yükle
+            npm install
+            
+            # Prisma Client'ı güncelle (Veritabanı şeması değiştiyse kritik)
+            npx prisma generate
+            
+            # Veritabanı değişikliklerini uygula (Opsiyonel ama önerilir, dikkatli kullanılmalı)
+            # npx prisma db push 
+            
+            # Projeyi derle
+            npm run build
+            
+            # Uygulamayı yeniden başlat
+            pm2 restart all
