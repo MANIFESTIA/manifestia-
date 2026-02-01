@@ -40,17 +40,35 @@ export const RITUALS: Ritual[] = [
             {
                 title: 'Korku Ateşi',
                 description: 'Bugün sadece seni durduran korkularını yakmaya odaklanıyoruz.',
-                steps: [] // Handled by component logic usually, or generic steps
+                steps: [
+                    { text: "Önünde, kutsal ve güvenli bir ateşin yandığını hayal et.", duration: 15, animation: 'focus' },
+                    { text: "Seni en çok korkutan düşünceyi bir kağıda yazdığını düşün.", duration: 20, animation: 'focus' },
+                    { text: "Kağıdı ateşe at. Yanışını ve küle dönüşmesini izle.", duration: 25, animation: 'fire' },
+                    { text: "Dumanın gökyüzüne karışıp yok oluşunu hisset.", duration: 20, animation: 'breathe' },
+                    { text: "Korku gitti. Sen özgürsün.", duration: 15, animation: 'stars' }
+                ]
             },
             {
                 title: 'Geçmişi Bırakma',
                 description: 'Geçmişteki pişmanlıklarını ve yüklerini ateşe ver.',
-                steps: []
+                steps: [
+                    { text: "Sırtında taşıdığın ağır yükü yere indir.", duration: 15, animation: 'breathe' },
+                    { text: "Bu yük, artık değiştiremeyeceğin geçmişindir.", duration: 20, animation: 'focus' },
+                    { text: "Mor bir alevin bu yükü yavaşça sardığını gör.", duration: 25, animation: 'fire' },
+                    { text: "Alevler yükseldikçe geçmişin ağırlığı hafifliyor.", duration: 20, animation: 'stars' },
+                    { text: "Şimdi ve buradasın. Geçmiş bitti.", duration: 15, animation: 'breathe' }
+                ]
             },
             {
                 title: 'Endişe Arınması',
                 description: 'Gelecek kaygılarını şimdi ve burada, ateşe teslim et.',
-                steps: []
+                steps: [
+                    { text: "Derin bir nefes al ve zihnindeki gürültüyü fark et.", duration: 15, animation: 'focus' },
+                    { text: "Her bir endişe, birer kuru yaprak gibi elinde.", duration: 20, animation: 'stars' },
+                    { text: "Yaprakları teker teker ateşe at.", duration: 30, animation: 'fire' },
+                    { text: "Çatırtılarını duy. Enerjinin temizlendiğini hisset.", duration: 20, animation: 'breathe' },
+                    { text: "Güvendesin. Her şey yolunda.", duration: 15, animation: 'focus' }
+                ]
             }
         ]
     },
@@ -317,10 +335,18 @@ export const getIcon = (name: string) => {
 export const getDailyRitual = (ritual: Ritual) => {
     const today = new Date();
     const seed = today.getDate() + today.getMonth() * 31 + today.getFullYear() * 365; // Simple daily seed
+
     // Pseudo-random index based on ritual ID and date
     // Convert string ID to number sum
     const idSum = ritual.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const variationIndex = (seed + idSum) % ritual.variations.length;
 
-    return ritual.variations[variationIndex];
+    // Fallback if variation has no steps (should not happen anymore)
+    const variation = ritual.variations[variationIndex];
+    if (!variation.steps || variation.steps.length === 0) {
+        // Fallback to first variation or a default
+        if (ritual.variations[0].steps.length > 0) return ritual.variations[0];
+    }
+
+    return variation;
 };

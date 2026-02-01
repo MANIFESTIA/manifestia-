@@ -94,11 +94,16 @@ export default function RitualPlayer({ ritual, onComplete, onExit }: RitualPlaye
                     filter: ["brightness(1)", "brightness(1.5)", "brightness(1)"],
                     transition: { duration: 3, repeat: Infinity }
                 };
-            case 'stars':
                 return {
                     y: [0, -10, 0],
                     rotate: [0, 5, -5, 0],
                     transition: { duration: 10, repeat: Infinity, ease: "linear" as const }
+                };
+            case 'fire':
+                return {
+                    scale: [1, 1.1, 0.9, 1.05, 1],
+                    filter: ["brightness(1) hue-rotate(0deg)", "brightness(1.5) hue-rotate(-10deg)", "brightness(0.8) hue-rotate(10deg)"],
+                    transition: { duration: 0.5, repeat: Infinity, ease: "easeInOut" }
                 };
             default:
                 return {};
