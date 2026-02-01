@@ -404,7 +404,10 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                             onContextMenu={(e) => e.preventDefault()}
                         >
                             {/* Central Deck Pile */}
-                            <div className="relative w-48 h-72 md:w-64 md:h-96 cursor-pointer group">
+                            <div
+                                className="relative w-48 h-72 md:w-64 md:h-96 cursor-pointer group touch-none select-none"
+                                style={{ WebkitTouchCallout: 'none' }}
+                            >
                                 {/* Glow behind deck */}
                                 <div className={`absolute inset-0 bg-purple-500 rounded-xl blur-[50px] transition-all duration-300 ${isHolding ? 'opacity-80 scale-110' : 'opacity-20 scale-90'}`}></div>
 
@@ -434,8 +437,8 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                                 <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${isHolding ? 'opacity-0' : 'opacity-100'}`}>
                                     <div className="bg-black/60 backdrop-blur-sm p-4 rounded-xl border border-white/10 text-center">
                                         <Sparkles className="w-8 h-8 text-white mx-auto mb-2 animate-pulse" />
-                                        <p className="text-white text-sm font-bold tracking-widest">ENERJİNİ YÜKLE</p>
-                                        <p className="text-white/60 text-xs mt-1">Kartlara Dokun ve Basılı Tut</p>
+                                        <p className="text-white text-sm font-bold tracking-widest leading-tight">KARTLARI KARIŞTIRMAK İÇİN</p>
+                                        <p className="text-white/60 text-xs mt-1">Ekrana Basılı Tut</p>
                                     </div>
                                 </div>
                             </div>
