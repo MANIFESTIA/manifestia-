@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, SkipForward, Check, X } from 'lucide-react';
+import { Play, Pause, SkipForward, Check, X, Volume2, VolumeX } from 'lucide-react';
 import { Ritual, RitualStep } from '@/lib/rituals';
+import { useHaptic } from '@/hooks/useHaptic';
+import { useSoundscape } from '@/hooks/useSoundscape';
 
 interface RitualPlayerProps {
     ritual: Ritual;
@@ -17,8 +19,31 @@ export default function RitualPlayer({ ritual, onComplete, onExit }: RitualPlaye
     const [isActive, setIsActive] = useState(false); // Start paused so user can prepare
     const [isCompleted, setIsCompleted] = useState(false);
 
+    // Sensory Hooks
+    const haptic = useHaptic();
+    const sound = useSoundscape(ritual.audioTrack || null);
+
     const steps = ritual.steps || [];
     const currentStep = steps[currentStepIndex];
+
+    // Trigger Sensor Effects when step changes or becomes active
+    useEffect(() => {
+        if (!isActive || isCompleted) {
+            sound.stop();
+            return;
+        }
+
+        // Audio
+        sound.play();
+
+        // Haptics based on animation type
+        const animationType = currentStep.animation;
+        if (haptic.isSupported) {
+            if (animationType === 'breathe') haptic.breatheIn();
+            else if (animationType === 'focus') haptic.focus();
+        }
+
+    }, [isActive, isCompleted, currentStepIndex, currentStep, haptic.isSupported]); // Triggers on step change
 
     // Timer Logic
     useEffect(() => {
@@ -42,10 +67,17 @@ export default function RitualPlayer({ ritual, onComplete, onExit }: RitualPlaye
         } else {
             setIsActive(false);
             setIsCompleted(true);
+            if (haptic.isSupported) haptic.success();
+            sound.stop();
         }
     };
 
     const togglePlay = () => setIsActive(!isActive);
+
+    const handleExit = () => {
+        sound.stop();
+        onExit();
+    };
 
     // Animation Variants
     const getAnimationVariant = (type: RitualStep['animation']) => {
@@ -102,13 +134,27 @@ export default function RitualPlayer({ ritual, onComplete, onExit }: RitualPlaye
             {/* Ambient Background Glow based on Ritual Color */}
             <div className={`absolute inset-0 bg-gradient-to-b ${ritual.color} opacity-20 z-0`} />
 
-            {/* Exit Button */}
-            <button
-                onClick={onExit}
-                className="absolute top-6 right-6 z-50 p-2 bg-black/20 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition"
-            >
-                <X className="w-6 h-6" />
-            </button>
+            {/* Top Bar: Exit & Settings */}
+            <div className="absolute top-6 left-6 right-6 z-50 flex justify-between">
+                <div className="flex gap-2">
+                    {/* Audio Toggle */}
+                    {ritual.audioTrack && (
+                        <button
+                            onClick={sound.toggleMute}
+                            className="p-2 bg-black/20 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition"
+                        >
+                            {sound.isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                        </button>
+                    )}
+                </div>
+
+                <button
+                    onClick={handleExit}
+                    className="p-2 bg-black/20 hover:bg-white/10 rounded-full text-white/50 hover:text-white transition"
+                >
+                    <X className="w-6 h-6" />
+                </button>
+            </div>
 
             {/* Central Animation Focus */}
             <div className="relative z-10 w-full max-w-md aspect-square flex items-center justify-center">

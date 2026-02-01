@@ -17,6 +17,7 @@ export interface Ritual {
     iconName: 'Flame' | 'Moon' | 'Sun' | 'Wind';
     color: string;
     steps?: RitualStep[];
+    audioTrack?: string; // URL to mp3
 }
 
 export const RITUALS: Ritual[] = [
@@ -30,7 +31,8 @@ export const RITUALS: Ritual[] = [
         duration: '3 Dk',
         iconName: 'Flame',
         color: 'from-orange-500 to-red-600',
-        steps: [] // Handled by special component
+        steps: [], // Handled by special component
+        audioTrack: '/sounds/fire-crackling.mp3'
     },
     {
         id: 'morning-intention',
@@ -42,6 +44,7 @@ export const RITUALS: Ritual[] = [
         duration: '2 Dk',
         iconName: 'Sun',
         color: 'from-yellow-400 to-orange-500',
+        audioTrack: '/sounds/morning-birds.mp3',
         steps: [
             { text: "Rahat bir pozisyon al ve gözlerini kapat.", duration: 5, animation: 'focus' },
             { text: "Derin bir nefes al... Ve yavaşça ver.", duration: 10, animation: 'breathe' },
@@ -60,6 +63,7 @@ export const RITUALS: Ritual[] = [
         duration: '5 Dk',
         iconName: 'Moon',
         color: 'from-indigo-400 to-purple-600',
+        audioTrack: '/sounds/night-crickets.mp3',
         steps: [
             { text: "Ay ışığının altında olduğunu hayal et.", duration: 10, animation: 'stars' },
             { text: "Gümüş rengi bır ışığın başından aşağı süzüldüğünü hisset.", duration: 20, animation: 'focus' },
