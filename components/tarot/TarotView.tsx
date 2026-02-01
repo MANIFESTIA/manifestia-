@@ -57,10 +57,10 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
     const { saveTarot } = useCosmicMemory();
 
     // New States
-    const [spreadType, setSpreadType] = useState<'single' | 'three_card'>('single');
     const [selectedCards, setSelectedCards] = useState<TarotCardType[]>([]);
     const [showHistory, setShowHistory] = useState(false);
-    const [history, setHistory] = useState<any[]>([]); // Type definiton can be improved later
+    const [history, setHistory] = useState<any[]>([]);
+    const spreadType = 'single';
 
     // Paywall State
     const [showPaywall, setShowPaywall] = useState(false);
@@ -73,12 +73,9 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
     // Check Free Status on Reveal attempt
     const checkQuotaAndReveal = (card: TarotCardType) => {
         if (isFree) {
-            // Free reading
             handlePickCard(card);
             updateUser({ lastTarotDate: today });
         } else {
-            // Need to pay
-            // Show Modal or check directly if we want
             setShowPaywall(true);
             setSelectedCard(card);
         }
@@ -271,19 +268,8 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                         <h2 className="text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 to-cyan-200 tracking-[0.2em]">
                             Kader Portalı
                         </h2>
-                        <div className="flex gap-2 text-[9px] md:text-[10px] uppercase tracking-widest mt-1">
-                            <button
-                                onClick={() => setSpreadType('single')}
-                                className={`px-2 py-0.5 rounded transition ${spreadType === 'single' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white/80'}`}
-                            >
-                                Tek Kart
-                            </button>
-                            <button
-                                onClick={() => setSpreadType('three_card')}
-                                className={`px-2 py-0.5 rounded transition ${spreadType === 'three_card' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white/80'}`}
-                            >
-                                3 Kart
-                            </button>
+                        <div className="flex gap-2 text-[9px] md:text-[10px] uppercase tracking-widest mt-1 text-white/40">
+                            Haftalık Kehanet Kanalı
                         </div>
                     </div>
                 </div>
