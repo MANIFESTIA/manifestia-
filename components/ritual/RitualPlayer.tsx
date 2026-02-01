@@ -183,7 +183,7 @@ export default function RitualPlayer({ ritual, onComplete, onExit }: RitualPlaye
             </div>
 
             {/* Progress & Controls */}
-            <div className="absolute bottom-12 w-full max-w-md px-6 z-20 flex flex-col gap-6">
+            <div className="absolute bottom-32 w-full max-w-md px-6 z-20 flex flex-col gap-6">
                 {/* Timer Bar */}
                 <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
                     <motion.div

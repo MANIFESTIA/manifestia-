@@ -103,7 +103,7 @@ export default function RitualView({ onClose }: RitualViewProps) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex flex-col bg-[#0b0b0e] text-white font-sans overflow-hidden">
+        <div className="fixed inset-0 z-[100] flex flex-col bg-[#0b0b0e] text-white font-sans overflow-hidden overscroll-none touch-none">
 
             {/* Header */}
             {viewMode === 'library' && (
