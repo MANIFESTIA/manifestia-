@@ -3,6 +3,25 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Flame, Send, Sparkles, MoveRight } from 'lucide-react';
 
+// Safe particle component for SSR
+const AshParticle = ({ delay }: { delay: number }) => {
+    const [dimensions, setDimensions] = useState({ w: 1000, h: 1000 });
+
+    useEffect(() => {
+        setDimensions({ w: window.innerWidth, h: window.innerHeight });
+    }, []);
+
+    return (
+        <motion.div
+            className="absolute bg-gray-500 rounded-full opacity-50"
+            initial={{ x: Math.random() * dimensions.w, y: -20 }}
+            animate={{ y: dimensions.h + 20 }}
+            transition={{ duration: 3, ease: "linear", delay }}
+            style={{ width: Math.random() * 6 + 2, height: Math.random() * 6 + 2 }}
+        />
+    );
+};
+
 export default function RitualBurning({ onClose }: { onClose: () => void }) {
     const [step, setStep] = useState<'intro' | 'writing' | 'burning' | 'completed'>('intro');
     const [intention, setIntention] = useState('');
@@ -194,16 +213,10 @@ export default function RitualBurning({ onClose }: { onClose: () => void }) {
                         {/* More Ash for the finale */}
                         <div className="absolute inset-0 overflow-hidden pointer-events-none">
                             {[...Array(30)].map((_, i) => (
-                                <motion.div
-                                    key={`final-ash-${i}`}
-                                    className="absolute bg-gray-500 rounded-full opacity-50"
-                                    initial={{ x: Math.random() * window.innerWidth, y: -20 }}
-                                    animate={{ y: window.innerHeight + 20 }}
-                                    transition={{ duration: 3, ease: "linear", delay: Math.random() * 1 }}
-                                    style={{ width: Math.random() * 6 + 2, height: Math.random() * 6 + 2 }}
-                                />
+                                <AshParticle key={`final-ash-${i}`} delay={Math.random() * 1} />
                             ))}
                         </div>
+
 
                         <div className="text-center relative z-20">
                             <motion.div
@@ -225,6 +238,6 @@ export default function RitualBurning({ onClose }: { onClose: () => void }) {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 }
