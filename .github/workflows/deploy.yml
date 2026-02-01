@@ -50,11 +50,14 @@ jobs:
             # Unzip overrides existing files
             unzip -o build.zip
             
-            # Install only production dependencies
-            npm install --production
+            # Install all dependencies (required for build)
+            npm install
             
             # Regen prisma client (needs .env)
             npx prisma generate
+            
+            # Build the application
+            npm run build
             
             # Push DB changes (needs .env)
             npx prisma db push
