@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { RITUALS, Ritual } from '@/lib/rituals';
+import { RITUALS, Ritual, getIcon, getDailyRitual } from '@/lib/rituals';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Flame, Moon, Sun, Wind, X, Sparkles, ArrowRight, Loader2, Clock } from 'lucide-react';
+import { Flame, X, Clock, Lock, CheckCircle, Diamond } from 'lucide-react';
+import { useUser } from '@/lib/UserContext';
+import DiamondConfirmModal from '@/components/economy/DiamondConfirmModal';
 import RitualPlayer from './RitualPlayer';
 
 interface RitualViewProps {
@@ -11,178 +13,224 @@ interface RitualViewProps {
 }
 
 export default function RitualView({ onClose }: RitualViewProps) {
+    const { user, spendDiamonds } = useUser();
     const [viewMode, setViewMode] = useState<'library' | 'player'>('library');
     const [activeRitualId, setActiveRitualId] = useState<string | null>(null);
+    const [activeRitualData, setActiveRitualData] = useState<Ritual | null>(null);
 
-    // Body Scroll Lock
+    // State for daily tracking
+    const [completedRituals, setCompletedRituals] = useState<string[]>([]);
+
+    // Payment Modal
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [pendingRitualId, setPendingRitualId] = useState<string | null>(null);
+
+    // Load completed rituals from local storage
     useEffect(() => {
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, []);
-    const [error, setError] = useState<string | null>(null);
+        if (!user?.id) return;
+        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const key = `manifestia_rituals_${user.id}_${today}`;
 
-    // Logic for active ritual
-    const activeRitual = activeRitualId ? RITUALS.find(r => r.id === activeRitualId) : null;
+        try {
+            const saved = localStorage.getItem(key);
+            if (saved) {
+                setCompletedRituals(JSON.parse(saved));
+            }
+        } catch (e) {
+            console.error("Failed to load ritual history", e);
+        }
+    }, [user?.id]);
+
+    const handleRitualClick = (ritual: Ritual) => {
+        const isCompleted = completedRituals.includes(ritual.id);
+        const dailyCount = completedRituals.length;
+
+        // If already completed logic (allow re-doing for free)
+        if (isCompleted) {
+            setActiveRitualId(ritual.id);
+            setActiveRitualData(ritual);
+            setViewMode('player');
+            return;
+        }
+
+        // Pricing Logic: 1st is free (cnt=0). 2nd+ is 5 diamonds.
+        if (dailyCount >= 1) {
+            setPendingRitualId(ritual.id);
+            setShowConfirmModal(true);
+        } else {
+            // Free
+            startRitual(ritual);
+        }
+    };
+
+    const confirmPurchase = async () => {
+        if (!pendingRitualId) return;
+
+        const success = await spendDiamonds(5, "Ritüel Açılışı");
+        if (success) {
+            const ritual = RITUALS.find(r => r.id === pendingRitualId);
+            if (ritual) {
+                startRitual(ritual);
+            }
+            setShowConfirmModal(false);
+        }
+    };
+
+    const startRitual = (ritual: Ritual) => {
+        setActiveRitualId(ritual.id);
+        setActiveRitualData(ritual);
+        setViewMode('player');
+    };
 
     const handleComplete = () => {
-        // Wait a bit on completion screen, then return to library
+        if (!activeRitualId || !user?.id) return;
+
+        const today = new Date().toISOString().split('T')[0];
+        const key = `manifestia_rituals_${user.id}_${today}`;
+
+        const newCompleted = [...completedRituals, activeRitualId];
+        // Dedupe
+        const uniqueCompleted = Array.from(new Set(newCompleted));
+
+        setCompletedRituals(uniqueCompleted);
+        localStorage.setItem(key, JSON.stringify(uniqueCompleted));
+
         setTimeout(() => {
             setActiveRitualId(null);
+            setActiveRitualData(null);
             setViewMode('library');
         }, 1500);
     };
 
-    // Filter Rituals
-
-    // Filter Rituals
-    const heroRitual = RITUALS.find(r => r.id === 'release-burning');
-    const otherRituals = RITUALS.filter(r => r.id !== 'release-burning');
-
     return (
-        <div className="fixed inset-0 z-50 flex flex-col bg-[#0F0F12] text-white font-sans overflow-hidden">
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#0b0b0e] text-white font-sans overflow-hidden">
 
-            {/* Header - Hidden in Player Mode */}
+            {/* Header */}
             {viewMode === 'library' && (
-                <div className="p-6 flex justify-between items-center z-10 border-b border-white/5 bg-[#0F0F12]/80 backdrop-blur-md">
-                    <h2 className="text-xl font-serif tracking-wider flex items-center gap-2">
-                        <Flame className="w-5 h-5 text-orange-400" />
-                        RİTÜEL MERKEZİ
-                    </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition">
-                        <X className="w-6 h-6 text-white/60" />
+                <div className="p-6 flex justify-between items-center z-10 bg-[#0b0b0e]/95 backdrop-blur-xl border-b border-white/5 sticky top-0">
+                    <div>
+                        <h2 className="text-2xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-purple-200 to-amber-100 animate-pulse-slow">
+                            Kutsal Alan
+                        </h2>
+                        <p className="text-xs text-white/50">Günlük Ruhsal Pratiklerin</p>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition group">
+                        <X className="w-6 h-6 text-white/40 group-hover:text-white transition-colors" />
                     </button>
                 </div>
             )}
 
             {/* --- PLAYER MODE --- */}
-            {viewMode === 'player' && activeRitual && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-50 bg-black"
-                >
-                    <RitualPlayer
-                        ritual={activeRitual}
-                        onComplete={handleComplete}
-                        onExit={() => {
-                            setActiveRitualId(null);
-                            setViewMode('library');
-                        }}
-                    />
-                </motion.div>
-            )}
-
-            {/* --- LIBRARY VIEW --- */}
-            <div className={`flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8 ${viewMode === 'player' ? 'hidden' : ''}`}>
-
-                {/* 1. HERO SECTION (Paper Burning) */}
-                {heroRitual && (
+            <AnimatePresence>
+                {viewMode === 'player' && activeRitualData && (
                     <motion.div
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
-                        onClick={() => {
-                            setActiveRitualId(heroRitual.id);
-                            setViewMode('player');
-                        }}
-                        className="relative w-full aspect-[4/3] md:aspect-[2/1] rounded-3xl overflow-hidden cursor-pointer group shadow-2xl border border-white/10"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.05 }}
+                        className="absolute inset-0 z-50 bg-black"
                     >
-                        {/* Dynamic Background */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${heroRitual.color} opacity-80 group-hover:opacity-100 transition-opacity duration-500`} />
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-500" />
-
-                        {/* Animated Particles/Effects Overlay */}
-                        <div className="absolute inset-0 opacity-30 mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
-
-                        <div className="absolute bottom-0 left-0 p-6 md:p-10 w-full bg-gradient-to-t from-black/90 via-black/50 to-transparent">
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 bg-white/20 backdrop-blur-md rounded-full">
-                                    <Flame className="w-6 h-6 text-white" />
-                                </div>
-                                <span className="text-xs font-bold uppercase tracking-widest text-orange-200 bg-orange-500/20 px-2 py-1 rounded">Popüler</span>
-                            </div>
-                            <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-2 shadow-black drop-shadow-lg">
-                                {heroRitual.title}
-                            </h2>
-                            <p className="text-white/80 text-sm md:text-base max-w-lg mb-4 line-clamp-2">
-                                {heroRitual.description}
-                            </p>
-
-                            <div className="flex items-center gap-4">
-                                <button className="bg-white text-black px-6 py-2 rounded-full font-medium text-sm hover:bg-orange-50 transition flex items-center gap-2">
-                                    <Flame className="w-4 h-4" />
-                                    Ritüele Başla
-                                </button>
-                                <span className="text-xs text-white/60 font-medium flex items-center gap-1">
-                                    <Clock className="w-3 h-3" /> {heroRitual.duration}
-                                </span>
-                            </div>
-                        </div>
+                        <RitualPlayer
+                            ritual={{
+                                ...activeRitualData,
+                                // Inject daily variation data here
+                                title: getDailyRitual(activeRitualData).title,
+                                description: getDailyRitual(activeRitualData).description,
+                                steps: getDailyRitual(activeRitualData).steps || []
+                            }}
+                            onComplete={handleComplete}
+                            onExit={() => {
+                                setActiveRitualId(null);
+                                setActiveRitualData(null);
+                                setViewMode('library');
+                            }}
+                        />
                     </motion.div>
                 )}
+            </AnimatePresence>
 
-                {/* 2. HORIZONTAL SCROLL (AI Tool + Other Rituals) */}
-                <div>
-                    <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4" />
-                        Diğer Ritüeller
-                    </h3>
+            {/* --- LIBRARY GRID --- */}
+            <div className={`flex-1 overflow-y-auto custom-scrollbar p-6 ${viewMode === 'player' ? 'hidden' : ''}`}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+                    {RITUALS.map(ritual => {
+                        const dailyContent = getDailyRitual(ritual);
+                        const isCompleted = completedRituals.includes(ritual.id);
+                        const isLocked = !isCompleted && completedRituals.length >= 1; // Locked behind paywall logic visually
 
-                    <div className="flex overflow-x-auto gap-4 pb-4 -mx-6 px-6 snap-x custom-scrollbar">
-
-                        {/* Other Ritual Cards */}
-                        {otherRituals.map(ritual => (
+                        return (
                             <motion.div
                                 key={ritual.id}
-                                whileHover={{ scale: 1.02 }}
+                                layoutId={ritual.id}
+                                whileHover={{ scale: 1.02, y: -5 }}
                                 whileTap={{ scale: 0.98 }}
-                                onClick={() => {
-                                    setActiveRitualId(ritual.id);
-                                    setViewMode('player');
-                                }}
+                                onClick={() => handleRitualClick(ritual)}
                                 className={`
-                                    min-w-[260px] w-[260px] relative overflow-hidden rounded-2xl p-5 cursor-pointer border border-white/5
-                                    group hover:border-white/10 transition-all duration-300 shrink-0 snap-start bg-[#121214] flex flex-col justify-between
+                                    relative group rounded-3xl overflow-hidden cursor-pointer
+                                    bg-[#15151a] border border-white/5 shadow-2xl
+                                    h-64 flex flex-col justify-between p-6
                                 `}
                             >
-                                {/* Background Gradient */}
-                                <div className={`absolute inset-0 bg-gradient-to-br ${ritual.color} opacity-5 group-hover:opacity-15 transition-opacity`} />
+                                {/* Animated Border / Premium Glow */}
+                                <div className={`absolute inset-0 bg-gradient-to-br ${ritual.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
+                                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
 
-                                <div>
-                                    <div className={`
-                                        w-10 h-10 rounded-full flex items-center justify-center mb-3
-                                        bg-gradient-to-br ${ritual.color} bg-opacity-20
-                                    `}>
-                                        {getIcon(ritual.iconName)}
+                                {/* "Done" State Change - Visual Transform */}
+                                {isCompleted && (
+                                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-10 flex items-center justify-center flex-col gap-2">
+                                        <CheckCircle className="w-12 h-12 text-green-400" />
+                                        <span className="text-green-200 font-serif text-lg">Tamamlandı</span>
                                     </div>
-                                    <h3 className="text-base font-bold text-white mb-1">{ritual.title}</h3>
-                                    <p className="text-xs text-white/50 line-clamp-2 mb-3">{ritual.description}</p>
+                                )}
+
+                                {/* Content */}
+                                <div className="relative z-10 flex justify-between items-start">
+                                    <div className={`
+                                        w-12 h-12 rounded-2xl flex items-center justify-center
+                                        bg-gradient-to-br ${ritual.color} shadow-[0_0_20px_rgba(0,0,0,0.5)]
+                                    `}>
+                                        {React.createElement(getIcon(ritual.iconName), { className: "w-6 h-6 text-white" })}
+                                    </div>
+
+                                    {/* Cost Badge */}
+                                    {isLocked && !isCompleted && (
+                                        <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full border border-purple-500/30 text-purple-300 text-xs font-bold">
+                                            <Diamond className="w-3 h-3 fill-current" />
+                                            5
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div className="flex items-center gap-3 text-[10px] font-medium text-white/30 mt-auto">
-                                    <span className="flex items-center gap-1">
-                                        <Clock className="w-3 h-3" />
-                                        {ritual.duration}
-                                    </span>
+                                <div className="relative z-10 mt-auto">
+                                    <h3 className="text-xl font-serif font-bold text-white mb-1 leading-tight group-hover:text-purple-200 transition-colors">
+                                        {dailyContent.title}
+                                    </h3>
+                                    <p className="text-sm text-white/50 line-clamp-2">
+                                        {dailyContent.description}
+                                    </p>
+
+                                    <div className="flex items-center gap-4 mt-4 text-xs font-medium text-white/30 uppercase tracking-widest">
+                                        <span className="flex items-center gap-1">
+                                            <Clock className="w-3 h-3" /> {ritual.duration}
+                                        </span>
+                                        <span className="w-1 h-1 bg-white/20 rounded-full" />
+                                        <span>{ritual.xpReward} XP</span>
+                                    </div>
                                 </div>
                             </motion.div>
-                        ))}
-                    </div>
+                        );
+                    })}
                 </div>
             </div>
+
+            {/* Confirm Purchase Modal */}
+            {showConfirmModal && (
+                <DiamondConfirmModal
+                    amount={5}
+                    title="Bu Ritüeli Aç"
+                    description="Günde 1 ücretsiz ritüelden sonraki her ritüel için 5 Elmas gereklidir."
+                    onConfirm={confirmPurchase}
+                    onCancel={() => setShowConfirmModal(false)}
+                />
+            )}
         </div>
     );
 }
-
-// Icon Helper
-const getIcon = (name: string) => {
-    switch (name) {
-        case 'Flame': return <Flame className="w-5 h-5 text-white" />;
-        case 'Moon': return <Moon className="w-5 h-5 text-white" />;
-        case 'Sun': return <Sun className="w-5 h-5 text-white" />;
-        case 'Wind': return <Wind className="w-5 h-5 text-white" />;
-        default: return <Wind className="w-5 h-5 text-white" />;
-    }
-};
