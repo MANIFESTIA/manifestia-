@@ -13,7 +13,6 @@ interface RitualViewProps {
 export default function RitualView({ onClose }: RitualViewProps) {
     const [viewMode, setViewMode] = useState<'library' | 'player'>('library');
     const [activeRitualId, setActiveRitualId] = useState<string | null>(null);
-    const [error, setError] = useState<string | null>(null);
 
     // Body Scroll Lock
     useEffect(() => {
@@ -22,50 +21,20 @@ export default function RitualView({ onClose }: RitualViewProps) {
             document.body.style.overflow = 'unset';
         };
     }, []);
-    const [aiRitual, setAiRitual] = useState<Ritual | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
-    // AI States
-    const [customEmotion, setCustomEmotion] = useState('');
-    const [isGenerating, setIsGenerating] = useState(false);
-
-    const activeRitual = aiRitual || (activeRitualId ? RITUALS.find(r => r.id === activeRitualId) : null);
+    // Logic for active ritual
+    const activeRitual = activeRitualId ? RITUALS.find(r => r.id === activeRitualId) : null;
 
     const handleComplete = () => {
         // Wait a bit on completion screen, then return to library
         setTimeout(() => {
             setActiveRitualId(null);
-            setAiRitual(null);
             setViewMode('library');
-            setCustomEmotion('');
         }, 1500);
     };
 
-    const handleGenerateRitual = async () => {
-        if (!customEmotion.trim()) return;
-
-        setIsGenerating(true);
-        try {
-            const res = await fetch('/api/ritual/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ emotion: customEmotion })
-            });
-
-            if (!res.ok) throw new Error('API Error');
-
-            const data = await res.json();
-
-            if (data.error) throw new Error(data.error);
-
-            setAiRitual(data);
-            setViewMode('player');
-        } catch (e) {
-            console.error("Failed to generate ritual:", e);
-            alert("Evren şu an yoğun, lütfen tekrar dene.");
-        } finally {
-            setIsGenerating(false);
-        }
-    };
+    // Filter Rituals
 
     // Filter Rituals
     const heroRitual = RITUALS.find(r => r.id === 'release-burning');
@@ -100,7 +69,6 @@ export default function RitualView({ onClose }: RitualViewProps) {
                         onComplete={handleComplete}
                         onExit={() => {
                             setActiveRitualId(null);
-                            setAiRitual(null);
                             setViewMode('library');
                         }}
                     />
@@ -159,49 +127,10 @@ export default function RitualView({ onClose }: RitualViewProps) {
                 <div>
                     <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <Sparkles className="w-4 h-4" />
-                        Diğer Ritüeller & AI
+                        Diğer Ritüeller
                     </h3>
 
                     <div className="flex overflow-x-auto gap-4 pb-4 -mx-6 px-6 snap-x custom-scrollbar">
-
-                        {/* AI Creation Card */}
-                        <div className="min-w-[280px] w-[280px] md:w-[320px] bg-gradient-to-br from-[#1a1528] to-[#2d1b4e] border border-purple-500/30 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden shrink-0 snap-start">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-[40px] -mr-10 -mt-10"></div>
-
-                            <div>
-                                <h3 className="text-lg font-serif text-purple-200 mb-2 flex items-center gap-2">
-                                    <Sparkles className="w-4 h-4 text-purple-400" />
-                                    AI Ritüel Yarat
-                                </h3>
-                                <p className="text-xs text-white/50 mb-4 line-clamp-2">
-                                    Nasıl hissediyorsun? Evren sana özel bir akış hazırlasın.
-                                </p>
-                            </div>
-
-                            <div className="space-y-2 relative z-10">
-                                <input
-                                    type="text"
-                                    value={customEmotion}
-                                    onChange={(e) => setCustomEmotion(e.target.value)}
-                                    placeholder="Örn: Yorgunum..."
-                                    disabled={isGenerating}
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50"
-                                    onKeyDown={(e) => e.key === 'Enter' && handleGenerateRitual()}
-                                />
-                                <button
-                                    onClick={handleGenerateRitual}
-                                    disabled={isGenerating || !customEmotion.trim()}
-                                    className="w-full bg-purple-500/20 hover:bg-purple-500/30 disabled:opacity-50 text-white py-2 rounded-xl transition flex items-center justify-center border border-purple-500/20 text-xs font-medium"
-                                >
-                                    {isGenerating ? (
-                                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                                    ) : (
-                                        <Sparkles className="w-4 h-4 mr-2" />
-                                    )}
-                                    {isGenerating ? 'Hazırlanıyor...' : 'Oluştur'}
-                                </button>
-                            </div>
-                        </div>
 
                         {/* Other Ritual Cards */}
                         {otherRituals.map(ritual => (
