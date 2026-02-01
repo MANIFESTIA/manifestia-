@@ -7,8 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCosmicGuidance } from '@/hooks/useCosmicGuidance';
 
 import ChatInterface from '@/components/chat/ChatInterface';
-import RitualPlayer from '@/components/ritual/RitualPlayer';
-import RitualBurning from '@/components/ritual/RitualBurning';
+import RitualView from '@/components/ritual/RitualView';
 import TarotView from '@/components/tarot/TarotView';
 
 import JournalView from '@/components/journal/JournalView';
@@ -16,8 +15,6 @@ import ProfileSettings from '@/components/dashboard/ProfileSettings';
 import EnergyRing from '@/components/dashboard/EnergyRing';
 import CosmicAlertWidget from '@/components/dashboard/CosmicAlertWidget';
 import { useCosmicWatcher } from '@/hooks/useCosmicWatcher';
-import RitualCard from '@/components/ritual/RitualCard';
-import { RITUALS } from '@/lib/rituals';
 import IntroSplash from '@/components/layout/IntroSplash';
 
 import DailyRewardPopup from '@/components/gamification/DailyRewardPopup';
@@ -44,8 +41,7 @@ export default function SanctuaryView() {
         return 'sanctuary';
     });
 
-    const [activeRitual, setActiveRitual] = useState<string | null>(null);
-    const [showRitualBurning, setShowRitualBurning] = useState(false);
+    const [showRitualView, setShowRitualView] = useState(false);
     const [showTarot, setShowTarot] = useState(false);
     const [showJournal, setShowJournal] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
@@ -144,7 +140,7 @@ export default function SanctuaryView() {
                                 <span className="text-xs text-white/70">Tarot</span>
                             </button>
                             <button
-                                onClick={() => setShowRitualBurning(true)}
+                                onClick={() => setShowRitualView(true)}
                                 className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition w-24"
                             >
                                 <Flame className="w-6 h-6 text-orange-300" />
@@ -177,23 +173,6 @@ export default function SanctuaryView() {
 
                         {/* Astro-Commerce Recommendation */}
                         <DailyCosmicRemedy />
-
-                        {/* Store Cards (Rituals) */}
-                        <section className="space-y-4">
-                            <div className="flex justify-between items-end px-2">
-                                <h2 className="text-lg font-medium text-white/80">Ritüel Kartları</h2>
-                                <span className="text-xs text-manifest-secondary cursor-pointer hover:text-white transition">Tümünü Gör</span>
-                            </div>
-                            <div className="flex gap-4 overflow-x-auto p-6 -mx-6 md:mx-0 hide-scrollbar snap-x">
-                                {RITUALS.map(ritual => (
-                                    <RitualCard
-                                        key={ritual.id}
-                                        ritual={ritual}
-                                        onClick={() => setActiveRitual(ritual.id)}
-                                    />
-                                ))}
-                            </div>
-                        </section>
                     </motion.div>
                 )}
 
@@ -208,8 +187,7 @@ export default function SanctuaryView() {
             </main>
 
             {/* Modals */}
-            {activeRitual && <RitualPlayer ritualId={activeRitual} onClose={() => setActiveRitual(null)} />}
-            {showRitualBurning && <RitualBurning onClose={() => setShowRitualBurning(false)} />}
+            {showRitualView && <RitualView onClose={() => setShowRitualView(false)} />}
             {showTarot && <TarotView onClose={() => setShowTarot(false)} />}
             {showJournal && <JournalView onClose={() => setShowJournal(false)} />}
 
