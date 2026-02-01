@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ArrowDownLeft, ArrowUpRight, Clock, Diamond } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
@@ -9,6 +9,13 @@ interface TransactionHistoryModalProps {
 }
 
 export default function TransactionHistoryModal({ onClose }: TransactionHistoryModalProps) {
+    // Body Scroll Lock
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
     const { user } = useUser();
     const transactions = user?.transactions || [];
 

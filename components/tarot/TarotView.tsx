@@ -66,6 +66,14 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
     const [showPaywall, setShowPaywall] = useState(false);
     const { updateUser } = useUser();
 
+    // Body Scroll Lock
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
+
     // Daily Free Check
     const today = new Date().toLocaleDateString('tr-TR', { timeZone: 'Europe/Istanbul' });
     const isFree = user?.lastTarotDate !== today;

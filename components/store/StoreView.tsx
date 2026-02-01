@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useUser } from '@/lib/UserContext';
 import { ShoppingBag, Diamond, ArrowLeft, ExternalLink, Sparkles, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -18,6 +18,14 @@ interface Product {
 
 export default function StoreView({ onBack, onShowHistory }: { onBack?: () => void, onShowHistory?: () => void }) {
     const { user, purchaseProduct } = useUser(); // Using new purchaseProduct method
+
+    // Body Scroll Lock
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
     const userDiamonds = user?.diamonds || 0;
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);

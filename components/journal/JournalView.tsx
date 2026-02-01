@@ -13,6 +13,14 @@ export default function JournalView({ onClose }: { onClose: () => void }) {
     const [isEditing, setIsEditing] = useState(false);
     const [textEntries, setTextEntries] = useState<any[]>([]);
 
+    // Body Scroll Lock
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
+
     // Fetch text entries
     const fetchJournalEntries = async () => {
         if (!user?.id) return;

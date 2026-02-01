@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Diamond, Clock, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import DiamondShop from '@/components/economy/DiamondShop';
@@ -10,6 +10,13 @@ interface DiamondShopModalProps {
 }
 
 export default function DiamondShopModal({ onClose }: DiamondShopModalProps) {
+    // Body Scroll Lock
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
     const [activeTab, setActiveTab] = React.useState<'buy' | 'history'>('buy');
     const { user } = useUser();
     const transactions = user?.transactions || [];

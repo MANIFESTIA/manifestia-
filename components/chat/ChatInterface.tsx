@@ -64,6 +64,14 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
     const { speak, stop: stopVoice, isPlaying: isVoicePlaying } = useVoice();
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    // Body Scroll Lock
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
+
     // Voice Mode State
     const [isVoiceMode, setIsVoiceMode] = useState(false);
     const [voiceStatus, setVoiceStatus] = useState<'IDLE' | 'LISTENING' | 'PROCESSING' | 'SPEAKING'>('IDLE');

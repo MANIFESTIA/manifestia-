@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RITUALS, Ritual } from '@/lib/rituals';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Moon, Sun, Wind, X, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
@@ -13,6 +13,15 @@ interface RitualViewProps {
 export default function RitualView({ onClose }: RitualViewProps) {
     const [viewMode, setViewMode] = useState<'library' | 'player'>('library');
     const [activeRitualId, setActiveRitualId] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    // Body Scroll Lock
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
     const [aiRitual, setAiRitual] = useState<Ritual | null>(null);
 
     // AI States

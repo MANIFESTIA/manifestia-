@@ -62,6 +62,14 @@ const getRisingSign = (dateString?: string, timeString?: string): string => {
 
 export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSettingsProps) {
     const { user, logout, updateUser } = useUser();
+
+    // Body Scroll Lock
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
 
