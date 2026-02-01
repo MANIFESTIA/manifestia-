@@ -42,22 +42,49 @@ export default function VisionBoardView({ onClose }: { onClose: () => void }) {
         }
     };
 
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 500000) { // 500KB limit
-            alert("Resim boyutu çok büyük! Lütfen 500KB altı bir resim seç.");
+        // 5MB limit for S3 (generous)
+        if (file.size > 5 * 1024 * 1024) {
+            alert("Resim boyutu çok büyük! Lütfen 5MB altı bir resim seç.");
             return;
         }
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            if (typeof reader.result === 'string') {
-                addItem(reader.result);
-            }
-        };
-        reader.readAsDataURL(file);
+        setLoading(true);
+
+        try {
+            // 1. Get Presigned URL
+            const presignRes = await fetch('/api/upload/presigned', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: file.name, fileType: file.type })
+            });
+
+            if (!presignRes.ok) throw new Error('Yükleme linki alınamadı');
+            const { uploadUrl, publicUrl } = await presignRes.json();
+
+            // 2. Upload to S3
+            const uploadRes = await fetch(uploadUrl, {
+                method: 'PUT',
+                body: file,
+                headers: { "Content-Type": file.type }
+            });
+
+            if (!uploadRes.ok) throw new Error('S3 yüklemesi başarısız');
+
+            // 3. Add to Board
+            await addItem(publicUrl);
+
+        } catch (error) {
+            console.error(error);
+            alert("Resim yüklenirken bir hata oluştu. Lütfen AWS ayarlarını kontrol edin.");
+        } finally {
+            setLoading(false);
+            // Reset input
+            e.target.value = '';
+        }
     };
 
     const addItem = async (url: string) => {
