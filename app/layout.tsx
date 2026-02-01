@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   title: "TheManifest | Kozmik Yolculuk",
   description: "Yapay zeka destekli spiritüel rehberiniz.",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "TheManifest",
+  },
 };
 
 export const viewport: Viewport = {
