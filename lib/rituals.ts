@@ -1,5 +1,11 @@
 import { Flame, Moon, Sun, Wind } from 'lucide-react';
 
+export interface RitualStep {
+    text: string;
+    duration: number; // seconds
+    animation: 'breathe' | 'focus' | 'stars' | 'fire';
+}
+
 export interface Ritual {
     id: string;
     title: string;
@@ -10,6 +16,7 @@ export interface Ritual {
     duration: string; // e.g. "5 Dk"
     iconName: 'Flame' | 'Moon' | 'Sun' | 'Wind';
     color: string;
+    steps?: RitualStep[];
 }
 
 export const RITUALS: Ritual[] = [
@@ -22,7 +29,8 @@ export const RITUALS: Ritual[] = [
         xpReward: 30,
         duration: '3 Dk',
         iconName: 'Flame',
-        color: 'from-orange-500 to-red-600'
+        color: 'from-orange-500 to-red-600',
+        steps: [] // Handled by special component
     },
     {
         id: 'morning-intention',
@@ -33,7 +41,14 @@ export const RITUALS: Ritual[] = [
         xpReward: 20,
         duration: '2 Dk',
         iconName: 'Sun',
-        color: 'from-yellow-400 to-orange-500'
+        color: 'from-yellow-400 to-orange-500',
+        steps: [
+            { text: "Rahat bir pozisyon al ve gözlerini kapat.", duration: 5, animation: 'focus' },
+            { text: "Derin bir nefes al... Ve yavaşça ver.", duration: 10, animation: 'breathe' },
+            { text: "Bugün nasıl hissetmek istiyorsun? Tek bir kelime seç.", duration: 15, animation: 'stars' },
+            { text: "Bu kelimenin enerjisinin tüm bedenine yayıldığını hayal et.", duration: 20, animation: 'focus' },
+            { text: "Hazır hissettiğinde, gülümseyerek gözlerini aç.", duration: 5, animation: 'breathe' }
+        ]
     },
     {
         id: 'full-moon-ceremony',
@@ -42,9 +57,16 @@ export const RITUALS: Ritual[] = [
         longDescription: 'Dolunay zamanı, tamamlanma ve arınma zamanıdır. Işığın en güçlü olduğu bu döngüde, hayatından çıkarmak istediklerine odaklan.',
         type: 'meditation',
         xpReward: 50,
-        duration: '10 Dk',
+        duration: '5 Dk',
         iconName: 'Moon',
-        color: 'from-indigo-400 to-purple-600'
+        color: 'from-indigo-400 to-purple-600',
+        steps: [
+            { text: "Ay ışığının altında olduğunu hayal et.", duration: 10, animation: 'stars' },
+            { text: "Gümüş rengi bır ışığın başından aşağı süzüldüğünü hisset.", duration: 20, animation: 'focus' },
+            { text: "Seni tutan, ağırlık yapan her şeyi nefesinle bırak.", duration: 15, animation: 'breathe' },
+            { text: "Işık seni tamamen temizledi ve arındırdı.", duration: 15, animation: 'stars' },
+            { text: "Huzur içindesin. Tamamlandın.", duration: 10, animation: 'focus' }
+        ]
     },
 ];
 

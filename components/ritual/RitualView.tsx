@@ -87,41 +87,17 @@ export default function RitualView({ onClose }: { onClose: () => void }) {
                             {/* Render Specific Ritual Component based on Type */}
                             {activeRitual?.type === 'burning' ? (
                                 <RitualBurning onClose={handleComplete} />
-                            ) : activeRitual?.type === 'manifestation' ? (
-                                // Basic prompt for intention setting
-                                <div className="h-full flex flex-col items-center justify-center p-10 text-center relative">
-                                    <div className="absolute inset-0 bg-gradient-to-b from-yellow-900/20 to-black z-0" />
-                                    <div className="relative z-10 max-w-lg bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-white/10">
-                                        <h3 className="text-3xl font-serif mb-4 text-yellow-200">{activeRitual.title}</h3>
-                                        <p className="text-white/80 text-lg mb-8 leading-relaxed">
-                                            "{activeRitual.description}"
-                                        </p>
-                                        <p className="text-white/60 mb-8 italic text-sm">
-                                            Derin bir nefes al. Gözlerini kapat ve bugünkü niyetine odaklan. Hazır hissettiğinde "Niyetimi Mühürle" de.
-                                        </p>
-                                        <button
-                                            onClick={handleComplete}
-                                            className="px-8 py-4 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-xl hover:scale-105 transition font-bold text-white shadow-[0_0_30px_rgba(234,179,8,0.4)]"
-                                        >
-                                            Niyetimi Mühürle
-                                        </button>
-                                    </div>
-                                </div>
                             ) : (
-                                <div className="h-full flex items-center justify-center p-10 text-center">
-                                    <p className="text-white/60">Bu ritüel tipi henüz aktif değil.</p>
-                                    <button
-                                        onClick={() => setActiveRitualId(null)}
-                                        className="mt-6 px-6 py-2 bg-white/10 rounded-lg hover:bg-white/20"
-                                    >
-                                        Geri Dön
-                                    </button>
-                                </div>
+                                <RitualPlayer
+                                    ritual={activeRitual!}
+                                    onComplete={handleComplete}
+                                    onExit={() => setActiveRitualId(null)}
+                                />
                             )}
                         </motion.div>
                     )}
                 </AnimatePresence>
             </div>
-        </div>
+        </div >
     );
 }
