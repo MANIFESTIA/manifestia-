@@ -175,7 +175,10 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-140px)] relative font-sans">
+        <div
+            className="flex flex-col h-[calc(100vh-140px)] relative font-sans"
+            onContextMenu={(e) => e.preventDefault()}
+        >
             <VoiceSettings
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}

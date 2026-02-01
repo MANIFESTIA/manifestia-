@@ -131,11 +131,13 @@ export default function TarotCard({
 
                 {/* Image varsa onu göster, yoksa standart arka plan ve ikon */}
                 {imageSrc ? (
-                    <div className="absolute inset-0 z-20">
+                    <div className="absolute inset-0 z-20 pointer-events-none">
                         <img
                             src={imageSrc}
                             alt={name}
                             className="w-full h-full object-cover scale-105"
+                            draggable="false"
+                            onContextMenu={(e) => e.preventDefault()}
                         />
                     </div>
                 ) : (
@@ -203,11 +205,13 @@ export default function TarotCard({
                     zIndex: isRevealed ? 0 : 2
                 }}
             >
-                <div className="w-full h-full bg-[#05030a] rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
+                <div className="w-full h-full bg-[#05030a] rounded-xl overflow-hidden shadow-inner flex items-center justify-center pointer-events-none">
                     <img
                         src="/tarot-back-v2.png"
                         alt="Tarot Back"
                         className="w-full h-full object-fill"
+                        draggable="false"
+                        onContextMenu={(e) => e.preventDefault()}
                     />
                 </div>
             </div>

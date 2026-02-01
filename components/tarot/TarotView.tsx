@@ -415,7 +415,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                                 {shuffledDeck.slice(0, 5).map((card, i) => (
                                     <motion.div
                                         key={i} // Use simple index force re-render
-                                        className="absolute inset-0 border border-white/10 rounded-xl bg-gradient-to-br from-[#1a103c] to-[#0f0a1e] shadow-2xl origin-center"
+                                        className="absolute inset-0 border border-white/10 rounded-xl bg-gradient-to-br from-[#1a103c] to-[#0f0a1e] shadow-2xl origin-center pointer-events-none"
                                         animate={isHolding ? {
                                             x: Math.random() * 40 - 20,
                                             y: Math.random() * 40 - 20,
