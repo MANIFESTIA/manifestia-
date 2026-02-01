@@ -112,11 +112,12 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
     const startShuffling = () => {
         setIsHolding(true);
         // Start rapid shuffling visual and energy charge
+        if (shuffleIntervalRef.current) clearInterval(shuffleIntervalRef.current);
+
         shuffleIntervalRef.current = setInterval(() => {
-            // Shuffle
+            // Shuffle visual
             setShuffledDeck(prev => {
                 const newDeck = [...prev];
-                // Swap random elements
                 const i = Math.floor(Math.random() * newDeck.length);
                 const j = Math.floor(Math.random() * newDeck.length);
                 [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
@@ -125,38 +126,63 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
 
             // Charge Energy
             setEnergyLevel(prev => {
-                if (prev >= 100) return 100;
-                return prev + 2; // Charge speed
+                const boost = 1.3; // ~3.8 seconds to fill (100 / 1.3 * 50ms)
+                const newVal = prev + boost;
+
+                // Auto-complete when full
+                if (newVal >= 100) {
+                    if (shuffleIntervalRef.current) clearInterval(shuffleIntervalRef.current);
+
+                    // Trigger completion logic immediately
+                    setTimeout(() => {
+                        // Apply Reversed Status Randomly (e.g. 30% chance)
+                        const deckWithReversed = shuffledDeck.map(c => ({
+                            ...c,
+                            isReversed: Math.random() < 0.3
+                        }));
+                        setShuffledDeck(deckWithReversed); // Note: closures might capture old deck, but state update is functional above.
+                        // Actually, better to use the functional update or just proceed, deck shuffling visual is fine.
+                        // Re-shuffling one last time for the logical deck:
+                        setShuffledDeck(currentDeck => {
+                            return currentDeck.map(c => ({ ...c, isReversed: Math.random() < 0.3 }));
+                        });
+
+                        setStep('spread');
+                        setIsHolding(false);
+                    }, 200); // Slight delay for visual satisfaction
+
+                    return 100;
+                }
+                return newVal;
             });
         }, 50);
     };
 
     const stopShuffling = () => {
+        // If we haven't reached 100 yet and user releases, we decay
+        // The auto-transition handles the 100 case effectively, 
+        // but we need to check if we are NOT at 100 to start decay.
+        // We can't easily check state 'energyLevel' here accurately due to closure staleness if we don't use ref, 
+        // but we can check the setEnergyLevel callback or just always start decay. 
+        // If it's 100, the step changes anyway, so decay won't be visible/matter or component unmounts.
+
         setIsHolding(false);
         if (shuffleIntervalRef.current) clearInterval(shuffleIntervalRef.current);
 
-        // If fully charged, proceed
-        if (energyLevel >= 100) {
-            // Apply Reversed Status Randomly (e.g. 30% chance) before setting spread
-            const deckWithReversed = shuffledDeck.map(c => ({
-                ...c,
-                isReversed: Math.random() < 0.3
-            }));
-            setShuffledDeck(deckWithReversed);
-            setStep('spread');
-        } else {
-            // Reset if not fully charged or maybe just pause? Let's decrease slowly or keep it?
-            // Let's decrease for game feel
-            const decay = setInterval(() => {
-                setEnergyLevel(prev => {
-                    if (prev <= 0) {
-                        clearInterval(decay);
-                        return 0;
-                    }
-                    return prev - 5;
-                });
-            }, 50);
-        }
+        // Decay if released early
+        const decay = setInterval(() => {
+            setEnergyLevel(prev => {
+                if (prev >= 100) {
+                    clearInterval(decay);
+                    return 100;
+                }
+                if (prev <= 0) {
+                    clearInterval(decay);
+                    return 0;
+                }
+                return prev - 3; // Fast decay
+            });
+        }, 20);
     };
 
     // Auto flow from Intro to Shuffling prompt
