@@ -473,7 +473,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                         >
                             <div className="absolute top-10 md:top-20 w-full text-center z-20 pointer-events-none px-4">
                                 <p className="text-xl md:text-2xl font-light text-white/90 tracking-widest drop-shadow-md">
-                                    {spreadType === 'single' ? 'TEK KART SORGUSU' : `3 KART: GEÇMİŞ, ŞİMDİ, GELECEK (${selectedCards.length}/3)`}
+                                    KOZMİK REHBERLİK
                                 </p>
                                 <p className="text-[10px] md:text-xs text-purple-300/60 uppercase tracking-[0.2em] mt-2">
                                     {isFree ? 'Kaderin seninle konuşmak istiyor.' : 'Yıldızların rehberliği için bedel ödenmeli.'}
@@ -643,7 +643,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                                                 className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-medium tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group text-sm md:text-base"
                                             >
                                                 <RefreshCw className="w-3 h-3 md:w-4 md:h-4 group-hover:rotate-180 transition-transform duration-500" />
-                                                YENİDEN BAĞLAN
+                                                YENİDEN KART SEÇ
                                             </button>
                                         </div>
                                     </div>
