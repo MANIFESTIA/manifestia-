@@ -171,62 +171,62 @@ export default function SanctuaryView() {
                                 </motion.div>
                             )}
                         </div>
-
+                    </motion.div>
                 )}
 
-                        {view === 'guide' && <ChatInterface onBack={() => setView('sanctuary')} />}
+                {view === 'guide' && <ChatInterface onBack={() => setView('sanctuary')} />}
 
-                        {view === 'market' && (
-                            <StoreView
-                                onBack={() => setView('sanctuary')}
-                                onShowHistory={() => setShowHistory(true)}
-                            />
-                        )}
-                    </main>
-
-            {/* Modals */}
-                {showRitualView && <RitualView onClose={() => setShowRitualView(false)} />}
-
-                {showTarot && <TarotView onClose={() => setShowTarot(false)} />}
-                {showJournal && <JournalView onClose={() => setShowJournal(false)} />}
-
-                {/* Profile Settings Modal */}
-                {showProfile && (
-                    <ProfileSettings
-                        onClose={() => setShowProfile(false)}
-                        onOpenJournal={() => {
-                            setShowProfile(false);
-                            setShowJournal(true);
-                        }}
+                {view === 'market' && (
+                    <StoreView
+                        onBack={() => setView('sanctuary')}
+                        onShowHistory={() => setShowHistory(true)}
                     />
                 )}
-                {showHistory && <TransactionHistoryModal onClose={() => setShowHistory(false)} />}
-                {showDiamondShop && <DiamondShopModal onClose={() => setShowDiamondShop(false)} />}
+            </main>
 
-                {/* Navigation Bar */}
-                <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-panel rounded-full p-2 flex justify-between items-center z-50 shadow-2xl backdrop-blur-xl">
-                    <button
-                        onClick={() => setView('sanctuary')}
-                        className={`p-3 rounded-full transition-all duration-300 ${view === 'sanctuary' ? 'bg-manifest-primary/20 text-white shadow-[0_0_15px_rgba(168,85,247,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
-                    >
-                        <Wind className="w-6 h-6" />
-                    </button>
-                    <button
-                        onClick={() => setView('guide')}
-                        className={`p-3 rounded-full transition-all duration-300 ${view === 'guide' ? 'bg-manifest-secondary/20 text-white shadow-[0_0_15px_rgba(236,72,153,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
-                    >
-                        <MessageCircle className="w-6 h-6" />
-                    </button>
-                    <button
-                        onClick={() => setView('market')} // Market View Action
-                        className={`p-3 rounded-full transition-all duration-300 ${view === 'market' ? 'bg-cyan-500/20 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
-                    >
-                        <ShoppingBag className="w-6 h-6" />
-                    </button>
+            {/* Modals */}
+            {showRitualView && <RitualView onClose={() => setShowRitualView(false)} />}
 
-                </nav>
-                {/* Intro Overlay - Concurennt Loading */}
-                {showIntro && <IntroSplash onComplete={() => setShowIntro(false)} autoEnter={true} />}
+            {showTarot && <TarotView onClose={() => setShowTarot(false)} />}
+            {showJournal && <JournalView onClose={() => setShowJournal(false)} />}
+
+            {/* Profile Settings Modal */}
+            {showProfile && (
+                <ProfileSettings
+                    onClose={() => setShowProfile(false)}
+                    onOpenJournal={() => {
+                        setShowProfile(false);
+                        setShowJournal(true);
+                    }}
+                />
+            )}
+            {showHistory && <TransactionHistoryModal onClose={() => setShowHistory(false)} />}
+            {showDiamondShop && <DiamondShopModal onClose={() => setShowDiamondShop(false)} />}
+
+            {/* Navigation Bar */}
+            <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-panel rounded-full p-2 flex justify-between items-center z-50 shadow-2xl backdrop-blur-xl">
+                <button
+                    onClick={() => setView('sanctuary')}
+                    className={`p-3 rounded-full transition-all duration-300 ${view === 'sanctuary' ? 'bg-manifest-primary/20 text-white shadow-[0_0_15px_rgba(168,85,247,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
+                >
+                    <Wind className="w-6 h-6" />
+                </button>
+                <button
+                    onClick={() => setView('guide')}
+                    className={`p-3 rounded-full transition-all duration-300 ${view === 'guide' ? 'bg-manifest-secondary/20 text-white shadow-[0_0_15px_rgba(236,72,153,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
+                >
+                    <MessageCircle className="w-6 h-6" />
+                </button>
+                <button
+                    onClick={() => setView('market')} // Market View Action
+                    className={`p-3 rounded-full transition-all duration-300 ${view === 'market' ? 'bg-cyan-500/20 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)] scale-110' : 'text-manifest-muted hover:text-white'}`}
+                >
+                    <ShoppingBag className="w-6 h-6" />
+                </button>
+
+            </nav>
+            {/* Intro Overlay - Concurennt Loading */}
+            {showIntro && <IntroSplash onComplete={() => setShowIntro(false)} autoEnter={true} />}
         </div>
     );
 }
