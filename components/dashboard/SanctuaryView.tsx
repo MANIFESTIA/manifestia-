@@ -9,8 +9,10 @@ import { useCosmicGuidance } from '@/hooks/useCosmicGuidance';
 import ChatInterface from '@/components/chat/ChatInterface';
 import RitualView from '@/components/ritual/RitualView';
 import TarotView from '@/components/tarot/TarotView';
+import VisionBoardView from '@/components/vision-board/VisionBoardView';
 
 import JournalView from '@/components/journal/JournalView';
+import { Image as ImageIcon } from 'lucide-react';
 import ProfileSettings from '@/components/dashboard/ProfileSettings';
 import EnergyRing from '@/components/dashboard/EnergyRing';
 import CosmicAlertWidget from '@/components/dashboard/CosmicAlertWidget';
@@ -42,6 +44,7 @@ export default function SanctuaryView() {
     });
 
     const [showRitualView, setShowRitualView] = useState(false);
+    const [showVisionBoard, setShowVisionBoard] = useState(false);
     const [showTarot, setShowTarot] = useState(false);
     const [showJournal, setShowJournal] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
@@ -139,12 +142,20 @@ export default function SanctuaryView() {
                                 <Sparkles className="w-6 h-6 text-indigo-300" />
                                 <span className="text-xs text-white/70">Tarot</span>
                             </button>
+
                             <button
                                 onClick={() => setShowRitualView(true)}
                                 className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition w-24"
                             >
                                 <Flame className="w-6 h-6 text-orange-300" />
                                 <span className="text-xs text-white/70">Ritüel</span>
+                            </button>
+                            <button
+                                onClick={() => setShowVisionBoard(true)}
+                                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition w-24"
+                            >
+                                <ImageIcon className="w-6 h-6 text-pink-300" />
+                                <span className="text-xs text-white/70">Vizyon</span>
                             </button>
                         </div>
 
@@ -188,6 +199,7 @@ export default function SanctuaryView() {
 
             {/* Modals */}
             {showRitualView && <RitualView onClose={() => setShowRitualView(false)} />}
+            {showVisionBoard && <VisionBoardView onClose={() => setShowVisionBoard(false)} />}
             {showTarot && <TarotView onClose={() => setShowTarot(false)} />}
             {showJournal && <JournalView onClose={() => setShowJournal(false)} />}
 
