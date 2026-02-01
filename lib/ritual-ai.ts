@@ -17,7 +17,7 @@ export async function generateRitualAI(emotion: string, duration: number = 2): P
         "longDescription": "Detailed explanation of why this ritual helps (Turkish)",
         "iconName": "One of: 'Flame', 'Sun', 'Moon', 'Wind'",
         "color": "Tailwind gradient string (e.g., 'from-blue-500 to-purple-600')",
-        "audioTrack": "One of: '/sounds/fire-crackling.mp3', '/sounds/morning-birds.mp3', '/sounds/night-crickets.mp3'",
+        "audioTrack": "One of: '/sounds/zen.ogg', '/sounds/cosmos.ogg', '/sounds/amazon.ogg', '/sounds/528hz-ambient.mp3'",
         "steps": [
             {
                 "text": "Instruction for this step (Turkish)",
