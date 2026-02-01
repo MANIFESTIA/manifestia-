@@ -17,9 +17,10 @@ export default function RitualView({ onClose }: { onClose: () => void }) {
     const activeRitual = activeRitualId ? RITUALS.find(r => r.id === activeRitualId) : null;
 
     const handleComplete = () => {
-        if (activeRitual) {
-            addXp(activeRitual.xpReward);
-        }
+        // XP system temporarily disabled
+        // if (activeRitual) {
+        //     addXp(activeRitual.xpReward);
+        // }
         setTimeout(() => {
             setActiveRitualId(null);
         }, 1500);

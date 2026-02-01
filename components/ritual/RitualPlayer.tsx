@@ -116,7 +116,7 @@ export default function RitualPlayer({ ritual, onComplete, onExit }: RitualPlaye
                     <Check className="w-12 h-12 text-white" />
                 </motion.div>
                 <h2 className="text-3xl font-serif text-white mb-2">Ritüel Tamamlandı</h2>
-                <p className="text-white/60 mb-8">+ {ritual.xpReward} XP ve Ruhsal Dinginlik Kazandın</p>
+                <p className="text-white/60 mb-8">Ruhsal Dinginlik Kazandın</p>
                 <button
                     onClick={onComplete}
                     className="px-8 py-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition border border-white/10"
