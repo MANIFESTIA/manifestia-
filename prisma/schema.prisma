@@ -36,25 +36,11 @@ model User {
   tarotReadings    TarotReading[]
   journalEntries   JournalEntry[]
   chatSessions     ChatSession[]
-  visionBoardItems VisionBoardItem[]
   
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
 
-model VisionBoardItem {
-  id        String   @id @default(uuid())
-  userId    String
-  imageUrl  String
-  x         Float    @default(0)
-  y         Float    @default(0)
-  scale     Float    @default(1)
-  rotation  Float    @default(0)
-  zIndex    Int      @default(1)
-  createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
 
 model Product {
   id            String   @id @default(uuid())
