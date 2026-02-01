@@ -72,7 +72,7 @@ export default function RitualView({ onClose }: RitualViewProps) {
     const otherRituals = RITUALS.filter(r => r.id !== 'release-burning');
 
     return (
-        <div className="h-full flex flex-col bg-[#0F0F12] text-white font-sans overflow-hidden relative">
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#0F0F12] text-white font-sans overflow-hidden">
 
             {/* Header - Hidden in Player Mode */}
             {viewMode === 'library' && (
