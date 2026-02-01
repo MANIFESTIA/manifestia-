@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "rm -rf .next && npm cache clean --force",
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
