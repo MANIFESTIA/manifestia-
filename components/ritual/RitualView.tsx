@@ -211,8 +211,6 @@ export default function RitualView({ onClose }: RitualViewProps) {
                                         <span className="flex items-center gap-1">
                                             <Clock className="w-3 h-3" /> {ritual.duration}
                                         </span>
-                                        <span className="w-1 h-1 bg-white/20 rounded-full" />
-                                        <span>{ritual.xpReward} XP</span>
                                     </div>
                                 </div>
                             </motion.div>

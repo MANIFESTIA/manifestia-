@@ -84,7 +84,7 @@ export const RITUALS: Ritual[] = [
         audioTrack: '/sounds/cosmos.ogg',
         variations: [
             {
-                title: 'Mavi Işık Kalkanı',
+                title: 'Korunma Ritüeli',
                 description: 'Etrafında geçilmez bir mavi ışık küresi oluştur.',
                 steps: [
                     { text: "Gözlerini kapat ve derin bir nefes al.", duration: 10, animation: 'focus' },
