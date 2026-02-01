@@ -12,7 +12,7 @@ import TarotView from '@/components/tarot/TarotView';
 import BirthChartView from '@/components/astrology/BirthChartView'; // [NEW]
 
 import JournalView from '@/components/journal/JournalView';
-import { Image as ImageIcon, Map } from 'lucide-react'; // [NEW] Map icon
+import { Image as ImageIcon, Map as MapIcon } from 'lucide-react'; // [NEW] Map icon
 import ProfileSettings from '@/components/dashboard/ProfileSettings';
 // ...
 const [showRitualView, setShowRitualView] = useState(false);
@@ -158,7 +158,7 @@ export default function SanctuaryView() {
                                 onClick={() => setShowBirthChart(true)}
                                 className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition w-24"
                             >
-                                <Map className="w-6 h-6 text-indigo-300" />
+                                <MapIcon className="w-6 h-6 text-indigo-300" />
                                 <span className="text-xs text-white/70 text-center leading-tight">Doğum Haritası</span>
                             </button>
                         </div>
