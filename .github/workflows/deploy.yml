@@ -44,13 +44,26 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/manifestia-
+            # Ensure .env exists for Prisma
+            cp .env.local .env
+            
             # Unzip overrides existing files
             unzip -o build.zip
+            
             # Install only production dependencies
             npm install --production
-            # Regen prisma client
+            
+            # Regen prisma client (needs .env)
             npx prisma generate
-            # Restart App
-            pm2 restart manifestia
+            
+            # Push DB changes (needs .env)
+            npx prisma db push
+            
+            # Restart App (or start if missing)
+            pm2 restart manifestia || pm2 start npm --name "manifestia" -- start
+            
+            # Save PM2 list
+            pm2 save
+            
             # Cleanup
             rm build.zip
