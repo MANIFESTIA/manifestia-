@@ -12,7 +12,7 @@ export async function POST(req: Request) {
         }
 
         // Validate allowed fields to update
-        const allowedFields = ['name', 'birthDate', 'birthTime', 'birthCity', 'email'];
+        const allowedFields = ['name', 'birthDate', 'birthTime', 'birthCity', 'email', 'sign'];
         const dataToUpdate: any = {};
 
         for (const key of Object.keys(updates)) {
@@ -38,9 +38,10 @@ export async function POST(req: Request) {
                 id: updatedUser.id,
                 email: updatedUser.email,
                 name: updatedUser.name,
-                birthDate: updatedUser.birthDate,
-                birthTime: updatedUser.birthTime,
-                birthCity: updatedUser.birthCity,
+                birthDate: (updatedUser as any).birthDate,
+                birthTime: (updatedUser as any).birthTime,
+                birthCity: (updatedUser as any).birthCity,
+                sign: (updatedUser as any).sign,
                 avatar: updatedUser.avatar,
                 diamonds: updatedUser.diamonds
             },

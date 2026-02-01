@@ -89,11 +89,12 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
         }
     };
 
-    const handleSaveWithPaywall = () => {
+    const handleSaveWithPaywall = async () => {
         if (!reading || !selectedCard) return;
 
         // Cost: 3 Diamonds
-        if (spendDiamonds(3, "Tarot Mühürleme")) {
+        const canSpend = await spendDiamonds(3, "Tarot Mühürleme");
+        if (canSpend) {
             saveTarot({
                 cardName: selectedCard.name,
                 interpretation: reading.interpretation,
@@ -102,10 +103,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
             });
             alert("Kaderin mühürlendi ve günlüğüne kaydedildi.");
         } else {
-            setShowPaywall(true); // Show insufficient funds modal if spend returns false (which it handles internally mostly, but let's be safe)
-            // Actually spendDiamonds returns false if insufficient. 
-            // We should check balance or just let the modal handle the confirmation.
-            // Better UX: Show Modal FIRST, then spend on confirm.
+            setShowPaywall(true);
         }
     };
 
@@ -654,8 +652,9 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                     title="Kozmik Bedel"
                     description="Günlük ücretsiz tarot hakkını doldurdun. Yıldızların sırlarını aralamak için 5 Kozmik Işıltı sunmalısın."
                     cost={5}
-                    onConfirm={() => {
-                        if (spendDiamonds(5, "Ekstra Tarot Falı")) {
+                    onConfirm={async () => {
+                        const canSpend = await spendDiamonds(5, "Ekstra Tarot Falı");
+                        if (canSpend) {
                             setShowPaywall(false);
                             if (selectedCard) handlePickCard(selectedCard);
                         } else {

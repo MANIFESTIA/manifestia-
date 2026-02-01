@@ -14,6 +14,12 @@ model User {
   password         String
   avatar           String?   // Base64 Image
   
+  // Birth Info
+  birthDate        String?
+  birthTime        String?
+  birthCity        String?
+  sign             String?
+  
   // Core Economy
   diamonds         Int       @default(0) // Elmas Miktarı
   xp               Int       @default(0)
