@@ -13,31 +13,44 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Deploy to EC2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies & Build
+        run: |
+          npm ci
+          npx prisma generate
+          npm run build
+
+      - name: Zip Build Assets
+        run: zip -r build.zip .next public package.json package-lock.json next.config.ts prisma scripts
+
+      - name: Copy Files to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build.zip"
+          target: "/home/ubuntu/manifestia-"
+
+      - name: Deploy on Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Proje klasörüne git (Klasör ismini sunucudaki ile aynı olduğundan emin ol)
             cd /home/ubuntu/manifestia-
-            
-            # Güncellemeleri çek
-            git pull origin main
-            
-            # Bağımlılıkları yükle
-            npm install
-            
-            # Prisma Client'ı güncelle (Veritabanı şeması değiştiyse kritik)
+            # Unzip overrides existing files
+            unzip -o build.zip
+            # Install only production dependencies
+            npm install --production
+            # Regen prisma client
             npx prisma generate
-            
-            # Veritabanı değişikliklerini uygula (Opsiyonel ama önerilir, dikkatli kullanılmalı)
-            # Veritabanı değişikliklerini uygula
-            npx prisma db push --accept-data-loss 
-            
-            # Projeyi derle
-            npm run build
-            
-            # Uygulamayı yeniden başlat
-            pm2 restart all
+            # Restart App
+            pm2 restart manifestia
+            # Cleanup
+            rm build.zip
