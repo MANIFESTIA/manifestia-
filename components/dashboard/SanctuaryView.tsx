@@ -34,17 +34,19 @@ type ViewState = 'sanctuary' | 'guide' | 'market';
 export default function SanctuaryView() {
     const { user } = useUser();
 
-    // Initialize view from localStorage if available, otherwise default to 'sanctuary'
-    const [view, setView] = useState<ViewState>(() => {
+    // Initialize view safely (prevents hydration mismatch)
+    const [view, setView] = useState<ViewState>('sanctuary');
+
+    // Load view from localStorage on mount
+    useEffect(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('manifestia_last_view');
             // Validate saved view is one of the allowed types
             if (saved === 'sanctuary' || saved === 'guide' || saved === 'market') {
-                return saved;
+                setView(saved as ViewState);
             }
         }
-        return 'sanctuary';
-    });
+    }, []);
 
     const [showRitualView, setShowRitualView] = useState(false);
     const [showTarot, setShowTarot] = useState(false);
