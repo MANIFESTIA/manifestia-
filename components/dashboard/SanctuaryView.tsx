@@ -40,11 +40,11 @@ export default function SanctuaryView() {
     // Load view from localStorage on mount
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('manifestia_last_view');
-            // Validate saved view is one of the allowed types
-            if (saved === 'sanctuary' || saved === 'guide' || saved === 'market') {
-                setView(saved as ViewState);
-            }
+            // const saved = localStorage.getItem('manifestia_last_view');
+            // if (saved === 'sanctuary' || saved === 'guide' || saved === 'market') {
+            //     setView(saved as ViewState);
+            // }
+            setView('sanctuary'); // Force Safe Start
         }
     }, []);
 

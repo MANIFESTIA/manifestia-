@@ -11,6 +11,7 @@ export default function CosmicBackground() {
 
     // Initial Star Generation
     useEffect(() => {
+        // Generate stars only on client side to avoid hydration mismatch
         const newStars = Array.from({ length: STAR_COUNT }).map((_, i) => ({
             id: i,
             style: {

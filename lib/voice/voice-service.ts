@@ -41,7 +41,8 @@ export class VoiceService {
     // API anahtarını .env.local'dan al (Hem Google hem Gemini değişkenine bak)
     this.apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY || '';
 
-    if (!this.apiKey) {
+    // Only warn on server side where it matters
+    if (!this.apiKey && typeof window === 'undefined') {
       console.warn("TTS Uyarısı: API Anahtarı bulunamadı (GOOGLE_GENERATIVE_AI_API_KEY veya GEMINI_API_KEY eksik).");
     }
   }

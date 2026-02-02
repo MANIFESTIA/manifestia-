@@ -5,19 +5,30 @@ import { X, Flame, Send, Sparkles, MoveRight } from 'lucide-react';
 
 // Safe particle component for SSR
 const AshParticle = ({ delay }: { delay: number }) => {
-    const [dimensions, setDimensions] = useState({ w: 1000, h: 1000 });
+    const [style, setStyle] = useState<any>(null);
 
     useEffect(() => {
-        setDimensions({ w: window.innerWidth, h: window.innerHeight });
+        const width = Math.random() * 6 + 2;
+        const height = Math.random() * 6 + 2;
+        const startX = Math.random() * window.innerWidth;
+
+        setStyle({
+            width,
+            height,
+            startX,
+            endY: window.innerHeight + 20
+        });
     }, []);
+
+    if (!style) return null;
 
     return (
         <motion.div
             className="absolute bg-gray-500 rounded-full opacity-50"
-            initial={{ x: Math.random() * dimensions.w, y: -20 }}
-            animate={{ y: dimensions.h + 20 }}
+            initial={{ x: style.startX, y: -20 }}
+            animate={{ y: style.endY }}
             transition={{ duration: 3, ease: "linear", delay }}
-            style={{ width: Math.random() * 6 + 2, height: Math.random() * 6 + 2 }}
+            style={{ width: style.width, height: style.height }}
         />
     );
 };
