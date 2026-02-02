@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "echo 'Cleaning .next...' && (if exist .next rd /s /q .next) && npm cache clean --force",
+    "prebuild": "rm -rf .next && npm cache clean --force",
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
