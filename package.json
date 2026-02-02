@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "prebuild": "rm -rf .next && npm cache clean --force",
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
@@ -31,6 +30,7 @@
     "prisma": "5.22.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-is": "^19.2.4",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
