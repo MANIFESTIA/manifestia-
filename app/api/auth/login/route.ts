@@ -30,14 +30,31 @@ export async function POST(req: Request) {
         // Not: Gerçek bir uygulamada burada Session Cookie veya JWT set edilmelidir.
         // Şimdilik client-side context için kullanıcı verisini dönüyoruz.
 
+        // Return sanitized user object matching UserProfile interface
         return NextResponse.json({
             success: true,
             message: 'Giriş başarılı.',
             user: {
                 id: user.id,
-                name: user.name,
                 email: user.email,
-                credits: user.credits
+                name: user.name,
+                avatar: user.avatar,
+
+                // Birth Info
+                birthDate: user.birthDate,
+                birthTime: user.birthTime,
+                birthCity: user.birthCity,
+                sign: user.sign,
+
+                // Economy & Gamification
+                diamonds: user.diamonds,
+                xp: user.xp,
+                level: user.level,
+                streak: {
+                    count: user.streak,
+                    lastLoginDate: user.lastLoginDate || ""
+                },
+                badges: user.badges
             }
         });
 
