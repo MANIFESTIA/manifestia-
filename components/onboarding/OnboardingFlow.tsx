@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/lib/UserContext';
 import { UserProfile } from '@/types';
-import { Star, ChevronRight, Moon, Sun, MapPin, Sparkles, ArrowRight, Lock, Mail, AlertCircle } from 'lucide-react';
+import { Star, ChevronRight, Moon, Sun, MapPin, Sparkles, ArrowRight, Lock, Mail, AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -113,9 +113,9 @@ export default function OnboardingFlow() {
                     email: data.user.email,
                     name: data.user.name,
                     diamonds: data.user.diamonds || 5, // Başlangıç kredisi
-                    birthDate: formData.birthDate, // Local state'ten al
-                    birthTime: formData.birthTime,
-                    birthCity: formData.birthCity,
+                    birthDate: formData.birthDate || "", // Local state'ten al
+                    birthTime: formData.birthTime || "",
+                    birthCity: formData.birthCity || "",
                     intents: formData.intents,
                     voiceGuide: formData.voiceGuide
                     // Not: Bu doğum bilgileri veritabanına henüz işlenmediyse, dashboard'da bir profil güncelleme isteği gerekebilir.
@@ -171,10 +171,30 @@ export default function OnboardingFlow() {
         { id: 'D', name: 'Ateş Ruhu', k: 'Fire', color: 'from-red-500 to-orange-500' },
     ];
 
+
+    const handleBack = () => {
+        if (step === 6) {
+            // "Hesaplama" (Adım 5) ekranını atla, direkt rehber seçimine dön
+            setStep(4);
+        } else if (step > 0) {
+            setStep(prev => prev - 1);
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden">
             {/* Arka Plan Efektleri (Hafif Nebula Katmanı) */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-manifest-primary/10 rounded-full blur-[150px] pointer-events-none animate-pulse-slow"></div>
+
+            {/* Back Button */}
+            {step > 0 && step !== 5 && (
+                <button
+                    onClick={handleBack}
+                    className="absolute top-6 left-6 z-50 p-3 rounded-full bg-black/20 text-white/50 hover:text-white hover:bg-white/10 border border-white/5 transition-all backdrop-blur-md group"
+                >
+                    <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+                </button>
+            )}
 
             <AnimatePresence mode="wait">
                 {/* STEP 0: INTRO */}
