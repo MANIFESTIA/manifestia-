@@ -1,28 +1,20 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@/lib/UserContext';
-import { MessageCircle, Wind, Sparkles, Users, ShoppingBag, Bell, Flame } from 'lucide-react';
+import { MessageCircle, Wind, Sparkles, Users, ShoppingBag, Bell, Flame, Image as ImageIcon, Map as MapIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-// import Antigravity from '@/components/ui/Antigravity';
 import { useCosmicGuidance } from '@/hooks/useCosmicGuidance';
+import { useCosmicWatcher } from '@/hooks/useCosmicWatcher';
 
 import ChatInterface from '@/components/chat/ChatInterface';
 import RitualView from '@/components/ritual/RitualView';
 import TarotView from '@/components/tarot/TarotView';
-import BirthChartView from '@/components/astrology/BirthChartView'; // [NEW]
-
+import BirthChartView from '@/components/astrology/BirthChartView';
 import JournalView from '@/components/journal/JournalView';
-import { Image as ImageIcon, Map as MapIcon } from 'lucide-react'; // [NEW] Map icon
 import ProfileSettings from '@/components/dashboard/ProfileSettings';
-// ...
-const [showRitualView, setShowRitualView] = useState(false);
-const [showTarot, setShowTarot] = useState(false);
-const [showBirthChart, setShowBirthChart] = useState(false); // [NEW]
 import EnergyRing from '@/components/dashboard/EnergyRing';
 import CosmicAlertWidget from '@/components/dashboard/CosmicAlertWidget';
-import { useCosmicWatcher } from '@/hooks/useCosmicWatcher';
 import IntroSplash from '@/components/layout/IntroSplash';
-
 import DailyRewardPopup from '@/components/gamification/DailyRewardPopup';
 import WalletDisplay from '@/components/gamification/WalletDisplay';
 import StoreView from '@/components/store/StoreView';
