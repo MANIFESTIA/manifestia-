@@ -12,8 +12,9 @@
   "dependencies": {
     "@ai-sdk/google": "^3.0.13",
     "@ai-sdk/react": "^1.1.8",
-    "@aws-sdk/client-s3": "^3.980.0",
-    "@aws-sdk/s3-request-presigner": "^3.980.0",
+    "@aws-sdk/client-s3": "^3.981.0",
+    "@aws-sdk/s3-request-presigner": "^3.981.0",
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@google-cloud/text-to-speech": "^6.4.0",
     "@google/generative-ai": "^0.21.0",
     "@prisma/client": "5.22.0",

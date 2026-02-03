@@ -46,29 +46,45 @@ export async function generateRitualAI(emotion: string, duration: number = 2): P
 
         return {
             id: `ai-${Date.now()}`,
+            baseTitle: data.title,
+            baseDescription: data.description,
             type: 'meditation',
             xpReward: 50,
             duration: `${duration} Dk`,
-            ...data
+            iconName: data.iconName,
+            color: data.color,
+            audioTrack: data.audioTrack,
+            variations: [
+                {
+                    title: data.title,
+                    description: data.longDescription || data.description,
+                    steps: data.steps
+                }
+            ]
         };
     } catch (error) {
         console.error("AI Ritual Generation Failed:", error);
         // Fallback Ritual
         return {
             id: 'fallback-calm',
-            title: 'Anlık Dinginlik',
-            description: 'Derin bir nefes al ve merkeze dön.',
-            longDescription: 'Yıldızların mesajı bazen sessizlikte gelir. Bu kısa ritüel ile zihnini sakinleştir.',
+            baseTitle: 'Anlık Dinginlik',
+            baseDescription: 'Derin bir nefes al ve merkeze dön.',
             type: 'meditation',
             xpReward: 20,
             duration: '2 Dk',
             iconName: 'Wind',
             color: 'from-blue-400 to-cyan-300',
-            audioTrack: '/sounds/morning-birds.mp3',
-            steps: [
-                { text: "Gözlerini kapat ve derin bir nefes al.", duration: 10, animation: 'focus' },
-                { text: "Nefes verken tüm gerginliği bırak.", duration: 10, animation: 'breathe' },
-                { text: "Sadece şu ana odaklan.", duration: 20, animation: 'stars' }
+            audioTrack: '/sounds/zen.ogg',
+            variations: [
+                {
+                    title: 'Anlık Dinginlik',
+                    description: 'Yıldızların mesajı bazen sessizlikte gelir. Bu kısa ritüel ile zihnini sakinleştir.',
+                    steps: [
+                        { text: "Gözlerini kapat ve derin bir nefes al.", duration: 10, animation: 'focus' },
+                        { text: "Nefes verken tüm gerginliği bırak.", duration: 10, animation: 'breathe' },
+                        { text: "Sadece şu ana odaklan.", duration: 20, animation: 'stars' }
+                    ]
+                }
             ]
         };
     }
