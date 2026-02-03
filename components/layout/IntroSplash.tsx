@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Sparkles, Play } from "lucide-react";
 
 interface IntroSplashProps {
+    // Logo updated to static Ankh
     onComplete: () => void;
     autoEnter?: boolean;
 }
