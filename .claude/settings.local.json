@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"c:\\\\Users\\\\KAAN\\\\PROJELER\\\\MANIFESTIA\\\\app\\\\api\\\\tarot\")",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

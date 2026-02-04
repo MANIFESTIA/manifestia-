@@ -8,14 +8,14 @@ import { useHaptic } from '@/hooks/useHaptic';
 import { useSoundscape } from '@/hooks/useSoundscape';
 
 interface RitualPlayerProps {
-    ritual: Ritual;
+    ritual: Ritual & { steps?: RitualStep[] };
     onComplete: () => void;
     onExit: () => void;
 }
 
 export default function RitualPlayer({ ritual, onComplete, onExit }: RitualPlayerProps) {
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(ritual.steps?.[0]?.duration || 0);
+    const [timeLeft, setTimeLeft] = useState((ritual.steps?.[0]?.duration || ritual.variations?.[0]?.steps?.[0]?.duration) || 0);
     const [isActive, setIsActive] = useState(false); // Start paused so user can prepare
     const [isCompleted, setIsCompleted] = useState(false);
 
@@ -23,7 +23,7 @@ export default function RitualPlayer({ ritual, onComplete, onExit }: RitualPlaye
     const haptic = useHaptic();
     const sound = useSoundscape(ritual.audioTrack || null);
 
-    const steps = ritual.steps || [];
+    const steps = ritual.steps || ritual.variations?.[0]?.steps || [];
     const currentStep = steps[currentStepIndex];
 
     // Trigger Sensor Effects when step changes or becomes active

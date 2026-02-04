@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import { verifyAuth } from '@/lib/auth-middleware';
 
 export async function POST(req: Request) {
     try {
-        const { userId, productId } = await req.json(); // Changed 'amount/cost' to 'productId' for secure backend validation
+        const userId = await verifyAuth(req);
+        if (!userId) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
 
-        if (!userId || !productId) {
+        const { productId } = await req.json();
+
+        if (!productId) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
@@ -30,17 +34,15 @@ export async function POST(req: Request) {
 
         // Create Purchase Transaction
         // Use a transaction to ensure atomicity
-        const result = await prisma.$transaction(async (prisma) => {
-            // Deduct diamonds
-            const updatedUser = await prisma.user.update({
+        const result = await prisma.$transaction(async (tx) => {
+            const updatedUser = await tx.user.update({
                 where: { id: userId },
                 data: {
                     diamonds: { decrement: product.priceDiamonds }
                 }
             });
 
-            // Create Transaction Record
-            await prisma.transaction.create({
+            await tx.transaction.create({
                 data: {
                     userId: userId,
                     amount: -product.priceDiamonds,
@@ -49,8 +51,7 @@ export async function POST(req: Request) {
                 }
             });
 
-            // Add to Inventory
-            await prisma.userInventory.create({
+            await tx.userInventory.create({
                 data: {
                     userId: userId,
                     productId: productId

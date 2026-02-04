@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import { verifyAuth } from '@/lib/auth-middleware';
 
 export async function POST(req: Request) {
     try {
-        const { userId } = await req.json();
-
+        const userId = await verifyAuth(req);
         if (!userId) {
-            return NextResponse.json({ error: 'User ID required' }, { status: 400 });
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const user = await prisma.user.findUnique({

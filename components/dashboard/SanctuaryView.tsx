@@ -1,10 +1,11 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useUser } from '@/lib/UserContext';
-import { MessageCircle, Wind, Sparkles, Users, ShoppingBag, Bell, Flame, Image as ImageIcon, Map as MapIcon } from 'lucide-react';
+import { MessageCircle, Wind, Sparkles, Users, ShoppingBag, Bell, Flame, Image as ImageIcon, Map as MapIcon, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCosmicGuidance } from '@/hooks/useCosmicGuidance';
 import { useCosmicWatcher } from '@/hooks/useCosmicWatcher';
+import { getDailyEnergy } from '@/lib/dailyEnergy';
 
 import ChatInterface from '@/components/chat/ChatInterface';
 import RitualView from '@/components/ritual/RitualView';
@@ -20,11 +21,32 @@ import WalletDisplay from '@/components/gamification/WalletDisplay';
 import StoreView from '@/components/store/StoreView';
 import TransactionHistoryModal from '@/components/economy/TransactionHistoryModal';
 import DiamondShopModal from '@/components/store/DiamondShopModal';
+import IntentSealView from '@/components/ritual/IntentSealView';
 
 type ViewState = 'sanctuary' | 'guide' | 'market';
 
 export default function SanctuaryView() {
     const { user } = useUser();
+
+    const energyPercentage = useMemo(() => {
+        if (!user?.id) return 0;
+        const today = new Date().toISOString().split('T')[0];
+        const loggedInToday = user.streak?.lastLoginDate === today;
+        const streakCount = user.streak?.count || 0;
+
+        const loginBonus = loggedInToday ? 40 : 10;
+        const streakBonus = Math.min(streakCount * 7, 40);
+
+        let ritualBonus = 0;
+        try {
+            const saved = localStorage.getItem(`manifestia_rituals_${user.id}_${today}`);
+            if (saved) ritualBonus = Math.min(JSON.parse(saved).length * 10, 20);
+        } catch {}
+
+        return Math.min(100, loginBonus + streakBonus + ritualBonus);
+    }, [user]);
+
+    const dailyEnergy = useMemo(() => getDailyEnergy(), []);
 
     // Initialize view safely (prevents hydration mismatch)
     const [view, setView] = useState<ViewState>('sanctuary');
@@ -48,6 +70,7 @@ export default function SanctuaryView() {
     const [showNotifications, setShowNotifications] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
     const [showDiamondShop, setShowDiamondShop] = useState(false);
+    const [showIntentSeal, setShowIntentSeal] = useState(false);
 
     // Intro Splash State - Overlay
     const [showIntro, setShowIntro] = useState(true);
@@ -155,15 +178,29 @@ export default function SanctuaryView() {
                                 <MapIcon className="w-6 h-6 text-indigo-300" />
                                 <span className="text-xs text-white/70 text-center leading-tight">Doğum Haritası</span>
                             </button>
+
+                            <button
+                                onClick={() => setShowIntentSeal(true)}
+                                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition w-24"
+                            >
+                                <Star className="w-6 h-6 text-amber-300" />
+                                <span className="text-xs text-white/70">Niyet</span>
+                            </button>
                         </div>
 
                         {/* Cosmic Alert Widget REMOVED from here */}
 
                         {/* Hero / Daily Energy */}
                         <div className="flex flex-col items-center py-6 relative">
-                            <EnergyRing key="energy-ring-v8-living-glow" percentage={88} />
+                            <EnergyRing percentage={energyPercentage} energyPalette={dailyEnergy} />
 
-                            <h2 className="mt-8 text-2xl font-serif text-white/90 text-center">
+                            <div className="mt-2 flex items-center gap-2">
+                                <span className="text-xs font-medium uppercase tracking-widest" style={{ color: dailyEnergy.primary }}>{dailyEnergy.name}</span>
+                                <span className="text-xs text-white/30">·</span>
+                                <span className="text-xs text-white/40">{dailyEnergy.element} Enerjisi</span>
+                            </div>
+
+                            <h2 className="mt-4 text-2xl font-serif text-white/90 text-center">
                                 Merhaba, {user?.name || "Ruh"}
                             </h2>
 
@@ -193,6 +230,7 @@ export default function SanctuaryView() {
             </main>
 
             {/* Modals */}
+            {showIntentSeal && <IntentSealView onClose={() => setShowIntentSeal(false)} />}
             {showRitualView && <RitualView onClose={() => setShowRitualView(false)} />}
             {showBirthChart && <BirthChartView onClose={() => setShowBirthChart(false)} />}
 

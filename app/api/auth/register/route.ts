@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { hashPassword } from '@/lib/auth';
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password } = await req.json();
+        const { name, email, password, birthDate, birthTime, birthCity, intents, voiceGuide } = await req.json();
 
         if (!email || !password || !name) {
             return NextResponse.json({ error: 'Tüm alanları doldurun.' }, { status: 400 });
@@ -24,20 +22,37 @@ export async function POST(req: Request) {
         // Şifreleme
         const hashedPassword = await hashPassword(password);
 
-        // Kullanıcı oluşturma
+        const token = crypto.randomUUID();
         const newUser = await prisma.user.create({
             data: {
                 name,
                 email,
                 password: hashedPassword,
-                diamonds: 5, // Yeni üyelere hoşgeldin hediyesi 5 elmas
+                diamonds: 5,
+                sessionToken: token,
+                birthDate: birthDate || null,
+                birthTime: birthTime || null,
+                birthCity: birthCity || null,
+                intents: intents || [],
+                voiceGuide: voiceGuide || null,
             },
         });
 
         return NextResponse.json({
             success: true,
             message: 'Kayıt başarılı! Giriş yapabilirsiniz.',
-            user: { id: newUser.id, name: newUser.name, email: newUser.email }
+            token,
+            user: {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                diamonds: newUser.diamonds,
+                birthDate: newUser.birthDate,
+                birthTime: newUser.birthTime,
+                birthCity: newUser.birthCity,
+                intents: newUser.intents,
+                voiceGuide: newUser.voiceGuide,
+            }
         });
 
     } catch (error) {

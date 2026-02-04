@@ -5,7 +5,7 @@ import { UserProfile } from '@/types';
 
 interface UserContextType {
     user: UserProfile | null;
-    saveUser: (data: UserProfile) => void;
+    saveUser: (data: UserProfile, token?: string) => void;
     logout: () => void;
     isOnboarded: boolean;
     // Gamification Methods
@@ -27,16 +27,22 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
     const [dailyReward, setDailyReward] = useState<{ show: boolean; amount: number; streak: number; badges?: string[]; items?: string[] } | null>(null);
 
+    const getAuthHeaders = (): HeadersInit => {
+        const storedToken = localStorage.getItem('manifestia_token');
+        return {
+            'Content-Type': 'application/json',
+            ...(storedToken ? { 'Authorization': `Bearer ${storedToken}` } : {}),
+        };
+    };
+
     useEffect(() => {
-        // Initial load from localStorage for speed
         const stored = localStorage.getItem('manifestia_user');
         if (stored) {
             try {
                 const parsedUser = JSON.parse(stored);
                 if (parsedUser && parsedUser.id) {
                     setUser(parsedUser);
-                    // Immediately sync with server
-                    syncUserWithServer(parsedUser.id);
+                    syncUserWithServer();
                 }
             } catch (e) {
                 console.error("Failed to parse local user", e);
@@ -45,22 +51,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
     }, []);
 
-    const syncUserWithServer = async (userId: string) => {
+    const syncUserWithServer = async () => {
         try {
             const res = await fetch('/api/user/me', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId })
+                headers: getAuthHeaders(),
             });
             const data = await res.json();
 
             if (data.success && data.user) {
-                // Determine if we need to show daily reward (logic moved to client check after sync or explicit call)
-                // For now, let's check daily login after sync
-                checkDailyLogin(data.user.id);
-
-                // Update local state without overwriting everything blindly if needed, 
-                // but sync usually means server is source of truth.
+                checkDailyLogin();
                 setUser(data.user);
                 localStorage.setItem('manifestia_user', JSON.stringify(data.user));
             }
@@ -69,12 +69,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const checkDailyLogin = async (userId: string) => {
+    const checkDailyLogin = async () => {
         try {
             const res = await fetch('/api/gamification/daily-checkin', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId })
+                headers: getAuthHeaders(),
             });
             const data = await res.json();
 
@@ -121,8 +120,25 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const spendDiamonds = async (amount: number, description: string) => {
-        // This is generic spend. We should use specific endpoints.
-        return false;
+        if (!user?.id) return false;
+
+        try {
+            const res = await fetch('/api/gamification/spend-diamonds', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ amount, description }),
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                updateUser({ diamonds: data.newBalance });
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Spend diamonds failed:', error);
+            return false;
+        }
     };
 
     const purchaseProduct = async (productId: string) => {
@@ -131,17 +147,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         try {
             const res = await fetch('/api/store/purchase', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user.id, productId })
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ productId })
             });
             const data = await res.json();
 
             if (data.success) {
-                // Update local balance
-                const updated = { ...user, diamonds: data.newBalance };
-                // We should also update inventory? 
-                // Best to re-sync user to get fresh inventory
-                syncUserWithServer(user.id);
+                syncUserWithServer();
                 return { success: true, message: data.message };
             } else {
                 return { success: false, message: data.error };
@@ -160,14 +172,18 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     const closeDailyReward = () => setDailyReward(null);
 
-    const saveUser = (data: UserProfile) => {
+    const saveUser = (data: UserProfile, token?: string) => {
         setUser(data);
         localStorage.setItem('manifestia_user', JSON.stringify(data));
+        if (token) {
+            localStorage.setItem('manifestia_token', token);
+        }
     };
 
     const logout = () => {
         setUser(null);
         localStorage.removeItem('manifestia_user');
+        localStorage.removeItem('manifestia_token');
     };
 
     return (

@@ -38,10 +38,10 @@ export default function RitualLibrary({ onSelectRitual }: RitualLibraryProps) {
                             </div>
 
                             <h3 className="text-lg font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gray-300 transition-all">
-                                {ritual.title}
+                                {ritual.baseTitle}
                             </h3>
                             <p className="text-sm text-white/60 leading-relaxed mb-6 line-clamp-2">
-                                {ritual.description}
+                                {ritual.baseDescription}
                             </p>
 
                             <div className="flex items-center justify-between mt-auto">

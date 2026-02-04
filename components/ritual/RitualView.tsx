@@ -133,9 +133,7 @@ export default function RitualView({ onClose }: RitualViewProps) {
                             ritual={{
                                 ...activeRitualData,
                                 // Inject daily variation data here
-                                title: getDailyRitual(activeRitualData).title,
-                                description: getDailyRitual(activeRitualData).description,
-                                steps: getDailyRitual(activeRitualData).steps || []
+                                steps: activeRitualData ? (getDailyRitual(activeRitualData).steps || []) : []
                             }}
                             onComplete={handleComplete}
                             onExit={() => {
@@ -222,11 +220,12 @@ export default function RitualView({ onClose }: RitualViewProps) {
             {/* Confirm Purchase Modal */}
             {showConfirmModal && (
                 <DiamondConfirmModal
-                    amount={5}
+                    isOpen={true}
+                    cost={5}
                     title="Bu Ritüeli Aç"
                     description="Günde 1 ücretsiz ritüelden sonraki her ritüel için 5 Elmas gereklidir."
                     onConfirm={confirmPurchase}
-                    onCancel={() => setShowConfirmModal(false)}
+                    onClose={() => setShowConfirmModal(false)}
                 />
             )}
         </div>

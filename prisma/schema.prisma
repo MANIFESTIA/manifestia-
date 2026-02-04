@@ -19,7 +19,11 @@ model User {
   birthTime        String?
   birthCity        String?
   sign             String?
-  
+
+  // Onboarding Preferences
+  intents          String[]  @default([])
+  voiceGuide       String?
+
   // Core Economy
   diamonds         Int       @default(0) // Elmas Miktarı
   xp               Int       @default(0)
@@ -31,6 +35,7 @@ model User {
   badges           String[]  @default([])
   
   // Auth & Security
+  sessionToken     String?
   resetToken       String?
   resetTokenExpiry DateTime?
   

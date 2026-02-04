@@ -32,17 +32,23 @@ export default function LoginPage() {
 
             if (res.ok) {
                 setStatus('success');
-                // Kullanıcı verisini context'e kaydet
                 saveUser({
                     id: data.user.id,
                     email: data.user.email,
                     name: data.user.name,
-                    diamonds: data.user.credits || data.user.diamonds || 0,
-                    // Diğer alanlar varsayılan veya mevcut değilse boş
-                    birthDate: '', birthTime: '', birthCity: ''
-                });
+                    diamonds: data.user.diamonds || 0,
+                    birthDate: data.user.birthDate || '',
+                    birthTime: data.user.birthTime || '',
+                    birthCity: data.user.birthCity || '',
+                    sign: data.user.sign,
+                    intents: data.user.intents,
+                    voiceGuide: data.user.voiceGuide,
+                    badges: data.user.badges,
+                    streak: data.user.streak,
+                    xp: data.user.xp,
+                    level: data.user.level,
+                }, data.token);
 
-                // Yönlendirme
                 setTimeout(() => {
                     router.push('/');
                 }, 500);

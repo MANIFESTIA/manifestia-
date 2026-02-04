@@ -94,40 +94,31 @@ export default function OnboardingFlow() {
                     name: formData.name,
                     email: formData.email,
                     password: formData.password,
-                    // Birth data is not standard in register API? 
-                    // Need to check if register API handles birth data or if we update later.
-                    // For now, let's assume we might lose birth data if API doesn't take it.
-                    // But we can update profile after register.
+                    birthDate: formData.birthDate,
+                    birthTime: formData.birthTime,
+                    birthCity: formData.birthCity,
+                    intents: formData.intents,
+                    voiceGuide: formData.voiceGuide,
                 }),
             });
 
             const data = await res.json();
 
             if (res.ok) {
-                // Başarılı Kayıt
-
-                // Context'e kaydet
-                // Not: Register API doğum verisini almayabilir, o yüzden context'e elimizdeki full veriyi basalım.
                 const fullUserProfile: UserProfile = {
                     id: data.user.id,
                     email: data.user.email,
                     name: data.user.name,
-                    diamonds: data.user.diamonds || 5, // Başlangıç kredisi
-                    birthDate: formData.birthDate || "", // Local state'ten al
-                    birthTime: formData.birthTime || "",
-                    birthCity: formData.birthCity || "",
-                    intents: formData.intents,
-                    voiceGuide: formData.voiceGuide
-                    // Not: Bu doğum bilgileri veritabanına henüz işlenmediyse, dashboard'da bir profil güncelleme isteği gerekebilir.
-                    // Veya UserProfileManager'ı çağırıp DB update yapmalıyız.
-                    // Şimdilik client-side context'te tutuyoruz, yeterli görünüm için.
+                    diamonds: data.user.diamonds,
+                    birthDate: data.user.birthDate || "",
+                    birthTime: data.user.birthTime || "",
+                    birthCity: data.user.birthCity || "",
+                    intents: data.user.intents,
+                    voiceGuide: data.user.voiceGuide,
                 };
 
-                saveUser(fullUserProfile);
-
-                // Yönlendirme (Aslında zaten Page.tsx isOnboarded true görünce Sanctuary'e geçer)
-                // Ama biz yine de güvenli olsun diye reload veya explicit set yapalım.
-                setStep(8); // Success step or just close
+                saveUser(fullUserProfile, data.token);
+                setStep(8);
             } else {
                 setRegisterError(data.error || 'Kayıt başarısız.');
             }

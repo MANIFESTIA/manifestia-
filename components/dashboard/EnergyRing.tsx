@@ -1,20 +1,26 @@
 "use client";
 import React from 'react';
 import { motion } from 'framer-motion';
+import { DailyEnergyPalette } from '@/lib/dailyEnergy';
 
 interface EnergyRingProps {
     percentage: number;
+    energyPalette?: DailyEnergyPalette;
 }
 
-export default function EnergyRing({ percentage }: EnergyRingProps) {
+const DEFAULT_PALETTE: DailyEnergyPalette = {
+    name: 'Bolluk Işığı', element: 'Altın',
+    primary: '#FACC15', secondary: '#EAB308', glowColor: 'rgba(250, 204, 21, 0.6)',
+};
+
+export default function EnergyRing({ percentage, energyPalette = DEFAULT_PALETTE }: EnergyRingProps) {
     const radius = 85; // Slightly larger for cleaner look
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
     return (
         <div className="relative w-80 h-80 flex items-center justify-center">
-            {/* Soft Ambient Background Ligh (Pinkish/Yellow mix) */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/20 to-yellow-500/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute inset-0 rounded-full blur-3xl animate-pulse" style={{ background: `linear-gradient(to top right, ${energyPalette.primary}33, ${energyPalette.secondary}33)` }}></div>
 
             {/* SVG Ring Container */}
             <svg className="w-full h-full transform -rotate-90">
@@ -26,11 +32,10 @@ export default function EnergyRing({ percentage }: EnergyRingProps) {
                         <stop offset="100%" stopColor="#A855F7" /> {/* Purple */}
                     </linearGradient>
 
-                    {/* Yellow/Gold Gradient for Progress */}
-                    <linearGradient id="yellowNeon" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#FEF08A" />
-                        <stop offset="50%" stopColor="#FACC15" />
-                        <stop offset="100%" stopColor="#EAB308" />
+                    <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor={energyPalette.primary} />
+                        <stop offset="50%" stopColor={energyPalette.secondary} />
+                        <stop offset="100%" stopColor={energyPalette.primary} />
                     </linearGradient>
                 </defs>
 
@@ -82,7 +87,7 @@ export default function EnergyRing({ percentage }: EnergyRingProps) {
                     cx="160"
                     cy="160"
                     r={radius}
-                    stroke="#FACC15"
+                    stroke={energyPalette.primary}
                     strokeWidth="14"
                     fill="transparent"
                     strokeDasharray={circumference}
@@ -98,13 +103,13 @@ export default function EnergyRing({ percentage }: EnergyRingProps) {
                     cx="160"
                     cy="160"
                     r={radius}
-                    stroke="url(#yellowNeon)"
+                    stroke="url(#energyGradient)"
                     strokeWidth="10"
                     fill="transparent"
                     strokeDasharray={circumference}
                     strokeLinecap="round"
                     style={{
-                        filter: "drop-shadow(0 0 4px rgba(250, 204, 21, 1))"
+                        filter: `drop-shadow(0 0 4px ${energyPalette.glowColor})`
                     }}
                 />
 
@@ -135,10 +140,10 @@ export default function EnergyRing({ percentage }: EnergyRingProps) {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.5 }}
                 >
-                    <span className="text-6xl font-serif text-white drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]">
+                    <span className="text-6xl font-serif text-white" style={{ textShadow: `0 0 15px ${energyPalette.glowColor}` }}>
                         {percentage}
                     </span>
-                    <span className="text-2xl text-yellow-200 ml-1 font-light">%</span>
+                    <span className="text-2xl ml-1 font-light" style={{ color: energyPalette.primary }}>%</span>
                 </motion.div>
             </div>
         </div>

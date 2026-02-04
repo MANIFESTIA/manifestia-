@@ -5,7 +5,7 @@ import { generateTarotReadingAI } from '@/lib/tarot-ai';
 
 export async function POST(req: Request) {
     let cardName = '';
-    let reading;
+    let reading: any;
 
     try {
         const body = await req.json();

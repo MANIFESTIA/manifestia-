@@ -126,7 +126,7 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
                 // Small delay to ensure state update before submit
                 setTimeout(() => {
                     const formEvent = { preventDefault: () => { } } as any;
-                    handleSubmit(formEvent, { data: { ...user, content: transcript } });
+                    handleSubmit(formEvent, { data: { ...user, content: transcript } as any });
                     setTranscript('');
                 }, 100);
             } else {

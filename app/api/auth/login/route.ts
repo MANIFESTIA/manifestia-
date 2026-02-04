@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { verifyPassword } from '@/lib/auth';
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
@@ -26,14 +24,16 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Hatalı e-posta veya şifre.' }, { status: 401 });
         }
 
-        // Başarılı giriş
-        // Not: Gerçek bir uygulamada burada Session Cookie veya JWT set edilmelidir.
-        // Şimdilik client-side context için kullanıcı verisini dönüyoruz.
+        const token = crypto.randomUUID();
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { sessionToken: token },
+        });
 
-        // Return sanitized user object matching UserProfile interface
         return NextResponse.json({
             success: true,
             message: 'Giriş başarılı.',
+            token,
             user: {
                 id: user.id,
                 email: user.email,
@@ -45,6 +45,10 @@ export async function POST(req: Request) {
                 birthTime: user.birthTime,
                 birthCity: user.birthCity,
                 sign: user.sign,
+
+                // Onboarding Preferences
+                intents: user.intents,
+                voiceGuide: user.voiceGuide,
 
                 // Economy & Gamification
                 diamonds: user.diamonds,
