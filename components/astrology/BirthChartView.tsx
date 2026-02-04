@@ -41,10 +41,12 @@ export default function BirthChartView({ onClose }: BirthChartViewProps) {
     });
 
     const [result, setResult] = useState<ChartData | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setStep('loading');
+        setError(null);
 
         try {
             const res = await fetch('/api/astrology/birth-chart', {
@@ -53,14 +55,17 @@ export default function BirthChartView({ onClose }: BirthChartViewProps) {
                 body: JSON.stringify(formData)
             });
 
-            if (!res.ok) throw new Error('API Error');
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || 'API Error');
+            }
 
             const data = await res.json();
             setResult(data);
             setStep('result');
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            // Handle error (go back to input or show message)
+            setError(error.message || "Bir hata oluştu.");
             setStep('input');
         }
     };
@@ -104,6 +109,11 @@ export default function BirthChartView({ onClose }: BirthChartViewProps) {
                             </div>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
+                                {error && (
+                                    <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-200 text-sm text-center">
+                                        {error}
+                                    </div>
+                                )}
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-indigo-300 uppercase tracking-wider ml-1">Ad Soyad</label>
                                     <div className="relative">
