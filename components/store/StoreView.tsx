@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '@/lib/UserContext';
 import { ShoppingBag, Diamond, ArrowLeft, ExternalLink, Sparkles, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getDailyEnergy } from '@/lib/dailyEnergy';
 
 
 interface Product {
@@ -18,6 +19,7 @@ interface Product {
 
 export default function StoreView({ onBack, onShowHistory }: { onBack?: () => void, onShowHistory?: () => void }) {
     const { user, purchaseProduct } = useUser(); // Using new purchaseProduct method
+    const dailyEnergy = getDailyEnergy(); // Get today's vibe
 
     // Body Scroll Lock
     useEffect(() => {
@@ -30,6 +32,24 @@ export default function StoreView({ onBack, onShowHistory }: { onBack?: () => vo
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [purchasing, setPurchasing] = useState<string | null>(null); // Track purchasing state per product
+
+    // Tag Mapping Logic
+    const getRecommendedTag = (element: string) => {
+        switch (element) {
+            case 'Su': return 'Denge';      // Water -> Balance/Calm
+            case 'Hava': return 'Bolluk';   // Air -> Movement/Abundance
+            case 'Ateş': return 'Korunma';  // Fire -> Protection
+            case 'Toprak': return 'Bolluk'; // Earth -> Material Abundance
+            case 'Esin': return 'Denge';    // Spirit -> Balance
+            case 'Kalp': return 'Aşk';      // Heart -> Love
+            case 'Altın': return 'Bolluk';  // Gold -> Abundance
+            default: return 'Kozmik';
+        }
+    };
+
+    const recommendedTag = getRecommendedTag(dailyEnergy.element);
+    const recommendedProduct = products.find(p => p.tag === recommendedTag) || products[0];
+
 
     useEffect(() => {
         fetchProducts();
@@ -119,6 +139,58 @@ export default function StoreView({ onBack, onShowHistory }: { onBack?: () => vo
                     İşlem Geçmişi
                 </button>
             </div>
+
+            {/* --- DAILY SMART RECOMMENDATION HERO --- */}
+            {recommendedProduct && !loading && (
+                <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    className="mb-10 relative overflow-hidden rounded-3xl border border-white/10"
+                >
+                    {/* Dynamic Background based on Daily Energy */}
+                    <div className="absolute inset-0 opacity-20" style={{ background: `linear-gradient(135deg, ${dailyEnergy.primary}, ${dailyEnergy.secondary})` }} />
+                    <div className="absolute inset-0 backdrop-blur-3xl" />
+
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 p-6 md:p-8">
+                        {/* Text Content */}
+                        <div className="flex-1 text-center md:text-left space-y-3">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/10 text-xs font-bold uppercase tracking-wider mb-2">
+                                <Sparkles className="w-3 h-3 text-amber-300" />
+                                <span style={{ color: dailyEnergy.primary }}>Günün Enerjisi: {dailyEnergy.name}</span>
+                            </div>
+
+                            <h3 className="text-2xl md:text-3xl font-serif font-bold text-white">
+                                Bugünün Önerisi: <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70">{recommendedProduct.name}</span>
+                            </h3>
+
+                            <p className="text-white/70 max-w-lg mx-auto md:mx-0 leading-relaxed">
+                                Bugün evrende <strong style={{ color: dailyEnergy.primary }}>{dailyEnergy.element}</strong> enerjisi hakim.
+                                Bu akışı yakalamak ve frekansını yükseltmek için senin için seçtiğimiz ürün bu.
+                            </p>
+
+                            <div className="pt-4">
+                                <button
+                                    onClick={() => handlePurchase(recommendedProduct)}
+                                    className="px-8 py-3 rounded-xl font-bold bg-white text-black hover:bg-gray-200 transition shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center gap-2 mx-auto md:mx-0"
+                                >
+                                    Hemen İncele
+                                    <Diamond className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Visual */}
+                        <div className="w-full md:w-1/3 aspect-video md:aspect-square relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 group">
+                            <img src={recommendedProduct.image} alt="Recommendation" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg text-white font-mono font-bold border border-white/10 flex items-center gap-1.5">
+                                <Diamond className="w-3.5 h-3.5 text-cyan-400" />
+                                {recommendedProduct.priceDiamonds}
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
 
 
 
