@@ -11,7 +11,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Doğum tarihi ve yeri gereklidir." }, { status: 400 });
         }
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const prompt = `
         Sen profesyonel, bilge ve mistik bir astrologsun. Aşağıdaki bilgilere sahip kişi için detaylı bir Doğum Haritası (Natal Chart) yorumu yap.
@@ -48,15 +48,27 @@ export async function POST(req: Request) {
         const response = await result.response;
 
         let text = response.text();
+        console.log("Gemini Raw Response:", text); // Debugging log
+
         // Clean markdown ```json if present
         text = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-        const data = JSON.parse(text);
+        // Extra cleanup: Remove any leading/trailing non-JSON characters if possible (basic heuristic)
+        if (text.startsWith('json')) text = text.slice(4).trim();
+
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (parseError) {
+            console.error("JSON Parse Error:", parseError);
+            console.error("Failed Text:", text);
+            return NextResponse.json({ error: "Yıldızların mesajı anlaşılamadı (JSON Hatası). Lütfen tekrar deneyin." }, { status: 500 });
+        }
 
         return NextResponse.json(data);
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Birth chart generation failed:", error);
-        return NextResponse.json({ error: "Yıldızlar şu an sessiz... Lütfen daha sonra tekrar dene." }, { status: 500 });
+        return NextResponse.json({ error: error.message || "Yıldızlar şu an sessiz..." }, { status: 500 });
     }
 }
