@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/UserContext';
+import { getApiUrl } from '@/lib/api';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -69,6 +70,14 @@ export default function LoginPage() {
                 <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[100px]" />
                 <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[100px]" />
             </div>
+
+            {/* Geri Butonu */}
+            <Link
+                href="/"
+                className="absolute top-6 left-6 z-50 p-3 rounded-full bg-black/20 text-white/50 hover:text-white hover:bg-white/10 border border-white/5 transition-all backdrop-blur-md group"
+            >
+                <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+            </Link>
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
