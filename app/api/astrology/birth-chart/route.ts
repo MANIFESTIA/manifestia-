@@ -4,9 +4,18 @@ import { AstrologyService } from "@/lib/astrology-service";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
+// Tarih formatını dönüştür (DD.MM.YYYY → YYYY-MM-DD)
+function convertDateFormat(dateStr: string): string {
+    if (dateStr.includes('.')) {
+        const [day, month, year] = dateStr.split('.');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+    return dateStr;
+}
+
 export async function POST(req: Request) {
     try {
-        const { name, birthDate, birthTime, birthPlace } = await req.json();
+        let { name, birthDate, birthTime, birthPlace } = await req.json();
 
         if (!birthDate || !birthPlace) {
             return NextResponse.json({
@@ -14,8 +23,12 @@ export async function POST(req: Request) {
             }, { status: 400 });
         }
 
-        // 1. GERÇEK HESAPLAMALAR
+        // Tarih formatını dönüştür
+        birthDate = convertDateFormat(birthDate);
+
         console.log('📊 Astroloji hesaplamaları başlıyor...');
+        console.log('📅 Tarih:', birthDate);
+        console.log('📍 Şehir:', birthPlace);
 
         const sunSign = AstrologyService.getSunSign(birthDate);
         const lifePath = AstrologyService.calculateLifePath(birthDate);
@@ -29,7 +42,7 @@ export async function POST(req: Request) {
         let ascendant = 'Bilinmiyor';
 
         if (birthTime && coordinates) {
-            console.log('📍 Koordinatlar:', coordinates);
+            console.log('📍 Koordinatlar bulundu:', coordinates);
             try {
                 moonSign = AstrologyService.getMoonSign(birthDate, birthTime);
                 ascendant = AstrologyService.getAscendant(
@@ -45,6 +58,9 @@ export async function POST(req: Request) {
             }
         } else {
             console.log('⚠️ Doğum saati veya koordinat yok');
+            if (!coordinates) {
+                console.log('⚠️ Şehir bulunamadı:', birthPlace);
+            }
         }
 
         const elementBalance = AstrologyService.calculateElementBalance(
@@ -55,7 +71,6 @@ export async function POST(req: Request) {
 
         console.log('🔥 Element Dengesi:', elementBalance);
 
-        // 2. GEMINI'YE SADECE YORUM İÇİN SOR
         console.log('🤖 Gemini yorumu isteniyor...');
 
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -94,13 +109,13 @@ Sadece JSON yanıt ver (Markdown yok):
             console.error("❌ JSON Parse Hatası:", parseError);
             interpretation = {
                 interpretation: {
-                    general: "Enerjin güçlü ve özgün.",
-                    love: "İlişkilerde samimi ve tutkulu.",
-                    career: "Yaratıcı ve lider ruhun var.",
-                    soulPurpose: "Başkalarına ilham vermek."
+                    general: "Enerjin güçlü ve özgün. Doğum haritanda derin bir potansiyel var.",
+                    love: "İlişkilerde samimi ve tutkulu bir yaklaşımın var.",
+                    career: "Yaratıcı ve lider ruhun, kariyerinde seni öne çıkaracak.",
+                    soulPurpose: "Bu hayattaki derslerini öğrenmek ve başkalarına ilham vermek."
                 }
             };
-            console.log('⚠️ Fallback yorum');
+            console.log('⚠️ Fallback yorum kullanıldı');
         }
 
         return NextResponse.json({
@@ -113,9 +128,9 @@ Sadece JSON yanıt ver (Markdown yok):
         });
 
     } catch (error: any) {
-        console.error("❌ Hata:", error);
+        console.error("❌ Birth chart hatası:", error);
         return NextResponse.json({
-            error: error.message || "Yıldızlar sessiz..."
+            error: error.message || "Yıldızlar şu an sessiz..."
         }, { status: 500 });
     }
 }
