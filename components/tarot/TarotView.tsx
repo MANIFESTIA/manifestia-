@@ -522,7 +522,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                         </motion.div>
                     )}
 
-                    {/* 4. REVEALING: SPARKLE EXPLOSION */}
+                    {/* 4. REVEALING: SPARKLE EXPLOSION & MYSTICAL TRAIL */}
                     {step === 'revealing' && selectedCard && (
                         <motion.div
                             key="revealing"
@@ -530,23 +530,43 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                         >
                             <GalaxyParticles />
 
+                            {/* Spinning Energy Ring */}
+                            <motion.div
+                                className="absolute w-[500px] h-[500px] rounded-full border border-purple-500/30"
+                                animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+                                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                            >
+                                <div className="absolute inset-0 rounded-full border-t-2 border-cyan-400/50 blur-[2px]" />
+                            </motion.div>
+
                             <motion.div // Card Container
-                                initial={{ scale: 0.5, rotateY: 0, y: 100 }}
-                                animate={{ scale: 1.2, rotateY: 180, y: 0 }}
-                                transition={{ duration: 2, ease: [0.19, 1, 0.22, 1] }} // Exponential ease
+                                initial={{ scale: 0.1, rotateY: 0, y: 300 }}
+                                animate={{ scale: 1.2, rotateY: 1080, y: 0 }} // 3 full spins
+                                transition={{ duration: 2.5, ease: [0.19, 1, 0.22, 1] }} // Exponential ease
                                 className="w-64 h-96 preserve-3d relative z-10"
                             >
+                                {/* Magical Trail / Ghost Effect */}
+                                {[1, 2, 3].map((i) => (
+                                    <motion.div
+                                        key={i}
+                                        className="absolute inset-0 bg-purple-500/30 rounded-xl blur-xl"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: [0, 0.5, 0], scale: [1, 1.5, 1] }}
+                                        transition={{ duration: 0.5, delay: i * 0.1, repeat: Infinity }}
+                                    />
+                                ))}
+
                                 <TarotCard
                                     name={selectedCard.name}
                                     isRevealed={true}
-                                    className="w-full h-full shadow-[0_0_100px_rgba(168,85,247,0.6)]"
+                                    className="w-full h-full shadow-[0_0_100px_rgba(168,85,247,0.8)]"
                                 />
                             </motion.div>
 
                             <motion.h2
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 1 }}
+                                initial={{ opacity: 0, scale: 2, filter: "blur(10px)" }}
+                                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                                transition={{ delay: 1.8, duration: 0.8 }}
                                 className="mt-12 text-5xl font-bold font-serif text-white tracking-widest text-shadow-glow"
                             >
                                 {selectedCard.name}

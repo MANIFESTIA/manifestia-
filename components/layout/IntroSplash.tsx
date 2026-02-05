@@ -65,10 +65,13 @@ export default function IntroSplash({ onComplete, autoEnter = false }: IntroSpla
                 variants={containerVariants}
                 transition={{ duration: autoEnter ? 0.6 : 1.5, ease: "easeInOut" }} // Fast exit for autoEnter
             >
-                {/* Background Ambience */}
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/40 via-[#050508] to-[#050508]" />
+                {/* Background Ambience & Star Tunnel */}
+                <div className="absolute inset-0 bg-[#050508]">
+                    <StarTunnel isWarping={isExiting} />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050508_90%)] z-10" />
+                </div>
 
-                <div className="relative z-10 text-center cursor-pointer" onClick={!isExiting && !autoEnter ? handleEnter : undefined}>
+                <div className="relative z-20 text-center cursor-pointer" onClick={!isExiting && !autoEnter ? handleEnter : undefined}>
 
                     {/* Logo / Title */}
                     <motion.div
@@ -80,9 +83,13 @@ export default function IntroSplash({ onComplete, autoEnter = false }: IntroSpla
                         {/* Logo */}
                         <motion.div
                             className="relative"
+                            animate={{
+                                filter: ["drop-shadow(0 0 10px rgba(251,191,36,0.3))", "drop-shadow(0 0 30px rgba(251,191,36,0.6))", "drop-shadow(0 0 10px rgba(251,191,36,0.3))"]
+                            }}
+                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                         >
-                            <div className="absolute -inset-8 bg-indigo-500/20 blur-3xl rounded-full opacity-60 animate-pulse" />
-                            <img src="/logo-ankh.png" alt="Manifest Logo" className="w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-[0_0_25px_rgba(251,191,36,0.5)] relative z-10" />
+                            <div className="absolute -inset-12 bg-indigo-500/20 blur-3xl rounded-full opacity-60 animate-pulse-slow" />
+                            <img src="/logo-ankh.png" alt="Manifest Logo" className="w-32 h-32 md:w-48 md:h-48 object-contain relative z-10" />
                         </motion.div>
 
                         {/* Title */}
@@ -91,7 +98,7 @@ export default function IntroSplash({ onComplete, autoEnter = false }: IntroSpla
                         </h1>
                     </motion.div>
 
-                    {/* Show Button ONLY if NOT auto-entering */}
+                    {/* ... Button ... */}
                     {!autoEnter && (
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -104,9 +111,6 @@ export default function IntroSplash({ onComplete, autoEnter = false }: IntroSpla
                                 whileTap={{ scale: 0.95 }}
                                 className="px-14 py-4 rounded-full relative overflow-hidden group border border-white/10 bg-gradient-to-r from-[#1a0b2e] via-[#4c1d95] to-[#1a0b2e] bg-[length:200%_auto] animate-gradient-slow transition-all duration-300 hover:border-white/30 shadow-lg"
                             >
-                                {/* Shine Effect */}
-                                <div className="absolute -inset-full top-0 block h-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent to-white/10 opacity-0 group-hover:opacity-100 group-hover:animate-shine" />
-
                                 <span className="relative z-10 flex items-center gap-4 text-base tracking-[0.3em] font-medium text-white/90 group-hover:text-white transition-colors uppercase drop-shadow-md">
                                     GİRİŞ YAP
                                     <span className="bg-white/10 p-1.5 rounded-full group-hover:bg-white/20 transition-colors">
@@ -119,5 +123,65 @@ export default function IntroSplash({ onComplete, autoEnter = false }: IntroSpla
                 </div>
             </motion.div>
         </>
+    );
+}
+
+// --- STAR TUNNEL COMPONENT ---
+function StarTunnel({ isWarping }: { isWarping: boolean }) {
+    // Generate static stars
+    const stars = React.useMemo(() => {
+        return [...Array(100)].map((_, i) => ({
+            id: i,
+            x: Math.random() * 100 - 50, // -50 to 50 vw
+            y: Math.random() * 100 - 50, // -50 to 50 vh
+            size: Math.random() * 2 + 1,
+            delay: Math.random() * 2,
+            duration: Math.random() * 3 + 2
+        }));
+    }, []);
+
+    return (
+        <div className="absolute inset-0 overflow-hidden perspective-1000">
+            {stars.map((star) => (
+                <motion.div
+                    key={star.id}
+                    className="absolute bg-white rounded-full"
+                    style={{
+                        left: '50%',
+                        top: '50%',
+                        width: star.size,
+                        height: star.size,
+                    }}
+                    initial={{
+                        x: 0,
+                        y: 0,
+                        opacity: 0,
+                        scale: 0.1
+                    }}
+                    animate={isWarping ? {
+                        x: star.x * 20 + 'vw',
+                        y: star.y * 20 + 'vh',
+                        opacity: [0, 1, 0],
+                        scale: [0.1, 5, 20], // Warp streak effect via scale
+                        /* Make them look like lines */
+                        width: [star.size, star.size, star.size * 2],
+                        height: [star.size, star.size * 10, star.size * 40],
+                    } : {
+                        x: star.x * 5 + 'vw',
+                        y: star.y * 5 + 'vh',
+                        opacity: [0, 1, 0],
+                        scale: [0.1, 1, 0.1],
+                        width: star.size,
+                        height: star.size
+                    }}
+                    transition={{
+                        duration: isWarping ? 0.8 : star.duration,
+                        repeat: Infinity,
+                        ease: isWarping ? "easeIn" : "linear",
+                        delay: isWarping ? 0 : star.delay
+                    }}
+                />
+            ))}
+        </div>
     );
 }
