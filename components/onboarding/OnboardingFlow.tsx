@@ -27,31 +27,31 @@ export default function OnboardingFlow() {
     const [registerError, setRegisterError] = useState('');
 
     const handleNext = async () => {
-        if (step === 2) {
-            // Doğum bilgileri girildi, Niyet seçimine geç
-            setStep(3);
+        if (step === 1) {
+            // Register step - email/password ile hesap oluştur
+            await handleRegister();
         } else if (step === 3) {
-            // Niyet seçildi, Ses rehberine geç
+            // Doğum bilgileri girildi, Niyet seçimine geç
             setStep(4);
         } else if (step === 4) {
-            // Ses seçildi, Hesaplamaya geç
+            // Niyet seçildi, Ses rehberine geç
             setStep(5);
         } else if (step === 5) {
-            // Bu adım useEffect ile otomatik tetiklenecek (Hesaplama)
+            // Ses seçildi, Hesaplamaya geç
+            setStep(6);
         } else if (step === 6) {
-            // Sonuç görüldü, Kayıt ekranına geç (Yeni Adım)
-            setStep(7);
+            // Bu adım useEffect ile otomatik tetiklenecek (Hesaplama)
         } else if (step === 7) {
-            // Kayıt İşlemi
-            await handleRegister();
+            // Sonuç görüldü, Profile kaydet
+            setStep(8);
         } else {
             setStep(prev => prev + 1);
         }
     };
 
-    // Step 5 (Hesaplama) tetiklendiğinde API'ye git
+    // Step 6 (Hesaplama) tetiklendiğinde API'ye git
     useEffect(() => {
-        if (step === 5) {
+        if (step === 6) {
             const fetchCosmicMessage = async () => {
                 setLoading(true);
                 try {
@@ -64,12 +64,12 @@ export default function OnboardingFlow() {
 
                     if (result.message) {
                         setCosmicMessage(result.message);
-                        setTimeout(() => setStep(6), 2500); // Biraz daha uzun beklet heyecan artsın
+                        setTimeout(() => setStep(7), 2500); // Biraz daha uzun beklet heyecan artsın
                     }
                 } catch (error) {
                     console.error("Cosmic connection error:", error);
                     setCosmicMessage("Yıldızlar şu an sessiz, ancak enerjin evrene ulaştı.");
-                    setStep(6);
+                    setStep(7);
                 } finally {
                     setLoading(false);
                 }
@@ -78,9 +78,57 @@ export default function OnboardingFlow() {
         }
     }, [step, formData]);
 
+    // Step 8 (Profile Güncelleme) tetiklendiğinde profili kaydet
+    useEffect(() => {
+        if (step === 8) {
+            const updateProfile = async () => {
+                setLoading(true);
+                try {
+                    const token = localStorage.getItem('manifestia_token');
+                    const res = await fetch(getApiUrl('api/user/me'), {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            name: formData.name,
+                            birthDate: formData.birthDate,
+                            birthTime: formData.birthTime,
+                            birthCity: formData.birthCity,
+                            intents: formData.intents,
+                            voiceGuide: formData.voiceGuide
+                        })
+                    });
+
+                    if (res.ok) {
+                        // Başarılı - Dashboard'a yönlendir
+                        setTimeout(() => {
+                            router.push('/dashboard');
+                        }, 1500);
+                    } else {
+                        console.error("Profile update failed");
+                        // Hata olsa bile dashboard'a git
+                        setTimeout(() => {
+                            router.push('/dashboard');
+                        }, 1500);
+                    }
+                } catch (error) {
+                    console.error("Profile update error:", error);
+                    setTimeout(() => {
+                        router.push('/dashboard');
+                    }, 1500);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            updateProfile();
+        }
+    }, [step, formData, router]);
+
     const handleRegister = async () => {
         if (!formData.email || !formData.password) {
-            setRegisterError('Lütfen tüm alanları doldur.');
+            setRegisterError('Lütfen e-posta ve şifre gir.');
             return;
         }
 
@@ -92,14 +140,9 @@ export default function OnboardingFlow() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: formData.name,
                     email: formData.email,
                     password: formData.password,
-                    birthDate: formData.birthDate,
-                    birthTime: formData.birthTime,
-                    birthCity: formData.birthCity,
-                    intents: formData.intents,
-                    voiceGuide: formData.voiceGuide,
+                    name: '', // Boş name ile başla, sonra güncellenecek
                 }),
             });
 
@@ -114,12 +157,12 @@ export default function OnboardingFlow() {
                     birthDate: data.user.birthDate || "",
                     birthTime: data.user.birthTime || "",
                     birthCity: data.user.birthCity || "",
-                    intents: data.user.intents,
-                    voiceGuide: data.user.voiceGuide,
+                    intents: data.user.intents || [],
+                    voiceGuide: data.user.voiceGuide || "",
                 };
 
                 saveUser(fullUserProfile, data.token);
-                setStep(8);
+                setStep(2); // Name adımına geç
             } else {
                 setRegisterError(data.error || 'Kayıt başarısız.');
             }
@@ -165,10 +208,11 @@ export default function OnboardingFlow() {
 
 
     const handleBack = () => {
-        if (step === 6) {
-            // "Hesaplama" (Adım 5) ekranını atla, direkt rehber seçimine dön
-            setStep(4);
-        } else if (step > 0) {
+        if (step === 7) {
+            // "Hesaplama" (Adım 6) ekranını atla, direkt rehber seçimine dön
+            setStep(5);
+        } else if (step > 0 && step !== 8) {
+            // Step 8 (profile update) sırasında geri gitmeye izin verme
             setStep(prev => prev - 1);
         }
     };
@@ -179,7 +223,7 @@ export default function OnboardingFlow() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-manifest-primary/10 rounded-full blur-[150px] pointer-events-none animate-pulse-slow"></div>
 
             {/* Back Button */}
-            {step > 0 && step !== 5 && (
+            {step > 0 && step !== 6 && step !== 8 && (
                 <button
                     onClick={handleBack}
                     className="absolute top-6 left-6 z-50 p-3 rounded-full bg-black/20 text-white/50 hover:text-white hover:bg-white/10 border border-white/5 transition-all backdrop-blur-md group"
@@ -233,8 +277,84 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {/* STEP 1: NAME */}
+                {/* STEP 1: REGISTER */}
                 {step === 1 && (
+                    <motion.div
+                        key="register"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="w-full max-w-md z-10 space-y-6 glass-panel p-8 rounded-3xl mx-4"
+                    >
+                        <div className="text-center mb-6">
+                            <h2 className="text-2xl font-serif text-white text-glow mb-2">Enerjini Mühürle</h2>
+                            <p className="text-manifest-muted font-light text-sm">Giriş yapabilmen için hesabını oluştur.</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-xs font-medium text-manifest-muted/80 ml-1">E-posta</label>
+                                <div className="bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                                    <Mail className="text-white/50 w-5 h-5" />
+                                    <input
+                                        type="email"
+                                        placeholder="ornek@mail.com"
+                                        value={formData.email}
+                                        onChange={(e) => updateField('email', e.target.value)}
+                                        className="bg-transparent w-full outline-none text-white font-light"
+                                        autoFocus
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label className="text-xs font-medium text-manifest-muted/80 ml-1">Şifre</label>
+                                <div className="bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                                    <Lock className="text-white/50 w-5 h-5" />
+                                    <input
+                                        type="password"
+                                        placeholder="Güçlü bir şifre"
+                                        value={formData.password}
+                                        onChange={(e) => updateField('password', e.target.value)}
+                                        className="bg-transparent w-full outline-none text-white font-light"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {registerError && (
+                            <div className="flex items-center gap-2 text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-500/20">
+                                <AlertCircle className="w-4 h-4 shrink-0" />
+                                <p>{registerError}</p>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={handleNext}
+                            disabled={loading || !formData.email || !formData.password}
+                            className="w-full mt-4 py-4 bg-gradient-to-r from-manifest-primary to-manifest-secondary rounded-xl text-white font-medium hover:shadow-[0_0_20px_rgba(236,72,153,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    <span>Hesabımı Oluştur</span>
+                                    <Sparkles className="w-5 h-5" />
+                                </>
+                            )}
+                        </button>
+
+                        <p className="text-xs text-manifest-muted/60 text-center mt-4">
+                            Zaten bir hesabın var mı?{' '}
+                            <Link href="/auth/login" className="text-purple-400 hover:text-white transition-colors underline">
+                                Giriş Yap
+                            </Link>
+                        </p>
+                    </motion.div>
+                )}
+
+                {/* STEP 2: NAME */}
+                {step === 2 && (
                     <motion.div
                         key="name"
                         initial={{ opacity: 0, y: 20 }}
@@ -272,8 +392,8 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {/* STEP 2: BIRTH DATA */}
-                {step === 2 && (
+                {/* STEP 3: BIRTH DATA */}
+                {step === 3 && (
                     <motion.div
                         key="birth"
                         initial={{ opacity: 0, x: 50 }}
@@ -350,8 +470,8 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {/* STEP 3: INTENT GRID */}
-                {step === 3 && (
+                {/* STEP 4: INTENT GRID */}
+                {step === 4 && (
                     <motion.div
                         key="intents"
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -400,8 +520,8 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {/* STEP 4: VOICE GUIDE */}
-                {step === 4 && (
+                {/* STEP 5: VOICE GUIDE */}
+                {step === 5 && (
                     <motion.div
                         key="guide"
                         initial={{ opacity: 0, x: 50 }}
@@ -453,8 +573,8 @@ export default function OnboardingFlow() {
                 )}
 
 
-                {/* STEP 5: CALCULATING */}
-                {step === 5 && (
+                {/* STEP 6: CALCULATING */}
+                {step === 6 && (
                     <motion.div
                         key="calculating"
                         initial={{ opacity: 0 }}
@@ -478,8 +598,8 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {/* STEP 6: RESULT */}
-                {step === 6 && (
+                {/* STEP 7: RESULT */}
+                {step === 7 && (
                     <motion.div
                         key="result"
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -502,7 +622,7 @@ export default function OnboardingFlow() {
                                     onClick={handleNext}
                                     className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl flex items-center justify-center gap-2 transition group-hover:border-manifest-primary/50 text-white"
                                 >
-                                    <span>Devam Et ve Kaydet</span>
+                                    <span>Devam Et</span>
                                     <ArrowRight className="w-5 h-5 ml-1" />
                                 </button>
                             </div>
@@ -510,71 +630,28 @@ export default function OnboardingFlow() {
                     </motion.div>
                 )}
 
-                {/* STEP 7: ACCOUNT CREATION (NEW) */}
-                {step === 7 && (
+                {/* STEP 8: UPDATING PROFILE */}
+                {step === 8 && (
                     <motion.div
-                        key="register"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="w-full max-w-md z-10 space-y-6 glass-panel p-8 rounded-3xl mx-4"
+                        key="updating"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center z-10 glass-panel p-12 rounded-3xl max-w-sm mx-auto relative overflow-hidden"
                     >
-                        <div className="text-center mb-6">
-                            <h2 className="text-2xl font-serif text-white text-glow mb-2">Enerjini Mühürle</h2>
-                            <p className="text-manifest-muted font-light text-sm">Giriş yapabilmen için hesabını oluştur.</p>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-manifest-muted/80 ml-1">E-posta</label>
-                                <div className="bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
-                                    <Mail className="text-white/50 w-5 h-5" />
-                                    <input
-                                        type="email"
-                                        placeholder="ornek@mail.com"
-                                        value={formData.email}
-                                        onChange={(e) => updateField('email', e.target.value)}
-                                        className="bg-transparent w-full outline-none text-white font-light"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-manifest-muted/80 ml-1">Şifre</label>
-                                <div className="bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
-                                    <Lock className="text-white/50 w-5 h-5" />
-                                    <input
-                                        type="password"
-                                        placeholder="Güçlü bir şifre"
-                                        value={formData.password}
-                                        onChange={(e) => updateField('password', e.target.value)}
-                                        className="bg-transparent w-full outline-none text-white font-light"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {registerError && (
-                            <div className="flex items-center gap-2 text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-500/20">
-                                <AlertCircle className="w-4 h-4 shrink-0" />
-                                <p>{registerError}</p>
-                            </div>
-                        )}
-
-                        <button
-                            onClick={handleNext}
-                            disabled={loading}
-                            className="w-full mt-4 py-4 bg-gradient-to-r from-manifest-primary to-manifest-secondary rounded-xl text-white font-medium hover:shadow-[0_0_20px_rgba(236,72,153,0.4)] transition-all flex items-center justify-center gap-2"
+                        <div className="absolute inset-0 bg-manifest-secondary/10 animate-pulse-slow"></div>
+                        <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                            className="w-20 h-20 mb-6 mx-auto relative"
                         >
-                            {loading ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                <>
-                                    <span>Hesabımı Oluştur</span>
-                                    <Sparkles className="w-5 h-5" />
-                                </>
-                            )}
-                        </button>
+                            <div className="absolute inset-0 border-t-2 border-r-2 border-manifest-secondary rounded-full"></div>
+                            <div className="absolute inset-2 border-b-2 border-l-2 border-manifest-primary rounded-full opacity-50"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <Sparkles className="w-8 h-8 text-white animate-pulse" />
+                            </div>
+                        </motion.div>
+                        <h2 className="text-2xl font-serif mb-2 text-white relative z-10">Profilin Kaydediliyor...</h2>
+                        <p className="text-manifest-muted text-sm font-light relative z-10">Enerjin mühürleniyor.</p>
                     </motion.div>
                 )}
 

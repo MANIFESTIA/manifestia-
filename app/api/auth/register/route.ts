@@ -6,8 +6,8 @@ export async function POST(req: Request) {
     try {
         const { name, email, password, birthDate, birthTime, birthCity, intents, voiceGuide } = await req.json();
 
-        if (!email || !password || !name) {
-            return NextResponse.json({ error: 'Tüm alanları doldurun.' }, { status: 400 });
+        if (!email || !password) {
+            return NextResponse.json({ error: 'E-posta ve şifre gerekli.' }, { status: 400 });
         }
 
         // Email kontrolü
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         const token = crypto.randomUUID();
         const newUser = await prisma.user.create({
             data: {
-                name,
+                name: name || '',
                 email,
                 password: hashedPassword,
                 diamonds: 5,
