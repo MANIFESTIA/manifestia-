@@ -4,6 +4,7 @@ import { useUser } from '@/lib/UserContext';
 import { ShoppingBag, Diamond, ArrowLeft, ExternalLink, Sparkles, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getDailyEnergy } from '@/lib/dailyEnergy';
+import { getApiUrl } from '@/lib/api';
 
 
 interface Product {
@@ -57,7 +58,7 @@ export default function StoreView({ onBack, onShowHistory }: { onBack?: () => vo
 
     const fetchProducts = async () => {
         try {
-            const res = await fetch('/api/store/products');
+            const res = await fetch(getApiUrl('api/store/products'));
             const data = await res.json();
             if (Array.isArray(data)) {
                 // Map backend Product to frontend Product (if needed)

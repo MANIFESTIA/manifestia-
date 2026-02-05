@@ -5,6 +5,7 @@ import { ProfileManager } from '@/lib/user-profile-manager'; // Import server lo
 // Since ProfileManager is in lib/ and effectively pure JS, we can use it in client components for direct logic if no secrets involved.
 import { Sparkles, ArrowRight, ShoppingBag, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getApiUrl } from '@/lib/api';
 
 // Mock Product Data (To avoid fetching all products just for image/name lookup in this component, or we pass product details)
 // Ideally we fetch product details. For speed, I'll use a lookup map or fetch.
@@ -25,7 +26,7 @@ export default function DailyCosmicRemedy() {
 
             // Veritabanından o ürünün detayını çek
             // (Şimdilik mock data ile simulation yapalım hızlıca, API endpointimiz list dönüyor)
-            fetch('/api/store/products')
+            fetch(getApiUrl('api/store/products'))
                 .then(res => res.json())
                 .then(products => {
                     const found = products.find((p: any) => p.code === rec.productId);

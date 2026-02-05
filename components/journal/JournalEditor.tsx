@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Save, X, Smile, Frown, Meh, Zap, CloudRain } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
+import { getApiUrl } from '@/lib/api';
 
 const MOODS = [
     { id: 'happy', label: 'Mutlu', icon: Smile, color: 'bg-yellow-500' },
@@ -33,7 +34,7 @@ export default function JournalEditor({ onSave, onCancel }: JournalEditorProps) 
 
         setSaving(true);
         try {
-            const res = await fetch('/api/journal', {
+            const res = await fetch(getApiUrl('api/journal'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

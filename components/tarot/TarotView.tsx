@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MAJOR_ARCANA, TarotCard as TarotCardType } from '@/lib/tarot-data';
+import { getApiUrl } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, RefreshCw, X, Stars, Diamond, History, Layers } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
@@ -221,7 +222,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
 
         try {
             // API İsteği
-            const response = await fetch('/api/tarot', {
+            const response = await fetch(getApiUrl('api/tarot'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -284,7 +285,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                         onClick={async () => {
                             if (!showHistory && user?.id) {
                                 try {
-                                    const res = await fetch(`/api/tarot?userId=${user.id}`);
+                                    const res = await fetch(getApiUrl(`api/tarot?userId=${user.id}`));
                                     const data = await res.json();
                                     setHistory(data);
                                 } catch (e) {

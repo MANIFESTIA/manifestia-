@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Lock, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { getApiUrl } from '@/lib/api';
 
 function ResetPasswordContent() {
     const [password, setPassword] = useState('');
@@ -39,7 +40,7 @@ function ResetPasswordContent() {
         }
 
         try {
-            const res = await fetch('/api/auth/reset-password', {
+            const res = await fetch(getApiUrl('api/auth/reset-password'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token, password }),

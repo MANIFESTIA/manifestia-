@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Diamond, Sparkles, CheckCircle } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
+import { getApiUrl } from '@/lib/api';
 
 interface IntentSealViewProps {
     onClose: () => void;
@@ -27,7 +28,7 @@ export default function IntentSealView({ onClose }: IntentSealViewProps) {
             const headers: HeadersInit = { 'Content-Type': 'application/json' };
             if (token) headers['Authorization'] = `Bearer ${token}`;
 
-            const res = await fetch('/api/rituals/seal-intent', {
+            const res = await fetch(getApiUrl('api/rituals/seal-intent'), {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({ intent: intent.trim() }),

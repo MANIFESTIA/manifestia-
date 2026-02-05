@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getApiUrl } from '@/lib/api';
 import { X, Star, Moon, Sun, MapPin, Calendar, Clock, Sparkles, Loader2 } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 
@@ -49,7 +50,7 @@ export default function BirthChartView({ onClose }: BirthChartViewProps) {
         setError(null);
 
         try {
-            const res = await fetch('/api/astrology/birth-chart', {
+            const res = await fetch(getApiUrl('api/astrology/birth-chart'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

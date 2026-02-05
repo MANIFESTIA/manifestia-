@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getApiUrl } from '@/lib/api';
 import { useUser } from '@/lib/UserContext';
 import { LogOut, X, User, BookOpen, Star, Camera, Upload, Calendar, MapPin, Clock, Moon, Edit2, Check, Save, ArrowUpCircle } from 'lucide-react';
 
@@ -134,7 +135,7 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
             const base64 = reader.result as string;
 
             try {
-                const res = await fetch('/api/user/avatar', {
+                const res = await fetch(getApiUrl('api/user/avatar'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: user?.id, avatar: base64 })
@@ -176,7 +177,7 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
 
     const handleSave = async () => {
         try {
-            const res = await fetch('/api/user/update', {
+            const res = await fetch(getApiUrl('api/user/update'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: user?.id, ...editForm })

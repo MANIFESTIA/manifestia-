@@ -15,7 +15,13 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   },
 });
 
+const isMobile = process.env.CAPACITOR_BUILD === 'true';
+
 const nextConfig: NextConfig = {
+  output: isMobile ? 'export' : undefined,
+  images: {
+    unoptimized: isMobile,
+  },
   reactStrictMode: true,
   typescript: {
     ignoreBuildErrors: true,

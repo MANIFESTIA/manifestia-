@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '@/lib/UserContext';
 import { useCosmicMemory } from '@/hooks/useCosmicMemory';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getApiUrl } from '@/lib/api';
 import { ArrowLeft, Calendar, Sparkles, Moon, Sun, Plus, BookOpen } from 'lucide-react';
 import JournalEditor from './JournalEditor';
 
@@ -25,7 +26,7 @@ export default function JournalView({ onClose }: { onClose: () => void }) {
     const fetchJournalEntries = async () => {
         if (!user?.id) return;
         try {
-            const res = await fetch(`/api/journal?userId=${user.id}`);
+            const res = await fetch(getApiUrl(`api/journal?userId=${user.id}`));
             if (res.ok) {
                 const data = await res.json();
                 setTextEntries(data);

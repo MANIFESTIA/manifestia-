@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import AuraCamera from './AuraCamera';
+import { getApiUrl } from '@/lib/api';
 import AuraResult, { AuraAnalysis } from './AuraResult';
 import { Sparkles, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,7 +20,7 @@ export default function AuraView({ onClose }: { onClose: () => void }) {
 
         try {
             // API Çağrısı
-            const response = await fetch('/api/aura', {
+            const response = await fetch(getApiUrl('api/aura'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ image: capturedImage })

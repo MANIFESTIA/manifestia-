@@ -6,6 +6,7 @@ import { UserProfile } from '@/types';
 import { Star, ChevronRight, Moon, Sun, MapPin, Sparkles, ArrowRight, Lock, Mail, AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getApiUrl } from '@/lib/api';
 
 export default function OnboardingFlow() {
     const { saveUser } = useUser();
@@ -54,7 +55,7 @@ export default function OnboardingFlow() {
             const fetchCosmicMessage = async () => {
                 setLoading(true);
                 try {
-                    const response = await fetch('/api/universe-message', {
+                    const response = await fetch(getApiUrl('api/universe-message'), {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ data: formData }),
@@ -87,7 +88,7 @@ export default function OnboardingFlow() {
         setRegisterError('');
 
         try {
-            const res = await fetch('/api/auth/register', {
+            const res = await fetch(getApiUrl('api/auth/register'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
