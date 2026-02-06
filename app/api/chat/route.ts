@@ -36,6 +36,7 @@ export async function POST(req: Request) {
         const lastUserMessage = messages[messages.length - 1];
 
         // Eğer oturum yoksa ve kullanıcı giriş yapmışsa, yeni oturum başlat
+        /* 
         if (userId && !sessionId) {
             try {
                 const session = await prisma.chatSession.create({
@@ -49,8 +50,10 @@ export async function POST(req: Request) {
                 console.error("Session creation failed", e);
             }
         }
+        */
 
         // Kullanıcı mesajını kaydet
+        /*
         if (sessionId && lastUserMessage) {
             try {
                 await prisma.chatMessage.create({
@@ -64,13 +67,18 @@ export async function POST(req: Request) {
                 console.error("User message save failed", e);
             }
         }
+        */
+
+        console.log("🤖 AI İsteği Başlatılıyor:", { model: 'gemini-1.5-flash', messageCount: messages.length });
 
         const result = streamText({
             model: google('gemini-1.5-flash'), // Stable model
             system: systemPrompt,
             messages,
             onFinish: async ({ text }) => {
+                console.log("✅ AI Yanıtı Tamamlandı (Uzunluk):", text.length);
                 // AI cevabını kaydet
+                /*
                 if (sessionId) {
                     try {
                         await prisma.chatMessage.create({
@@ -84,6 +92,7 @@ export async function POST(req: Request) {
                         console.error("AI message save failed", e);
                     }
                 }
+                */
             }
         });
 
