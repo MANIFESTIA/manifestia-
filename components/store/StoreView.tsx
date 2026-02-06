@@ -283,7 +283,7 @@ const FALLBACK_PRODUCTS = [
         description: "Bolluk ve bereket enerjisini üzerine çek. Saf doğal taş.",
         priceTL: 750,
         priceDiamonds: 600,
-        image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1561839561-b13bcfe95249?auto=format&fit=crop&q=80&w=600",
         tag: "Bolluk"
     },
     {
@@ -292,7 +292,7 @@ const FALLBACK_PRODUCTS = [
         description: "Negatif enerjilere karşı kalkan oluştur.",
         priceTL: 450,
         priceDiamonds: 350,
-        image: "https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?auto=format&fit=crop&q=80&w=600",
         tag: "Korunma"
     },
     {
@@ -301,7 +301,7 @@ const FALLBACK_PRODUCTS = [
         description: "Tüm enerji merkezlerini dengele. Tam set.",
         priceTL: 1200,
         priceDiamonds: 950,
-        image: "https://images.unsplash.com/photo-1603561596112-0a132b757442?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1600609842388-439006c42994?auto=format&fit=crop&q=80&w=600",
         tag: "Denge"
     },
     {

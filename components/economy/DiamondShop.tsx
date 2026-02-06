@@ -28,10 +28,10 @@ export default function DiamondShop() {
                 <button
                     key={pkg.id}
                     onClick={() => handlePurchase(pkg)}
-                    className={`relative p-4 rounded-2xl border text-left transition-all hover:scale-[1.02] active:scale-95
+                    className={`relative p-4 rounded-2xl border text-left transition-all duration-300 hover:scale-[1.05] active:scale-95 cursor-pointer
                         ${pkg.highlight
-                            ? 'bg-gradient-to-br from-manifest-primary/20 to-manifest-secondary/20 border-manifest-primary/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]'
-                            : 'bg-white/5 border-white/10 hover:bg-white/10'
+                            ? 'bg-gradient-to-br from-manifest-primary/20 to-manifest-secondary/20 border-manifest-primary/50 shadow-[0_0_15px_rgba(168,85,247,0.2)] animate-pulse-subtle hover:shadow-[0_0_30px_rgba(168,85,247,0.5)]'
+                            : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)]'
                         }
                     `}
                 >

@@ -150,7 +150,7 @@ export default function BirthChartView({ onClose }: BirthChartViewProps) {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2">
+                                    <div className="space-y-1">
                                         <label className="text-xs font-bold text-indigo-300 uppercase tracking-wider ml-1">Doğum Tarihi</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30">
@@ -162,12 +162,14 @@ export default function BirthChartView({ onClose }: BirthChartViewProps) {
                                                 value={formData.birthDate}
                                                 onChange={e => setFormData({ ...formData, birthDate: e.target.value })}
                                                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 transition [color-scheme:dark]"
+                                                placeholder="01.05.2003"
                                             />
                                         </div>
+                                        <p className="text-xs text-white/30 ml-1">Örnek: 15.03.1995</p>
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
+                                <div className="space-y-1">
                                     <label className="text-xs font-bold text-indigo-300 uppercase tracking-wider ml-1">Doğum Saati</label>
                                     <div className="relative">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30">
@@ -181,6 +183,7 @@ export default function BirthChartView({ onClose }: BirthChartViewProps) {
                                             className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-white/20 focus:outline-none focus:border-indigo-500/50 focus:bg-white/10 transition [color-scheme:dark] disabled:opacity-50"
                                         />
                                     </div>
+                                    <p className="text-xs text-white/30 ml-1">Örnek: 14:30</p>
                                     <div className="flex items-center gap-2 mt-2 ml-1">
                                         <input
                                             type="checkbox"

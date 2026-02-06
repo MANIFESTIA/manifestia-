@@ -271,11 +271,39 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 hide-scrollbar pt-16 pb-4">
                 {messages.length === 0 && (
-                    <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-50">
-                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-2">
+                    <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
+                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-2 opacity-50">
                             <Sparkles className="w-8 h-8 text-manifest-primary/50" />
                         </div>
-                        <p className="font-light text-lg">"Evren seni dinliyor..."</p>
+                        <p className="font-light text-lg opacity-50">"Evren seni dinliyor..."</p>
+
+                        {/* Suggested Questions */}
+                        <div className="grid grid-cols-2 gap-3 mt-8 w-full max-w-md px-4">
+                            {[
+                                "Bu ay benim için nasıl geçecek?",
+                                "Aşk hayatım hakkında ne söylersin?",
+                                "Kariyer için tavsiyelerin var mı?",
+                                "Bugün enerjim nasıl?"
+                            ].map((question, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => {
+                                        setInput(question);
+                                        // Small delay to ensure state update before submit
+                                        setTimeout(() => {
+                                            // Create a synthetic event
+                                            const syntheticEvent = {
+                                                preventDefault: () => { },
+                                            } as React.FormEvent<HTMLFormElement>;
+                                            handleSubmit(syntheticEvent);
+                                        }, 100);
+                                    }}
+                                    className="p-4 text-xs md:text-sm text-left bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 rounded-2xl text-white/60 hover:text-white transition-all hover:-translate-y-1 duration-300"
+                                >
+                                    {question}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 )}
 

@@ -21,7 +21,7 @@ export default function RitualLibrary({ onSelectRitual }: RitualLibraryProps) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all hover:bg-white/10"
+                        className="group relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10 hover:scale-[1.05] hover:shadow-[0_0_25px_rgba(139,92,246,0.4)] hover:border-purple-500/50 cursor-pointer"
                     >
                         {/* Background Gradient */}
                         <div className={`absolute inset-0 bg-gradient-to-br ${ritual.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
