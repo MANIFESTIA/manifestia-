@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useMemo } from 'react';
 import { useUser } from '@/lib/UserContext';
-import { MessageCircle, Wind, Sparkles, Users, ShoppingBag, Bell, Flame, Image as ImageIcon, Map as MapIcon, Star } from 'lucide-react';
+import { MessageCircle, Wind, Sparkles, Users, ShoppingBag, Bell, Flame, Image as ImageIcon, Map as MapIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCosmicGuidance } from '@/hooks/useCosmicGuidance';
 import { useCosmicWatcher } from '@/hooks/useCosmicWatcher';
@@ -21,7 +21,6 @@ import WalletDisplay from '@/components/gamification/WalletDisplay';
 import StoreView from '@/components/store/StoreView';
 import TransactionHistoryModal from '@/components/economy/TransactionHistoryModal';
 import DiamondShopModal from '@/components/store/DiamondShopModal';
-import IntentSealView from '@/components/ritual/IntentSealView';
 
 type ViewState = 'sanctuary' | 'guide' | 'market';
 
@@ -70,7 +69,6 @@ export default function SanctuaryView() {
     const [showNotifications, setShowNotifications] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
     const [showDiamondShop, setShowDiamondShop] = useState(false);
-    const [showIntentSeal, setShowIntentSeal] = useState(false);
 
     // Intro Splash State - Overlay
     const [showIntro, setShowIntro] = useState(true);
@@ -178,14 +176,6 @@ export default function SanctuaryView() {
                                 <MapIcon className="w-6 h-6 text-indigo-300" />
                                 <span className="text-xs text-white/70 text-center leading-tight">Doğum Haritası</span>
                             </button>
-
-                            <button
-                                onClick={() => setShowIntentSeal(true)}
-                                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition w-24"
-                            >
-                                <Star className="w-6 h-6 text-amber-300" />
-                                <span className="text-xs text-white/70">Niyet</span>
-                            </button>
                         </div>
 
                         {/* Cosmic Alert Widget REMOVED from here */}
@@ -230,7 +220,6 @@ export default function SanctuaryView() {
             </main>
 
             {/* Modals */}
-            {showIntentSeal && <IntentSealView onClose={() => setShowIntentSeal(false)} />}
             {showRitualView && <RitualView onClose={() => setShowRitualView(false)} />}
             {showBirthChart && <BirthChartView onClose={() => setShowBirthChart(false)} />}
 
