@@ -156,7 +156,6 @@ export default function TarotCard({
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                style={{ transform: 'rotateY(180deg)' }}
                             >
                                 {getIcon()}
                             </motion.div>
@@ -173,7 +172,6 @@ export default function TarotCard({
                 {/* Alt Metin Alanı */}
                 <div
                     className="absolute bottom-0 inset-x-0 h-16 flex flex-col items-center justify-center border-t border-white/10 bg-black/80 backdrop-blur-md z-30"
-                    style={{ transform: 'rotateY(180deg)' }}
                 >
                     <span className="font-serif font-bold text-lg uppercase tracking-widest drop-shadow-md text-center px-2 leading-none mb-1 text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70">
                         {name || "UNKNOWN"}
