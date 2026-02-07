@@ -74,7 +74,7 @@ export default function TarotCard({
             // 16 - The Tower
             "yıkılan kule": "/tarot-cards/the-tower.png?v=4", "kule": "/tarot-cards/the-tower.png?v=4", "tower": "/tarot-cards/the-tower.png?v=4",
             // 17 - The Star
-            "yıldız": "/tarot-cards/the-star.png?v=4", "star": "/tarot-cards/the-star.png?v=4",
+            "yıldız": "/tarot-cards/the-star-full.png?v=5", "star": "/tarot-cards/the-star-full.png?v=5",
             // 18 - The Moon
             "ay": "/tarot-cards/the-moon.png?v=4", "moon": "/tarot-cards/the-moon.png?v=4",
             // 19 - The Sun
@@ -180,6 +180,105 @@ export default function TarotCard({
                         {cardData?.englishName || "ARCANA"}
                     </span>
                 </div>
+
+
+                {/* ADAPTIVE PREMIUM FRAMES (CSS/SVG) */}
+                {(() => {
+                    const lowerName = n.toLowerCase();
+
+                    // --- THE STAR (Gümüş & Kristal) ---
+                    if (lowerName.includes("star") || lowerName.includes("yıldız")) {
+                        return (
+                            <div className="absolute inset-0 z-50 pointer-events-none rounded-xl overflow-hidden">
+                                {/* Border Glow */}
+                                <div className="absolute inset-0 border-[3px] border-cyan-300/30 rounded-xl shadow-[inset_0_0_20px_rgba(34,211,238,0.3)]" />
+                                {/* SVG Frame */}
+                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="silver-grad" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0%" stopColor="#e2e8f0" />
+                                            <stop offset="50%" stopColor="#94a3b8" />
+                                            <stop offset="100%" stopColor="#f8fafc" />
+                                        </linearGradient>
+                                        <filter id="glow-star">
+                                            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                                            <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                                        </filter>
+                                    </defs>
+                                    {/* Corners */}
+                                    <path d="M10,50 L10,10 L50,10" stroke="url(#silver-grad)" strokeWidth="3" fill="none" filter="url(#glow-star)" />
+                                    <path d="M250,50 L250,10 L290,10" stroke="url(#silver-grad)" strokeWidth="3" fill="none" filter="url(#glow-star)" transform="scale(-1, 1) translate(-300, 0)" />
+                                    <path d="M10,450 L10,490 L50,490" stroke="url(#silver-grad)" strokeWidth="3" fill="none" filter="url(#glow-star)" />
+                                    <path d="M250,450 L250,490 L290,490" stroke="url(#silver-grad)" strokeWidth="3" fill="none" filter="url(#glow-star)" transform="scale(-1, 1) translate(-300, 0)" />
+                                    {/* Star Accents */}
+                                    <circle cx="10" cy="10" r="3" fill="#22d3ee" filter="url(#glow-star)" />
+                                    <circle cx="290" cy="10" r="3" fill="#22d3ee" filter="url(#glow-star)" />
+                                    <circle cx="10" cy="490" r="3" fill="#22d3ee" filter="url(#glow-star)" />
+                                    <circle cx="290" cy="490" r="3" fill="#22d3ee" filter="url(#glow-star)" />
+                                </svg>
+                            </div>
+                        );
+                    }
+
+                    // --- DEATH (Gotik & Dikenli) ---
+                    if (lowerName.includes("death") || lowerName.includes("ölüm")) {
+                        return (
+                            <div className="absolute inset-0 z-50 pointer-events-none rounded-xl overflow-hidden">
+                                <div className="absolute inset-0 border-[3px] border-slate-800/60 rounded-xl shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
+                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="death-grad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#334155" />
+                                            <stop offset="50%" stopColor="#0f172a" />
+                                            <stop offset="100%" stopColor="#334155" />
+                                        </linearGradient>
+                                    </defs>
+                                    {/* Dark Thorns/Vines */}
+                                    <path d="M0,60 C10,30 30,10 60,0" stroke="#1e293b" strokeWidth="6" fill="none" />
+                                    <path d="M300,60 C290,30 270,10 240,0" stroke="#1e293b" strokeWidth="6" fill="none" />
+                                    <path d="M0,440 C10,470 30,490 60,500" stroke="#1e293b" strokeWidth="6" fill="none" />
+                                    <path d="M300,440 C290,470 270,490 240,500" stroke="#1e293b" strokeWidth="6" fill="none" />
+                                    {/* Inner Detail */}
+                                    <path d="M15,15 L285,15 L285,485 L15,485 Z" stroke="url(#death-grad)" strokeWidth="2" fill="none" />
+                                    <circle cx="15" cy="15" r="4" fill="#ef4444" opacity="0.4" />
+                                    <circle cx="285" cy="15" r="4" fill="#ef4444" opacity="0.4" />
+                                </svg>
+                            </div>
+                        );
+                    }
+
+                    // --- TEMPERANCE (Altın & Akışkan) ---
+                    if (lowerName.includes("temperance") || lowerName.includes("denge")) {
+                        return (
+                            <div className="absolute inset-0 z-50 pointer-events-none rounded-xl overflow-hidden">
+                                <div className="absolute inset-0 border-[2px] border-amber-400/20 rounded-xl shadow-[inset_0_0_15px_rgba(251,191,36,0.2)]" />
+                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="gold-flow" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0%" stopColor="#fcd34d" />
+                                            <stop offset="50%" stopColor="#d97706" />
+                                            <stop offset="100%" stopColor="#fffbeb" />
+                                        </linearGradient>
+                                    </defs>
+                                    {/* Fluid Corners */}
+                                    <path d="M0,40 Q0,0 40,0 L80,0" stroke="url(#gold-flow)" strokeWidth="3" fill="none" />
+                                    <path d="M300,40 Q300,0 260,0 L220,0" stroke="url(#gold-flow)" strokeWidth="3" fill="none" />
+                                    <path d="M0,460 Q0,500 40,500 L80,500" stroke="url(#gold-flow)" strokeWidth="3" fill="none" />
+                                    <path d="M300,460 Q300,500 260,500 L220,500" stroke="url(#gold-flow)" strokeWidth="3" fill="none" />
+                                    {/* Inner decorative line */}
+                                    <rect x="12" y="12" width="276" height="476" rx="8" stroke="url(#gold-flow)" strokeWidth="1" fill="none" strokeOpacity="0.5" />
+                                </svg>
+                            </div>
+                        );
+                    }
+
+                    // --- DEFAULT GOLD FRAME (Other Cards) ---
+                    // The user asked to apply a nice frame to ALL cards eventually. For now, let's keep others simple or apply a default.
+                    // Let's apply a subtle default gold border to others if desired, or skip. User said "dediklerim için".
+
+                    return null;
+                })()}
+
             </div>
         );
     };
