@@ -57,6 +57,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                 method: 'POST',
                 headers: getAuthHeaders(),
             });
+
+            if (res.status === 401) {
+                console.warn("Session expired. Logging out.");
+                logout();
+                return;
+            }
+
             const data = await res.json();
 
             if (data.success && data.user) {
@@ -83,8 +90,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                     show: true,
                     amount: data.reward,
                     streak: data.streak,
-                    badges: data.badges, // Backend returns full list or new? API sends newBadges in response usually? 
-                    // My API implementation returns `badges: newBadges`. 
+                    badges: data.badges,
                     items: []
                 });
 
@@ -105,17 +111,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const addDiamonds = (amount: number) => {
-        // This is usually server side now via transactions.
-        // We can optimistically update or call an endpoint?
-        // For security, client shouldn't just "addDiamonds".
-        // Use purchaseDiamonds or specific actions.
         console.warn("Client-side addDiamonds is deprecated. Use server actions.");
     };
 
-    // Deprecated client-side method, kept for compatibility if needed
     const purchaseDiamonds = async (amount: number, cost: number) => {
-        // Implement "Buy Diamonds" logic here if we have a real payment gateway.
-        // For now, this might just be a mock or "Buy with TL".
         return true;
     };
 
@@ -128,13 +127,26 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                 headers: getAuthHeaders(),
                 body: JSON.stringify({ amount, description }),
             });
+
+            if (res.status === 401) {
+                console.warn("Unauthorized spend attempt. Session likely expired.");
+                logout();
+                return false;
+            }
+
             const data = await res.json();
 
             if (data.success) {
                 updateUser({ diamonds: data.newBalance });
                 return true;
+            } else {
+                console.error("Spend failed:", data.error);
+                // Force sync if balance mismatch suspected
+                if (data.error === 'Yetersiz elmas') {
+                    await syncUserWithServer();
+                }
+                return false;
             }
-            return false;
         } catch (error) {
             console.error('Spend diamonds failed:', error);
             return false;

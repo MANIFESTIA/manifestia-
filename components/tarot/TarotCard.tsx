@@ -35,66 +35,66 @@ export default function TarotCard({
 
     // --- ÖN YÜZ: DYNAMIC CUSTOM IMAGES Or ICONS ---
     const CardFront = () => {
-        const n = name?.toLowerCase() || "";
+        const n = name?.toLocaleLowerCase('tr-TR') || "";
 
         // Hangi kartlar için görselimiz var?
         const customImages: Record<string, string> = {
             // 0 - The Fool
-            "fool": "/tarot-cards/the-fool.png", "mecnun": "/tarot-cards/the-fool.png", "deli": "/tarot-cards/the-fool.png",
+            "mecnun": "/tarot-cards/the-fool.png?v=4", "deli": "/tarot-cards/the-fool.png?v=4", "fool": "/tarot-cards/the-fool.png?v=4",
             // 1 - The Magician
-            "magician": "/tarot-cards/the-magician.png", "büyücü": "/tarot-cards/the-magician.png",
+            "büyücü": "/tarot-cards/the-magician.png?v=4", "magician": "/tarot-cards/the-magician.png?v=4",
             // 2 - The High Priestess
-            "priestess": "/tarot-cards/the-high-priestess.png", "azize": "/tarot-cards/the-high-priestess.png",
+            "azize": "/tarot-cards/the-high-priestess.png?v=4", "priestess": "/tarot-cards/the-high-priestess.png?v=4",
             // 3 - The Empress
-            "empress": "/tarot-cards/the-empress.png", "imparatoriçe": "/tarot-cards/the-empress.png",
+            "imparatoriçe": "/tarot-cards/the-empress.png?v=4", "empress": "/tarot-cards/the-empress.png?v=4",
             // 4 - The Emperor
-            "emperor": "/tarot-cards/the-emperor.png", "imparator": "/tarot-cards/the-emperor.png",
+            "imparator": "/tarot-cards/the-emperor.png?v=4", "emperor": "/tarot-cards/the-emperor.png?v=4",
             // 5 - The Hierophant
-            "hierophant": "/tarot-cards/the-hierophant.png", "aziz": "/tarot-cards/the-hierophant.png",
+            "aziz": "/tarot-cards/the-hierophant.png?v=4", "hierophant": "/tarot-cards/the-hierophant.png?v=4",
             // 6 - The Lovers
-            "lovers": "/tarot-cards/the-lovers.png", "aşıklar": "/tarot-cards/the-lovers.png",
+            "aşıklar": "/tarot-cards/the-lovers.png?v=4", "lovers": "/tarot-cards/the-lovers.png?v=4",
             // 7 - The Chariot
-            "chariot": "/tarot-cards/the-chariot.png", "araba": "/tarot-cards/the-chariot.png",
-            // 8 - Strength
-            "strength": "/tarot-cards/strength.png", "güç": "/tarot-cards/strength.png",
+            "araba": "/tarot-cards/the-chariot.png?v=4", "chariot": "/tarot-cards/the-chariot.png?v=4",
+            // 8 - Strength (Aslan = Strength)
+            "güç": "/tarot-cards/strength.png?v=4", "strength": "/tarot-cards/strength.png?v=4", "aslan": "/tarot-cards/strength.png?v=4",
             // 9 - The Hermit
-            "hermit": "/tarot-cards/the-hermit.png", "ermiş": "/tarot-cards/the-hermit.png",
+            "ermiş": "/tarot-cards/the-hermit.png?v=4", "hermit": "/tarot-cards/the-hermit.png?v=4",
             // 10 - Wheel of Fortune
-            "wheel": "/tarot-cards/wheel-of-fortune.png", "çark": "/tarot-cards/wheel-of-fortune.png", "kader": "/tarot-cards/wheel-of-fortune.png",
+            "kader": "/tarot-cards/wheel-of-fortune.png?v=4", "çark": "/tarot-cards/wheel-of-fortune.png?v=4", "wheel": "/tarot-cards/wheel-of-fortune.png?v=4",
             // 11 - Justice
-            "justice": "/tarot-cards/justice.png", "adalet": "/tarot-cards/justice.png",
+            "adalet": "/tarot-cards/justice.png?v=4", "justice": "/tarot-cards/justice.png?v=4",
             // 12 - The Hanged Man
-            "hanged": "/tarot-cards/the-hanged-man.png", "aslan": "/tarot-cards/the-hanged-man.png", "asılan": "/tarot-cards/the-hanged-man.png",
+            "asılan": "/tarot-cards/the-hanged-man.png?v=4", "hanged": "/tarot-cards/the-hanged-man.png?v=4",
             // 13 - Death
-            "death": "/tarot-cards/death.png", "ölüm": "/tarot-cards/death.png",
+            "ölüm": "/tarot-cards/death.png?v=4", "death": "/tarot-cards/death.png?v=4",
             // 14 - Temperance
-            "temperance": "/tarot-cards/temperance.png", "denge": "/tarot-cards/temperance.png",
+            "denge": "/tarot-cards/temperance.png?v=4", "temperance": "/tarot-cards/temperance.png?v=4",
             // 15 - The Devil
-            "devil": "/tarot-cards/the-devil.png", "şeytan": "/tarot-cards/the-devil.png",
+            "şeytan": "/tarot-cards/the-devil.png?v=4", "devil": "/tarot-cards/the-devil.png?v=4",
             // 16 - The Tower
-            "tower": "/tarot-cards/the-tower.png", "kule": "/tarot-cards/the-tower.png",
+            "yıkılan kule": "/tarot-cards/the-tower.png?v=4", "kule": "/tarot-cards/the-tower.png?v=4", "tower": "/tarot-cards/the-tower.png?v=4",
             // 17 - The Star
-            "star": "/tarot-cards/the-star.png", "yıldız": "/tarot-cards/the-star.png",
+            "yıldız": "/tarot-cards/the-star.png?v=4", "star": "/tarot-cards/the-star.png?v=4",
             // 18 - The Moon
-            "moon": "/tarot-cards/the-moon.png", "ay": "/tarot-cards/the-moon.png",
+            "ay": "/tarot-cards/the-moon.png?v=4", "moon": "/tarot-cards/the-moon.png?v=4",
             // 19 - The Sun
-            "sun": "/tarot-cards/the-sun.png", "güneş": "/tarot-cards/the-sun.png",
+            "güneş": "/tarot-cards/the-sun.png?v=4", "sun": "/tarot-cards/the-sun.png?v=4",
             // 20 - Judgement
-            "judgement": "/tarot-cards/judgement.png", "mahkeme": "/tarot-cards/judgement.png",
+            "mahkeme": "/tarot-cards/judgement.png?v=4", "judgement": "/tarot-cards/judgement.png?v=4",
             // 21 - The World
-            "world": "/tarot-cards/the-world.png", "dünya": "/tarot-cards/the-world.png"
+            "dünya": "/tarot-cards/the-world.png?v=4", "world": "/tarot-cards/the-world.png?v=4"
         };
 
         // Bu kartın görseli var mı? (İsim içinde geçen anahtar kelimeye bak)
-        const imageKey = Object.keys(customImages).find(key => n.includes(key));
+        // Check for EXACT match first, then strict includes.
+        // Sort keys by length descending to ensure "imparatoriçe" is checked before "imparator"
+        const sortedKeys = Object.keys(customImages).sort((a, b) => b.length - a.length);
+        const imageKey = sortedKeys.find(key => n.includes(key));
+
         const imageSrc = imageKey ? customImages[imageKey] : null;
 
         const getIcon = () => {
-            const props = {
-                className: "w-24 h-24 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]",
-                style: { color: themeColor, filter: `drop-shadow(0 0 10px ${themeColor})` }
-            };
-
+            // Use safer checks for Turkish characters
             if (n.includes("fool") || n.includes("mecnun")) return <Footprints {...props} />;
             if (n.includes("magician") || n.includes("büyücü")) return <Zap {...props} />;
             if (n.includes("priestess") || n.includes("azize")) return <Moon {...props} />;
@@ -107,7 +107,7 @@ export default function TarotCard({
             if (n.includes("hermit") || n.includes("ermiş")) return <Lightbulb {...props} />;
             if (n.includes("wheel") || n.includes("çark")) return <RefreshCw {...props} />;
             if (n.includes("justice") || n.includes("adalet")) return <Scale {...props} />;
-            if (n.includes("hanged") || n.includes("aslan") || n.includes("asılan")) return <Anchor {...props} className="rotate-180" />;
+            if (n.includes("hanged") || n.includes("asılan")) return <Anchor {...props} className="rotate-180" />;
             if (n.includes("death") || n.includes("ölüm")) return <Skull {...props} />;
             if (n.includes("temperance") || n.includes("denge")) return <Droplet {...props} />;
             if (n.includes("devil") || n.includes("şeytan")) return <Ghost {...props} />;
@@ -121,15 +121,18 @@ export default function TarotCard({
             return <Hexagon {...props} />;
         };
 
+        const props = {
+            className: "w-24 h-24 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]",
+            style: { color: themeColor, filter: `drop-shadow(0 0 10px ${themeColor})` }
+        };
+
         return (
             <div className={`w-full h-full bg-[#080510] rounded-xl relative flex flex-col overflow-hidden shadow-inner ${imageSrc ? '' : 'border-2'}`}
                 style={{
                     borderColor: imageSrc ? 'transparent' : themeColor,
-                    // Eğer kart ters ise 180 derece döndür
                     transform: isReversed ? 'rotate(180deg)' : 'none'
                 }}>
 
-                {/* Image varsa onu göster, yoksa standart arka plan ve ikon */}
                 {imageSrc ? (
                     <div className="absolute inset-0 z-20 pointer-events-none">
                         <img
@@ -162,10 +165,10 @@ export default function TarotCard({
                 )}
 
                 {/* Köşe Süsleri (Her zaman) */}
-                <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-white/40 z-30 mix-blend-overlay" />
-                <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-white/40 z-30 mix-blend-overlay" />
-                <div className="absolute bottom-16 left-2 w-2 h-2 border-b border-l border-white/40 z-30 mix-blend-overlay" />
-                <div className="absolute bottom-16 right-2 w-2 h-2 border-b border-r border-white/40 z-30 mix-blend-overlay" />
+                <div className="absolute top-2 left-2 w-2 h-2 border-t border-l border-white/20 z-30 mix-blend-soft-light" />
+                <div className="absolute top-2 right-2 w-2 h-2 border-t border-r border-white/20 z-30 mix-blend-soft-light" />
+                <div className="absolute bottom-16 left-2 w-2 h-2 border-b border-l border-white/20 z-30 mix-blend-soft-light" />
+                <div className="absolute bottom-16 right-2 w-2 h-2 border-b border-r border-white/20 z-30 mix-blend-soft-light" />
 
                 {/* Alt Metin Alanı */}
                 <div

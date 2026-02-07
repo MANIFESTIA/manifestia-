@@ -92,24 +92,75 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
     };
 
     // Vercel AI SDK
-    const { messages, input, handleInputChange, handleSubmit, setInput, isLoading } = useChat({
-        api: '/api/chat',
-        body: { data: user },
-        onError: (error) => {
-            console.error("Chat API Error:", error);
-            if (isVoiceMode) {
-                speak("Bir bağlantı hatası oluştu.", selectedPersona);
-                setVoiceStatus('IDLE');
+    // Manual State Management
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [input, setInput] = useState('');
+    const [isLoading, setLoading] = useState(false);
+
+    // Handle Input Change
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInput(e.target.value);
+    };
+
+    // Manual Send Message
+    const sendMessage = async (message: string) => {
+        if (!message.trim()) return;
+
+        console.log('📤 Mesaj gönderiliyor:', message);
+        setLoading(true);
+        setInput(''); // Clear input immediately
+
+        // Add user message temporarily
+        const userMsg: Message = { id: Date.now().toString(), role: 'user', content: message };
+        setMessages(prev => [...prev, userMsg]);
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message,
+                    sessionId: 'test-session'
+                })
+            });
+
+            console.log('📥 API Response:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error('❌ API Error Data:', errorData);
+                throw new Error(errorData.error || errorData.details || `API Hatası: ${response.status}`);
             }
-        },
-        onFinish: (message: Message) => {
-            // Auto-speak in Voice Mode
+
+            const data = await response.json();
+            console.log('✅ Yanıt:', data);
+
+            // Add assistant message
+            const assistantMsg: Message = { id: (Date.now() + 1).toString(), role: 'assistant', content: data.response };
+
+            setMessages(prev => [...prev, assistantMsg]);
+
+            // Voice integration
             if (isVoiceMode) {
                 setVoiceStatus('SPEAKING');
-                speak(message.content, selectedPersona);
+                speak(data.response, selectedPersona);
             }
+
+        } catch (error) {
+            console.error('❌ Chat error:', error);
+            // Optionally add error message to chat
+            setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: "Bir hata oluştu. Lütfen tekrar deneyin." }]);
+        } finally {
+            setLoading(false);
         }
-    });
+    };
+
+    // Wrapper for form submission to match existing calls
+    const handleSubmit = async (e?: { preventDefault?: () => void }, data?: { data?: any }) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const msg = data?.data?.content || input;
+        await sendMessage(msg);
+    };
 
     // STT Integration
     const { isListening, transcript, startListening, stopListening, setTranscript } = useSpeechToText();

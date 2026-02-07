@@ -1,12 +1,13 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { streamText, generateText } from 'ai';
 import { ProfileManager } from '@/lib/user-profile-manager';
 import { prisma } from '@/lib/prisma';
 
 // Google Provider'ı bizim API anahtarımızla yapılandır
-const google = createGoogleGenerativeAI({
-    apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY || '',
-});
+// Google Provider'ı bizim API anahtarımızla yapılandır
+// const google = createGoogleGenerativeAI({
+//     apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY || '',
+// });
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -15,6 +16,11 @@ export async function POST(req: Request) {
     try {
         // API Key Kontrolü
         const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
+        // Initialize Google Provider inside the handler to ensure env vars are loaded
+        const google = createGoogleGenerativeAI({
+            apiKey: apiKey || '',
+        });
+
         if (!apiKey) {
             console.error("❌ API Key Bulunamadı! .env.local dosyasında GEMINI_API_KEY tanımlı olduğundan emin olun.");
             return new Response(JSON.stringify({ error: "Server Configuration Error: Missing API Key" }), {
@@ -24,7 +30,14 @@ export async function POST(req: Request) {
         }
 
         // Frontend'den hem mesajları hem de kullanıcı verisini (data body içinde) bekliyoruz
-        const { messages, data } = await req.json();
+        const body = await req.json();
+        let { messages, data } = body;
+
+        // Support for manual debugging (single message payload)
+        if (body.message && !messages) {
+            messages = [{ role: 'user', content: body.message }];
+            data = { sessionId: body.sessionId };
+        }
 
         const userId = data?.userId;
         let sessionId = data?.sessionId;
@@ -71,8 +84,21 @@ export async function POST(req: Request) {
 
         console.log("🤖 AI İsteği Başlatılıyor:", { model: 'gemini-1.5-flash', messageCount: messages.length });
 
+        // If manual debug mode (implied by body.message), return JSON
+        if (body.message) {
+            const result = await generateText({
+                model: google('gemini-2.0-flash'),
+                system: systemPrompt,
+                messages,
+            });
+
+            return new Response(JSON.stringify({ response: result.text }), {
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
         const result = streamText({
-            model: google('gemini-1.5-flash'), // Stable model
+            model: google('gemini-2.0-flash'), // Stable model
             system: systemPrompt,
             messages,
             onFinish: async ({ text }) => {
@@ -103,8 +129,12 @@ export async function POST(req: Request) {
         });
 
     } catch (error: any) {
-        console.error("Chat Route Error:", error);
-        return new Response(JSON.stringify({ error: error.message || "Internal Server Error" }), {
+        console.error("Chat Route Error Details:", error);
+        console.error("Stack Trace:", error.stack);
+        return new Response(JSON.stringify({
+            error: error.message || "Internal Server Error",
+            details: error.toString()
+        }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
         });

@@ -679,7 +679,9 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                             setShowPaywall(false);
                             if (selectedCard) handlePickCard(selectedCard);
                         } else {
-                            // Modal internal logic handles redirect usually
+                            alert("İşlem gerçekleştirilemedi. Bakiyeniz güncelleniyor, lütfen tekrar deneyin.");
+                            setShowPaywall(false);
+                            setSelectedCard(null); // Reset selection
                         }
                     }}
                 />

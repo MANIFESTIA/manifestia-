@@ -9,7 +9,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { amount, description } = await req.json();
+        let { amount, description } = await req.json();
+        amount = Number(amount);
 
         if (!amount || !description) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -26,7 +27,15 @@ export async function POST(req: Request) {
         }
 
         if (user.diamonds < amount) {
-            return NextResponse.json({ error: 'Yetersiz elmas' }, { status: 400 });
+            console.error(`Insufficient funds for user ${userId}: Has ${user.diamonds}, Needs ${amount}`);
+            return NextResponse.json({
+                error: 'Yetersiz elmas',
+                details: {
+                    userId,
+                    currentBalance: user.diamonds,
+                    required: amount
+                }
+            }, { status: 400 });
         }
 
         const updatedUser = await prisma.$transaction(async (tx) => {
