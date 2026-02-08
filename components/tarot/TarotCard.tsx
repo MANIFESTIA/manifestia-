@@ -245,17 +245,17 @@ export default function TarotCard({
                         death: { stops: ["#e2e8f0", "#ffffff", "#94a3b8"], glow: "#ffffff", accent: "#e2e8f0", bottomOpacity: 0.8 },
                         ölüm: { stops: ["#e2e8f0", "#ffffff", "#94a3b8"], glow: "#ffffff", accent: "#e2e8f0", bottomOpacity: 0.8 },
 
-                        // 14. Temperance (Denge) - Smooth Gold/White/Amber
-                        temperance: { stops: ["#fcd34d", "#ffffff", "#d97706"], glow: "#fbbf24", accent: "#ffffff", bottomOpacity: 0.6 },
-                        denge: { stops: ["#fcd34d", "#ffffff", "#d97706"], glow: "#fbbf24", accent: "#ffffff", bottomOpacity: 0.6 },
+                        // 14. Temperance (Denge) - Bright Yellow/Gold (Requested)
+                        temperance: { stops: ["#fef08a", "#facc15", "#eab308"], glow: "#facc15", accent: "#fef08a", bottomOpacity: 1.0 },
+                        denge: { stops: ["#fef08a", "#facc15", "#eab308"], glow: "#facc15", accent: "#fef08a", bottomOpacity: 1.0 },
 
                         // 15. The Devil (Şeytan) - PURE PURPLE (Requested)
                         devil: { stops: ["#d8b4fe", "#a855f7", "#581c87"], glow: "#a855f7", accent: "#d8b4fe", bottomOpacity: 1.0 },
                         şeytan: { stops: ["#d8b4fe", "#a855f7", "#581c87"], glow: "#a855f7", accent: "#d8b4fe", bottomOpacity: 1.0 },
 
-                        // 16. The Tower (Yıkılan Kule) - Orange/Red/Grey
-                        tower: { stops: ["#f97316", "#dc2626", "#4b5563"], glow: "#f97316", accent: "#dc2626", bottomOpacity: 0.8 },
-                        kule: { stops: ["#f97316", "#dc2626", "#4b5563"], glow: "#f97316", accent: "#dc2626", bottomOpacity: 0.8 },
+                        // 16. The Tower (Yıkılan Kule) - Shattered Crystal & Lightning (White/Cyan)
+                        tower: { stops: ["#ffffff", "#22d3ee", "#94a3b8"], glow: "#ffffff", accent: "#22d3ee", bottomOpacity: 1.0 },
+                        kule: { stops: ["#ffffff", "#22d3ee", "#94a3b8"], glow: "#ffffff", accent: "#22d3ee", bottomOpacity: 1.0 },
 
                         // 17. The Star (Yıldız) - Cyan/White/Indigo (Updated to new frame)
                         star: { stops: ["#22d3ee", "#ffffff", "#6366f1"], glow: "#22d3ee", accent: "#ffffff", bottomOpacity: 0.6 },
