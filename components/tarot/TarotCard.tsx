@@ -186,6 +186,57 @@ export default function TarotCard({
                 {(() => {
                     const lowerName = n.toLowerCase();
 
+                    // --- THE FOOL (Mecnun - Wind & Freedom) ---
+                    if (lowerName.includes("fool") || lowerName.includes("mecnun") || lowerName.includes("deli")) {
+                        return (
+                            <div className="absolute inset-0 z-50 pointer-events-none rounded-xl overflow-hidden">
+                                {/* Breezy Atmosphere */}
+                                <div className="absolute inset-0 rounded-xl shadow-[inset_0_0_30px_rgba(34,211,238,0.3)]" />
+
+                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="fool-grad" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.8" /> {/* Cyan */}
+                                            <stop offset="50%" stopColor="#facc15" stopOpacity="0.8" /> {/* Sun Yellow */}
+                                            <stop offset="100%" stopColor="#ffffff" stopOpacity="0.8" /> {/* White */}
+                                        </linearGradient>
+                                        <filter id="wind-blur">
+                                            <feGaussianBlur stdDeviation="2" />
+                                        </filter>
+                                    </defs>
+
+                                    {/* Main Frame - Playful & Open */}
+                                    <path
+                                        d="M10,20 Q150,-10 290,20 L290,480 Q150,510 10,480 Z"
+                                        stroke="url(#fool-grad)"
+                                        strokeWidth="2"
+                                        fill="none"
+                                        filter="url(#wind-blur)"
+                                        opacity="0.6"
+                                    />
+                                    <rect
+                                        x="5" y="5"
+                                        width="290" height="490"
+                                        rx="15" ry="15"
+                                        stroke="url(#fool-grad)"
+                                        strokeWidth="2"
+                                        fill="none"
+                                    />
+
+                                    {/* Wind Swirls / Feathers */}
+                                    {/* Top Left Swirl */}
+                                    <path d="M-10,40 Q20,40 40,10" stroke="#fff" strokeWidth="2" fill="none" opacity="0.8" />
+                                    {/* Bottom Right Swirl */}
+                                    <path d="M310,460 Q280,460 260,490" stroke="#facc15" strokeWidth="2" fill="none" opacity="0.8" />
+
+                                    {/* Tiny 'Potential' Dots */}
+                                    <circle cx="20" cy="20" r="3" fill="#facc15" filter="url(#wind-blur)" />
+                                    <circle cx="280" cy="480" r="3" fill="#22d3ee" filter="url(#wind-blur)" />
+                                </svg>
+                            </div>
+                        );
+                    }
+
                     // --- THE STAR (Startlight & Cosmic Flow) ---
                     if (lowerName.includes("star") || lowerName.includes("yıldız")) {
                         return (
