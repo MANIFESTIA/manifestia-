@@ -186,35 +186,57 @@ export default function TarotCard({
                 {(() => {
                     const lowerName = n.toLowerCase();
 
-                    // --- THE STAR (Gümüş & Kristal) ---
+                    // --- THE STAR (Startlight & Cosmic Flow) ---
                     if (lowerName.includes("star") || lowerName.includes("yıldız")) {
                         return (
                             <div className="absolute inset-0 z-50 pointer-events-none rounded-xl overflow-hidden">
-                                {/* Border Glow */}
-                                <div className="absolute inset-0 border-[3px] border-cyan-300/30 rounded-xl shadow-[inset_0_0_20px_rgba(34,211,238,0.3)]" />
-                                {/* SVG Frame */}
+                                {/* Soft Inner Atmosphere */}
+                                <div className="absolute inset-0 rounded-xl shadow-[inset_0_0_40px_rgba(34,211,238,0.2)] mix-blend-screen" />
+
                                 <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" preserveAspectRatio="none">
                                     <defs>
-                                        <linearGradient id="silver-grad" x1="0" y1="0" x2="1" y2="1">
-                                            <stop offset="0%" stopColor="#e2e8f0" />
-                                            <stop offset="50%" stopColor="#94a3b8" />
-                                            <stop offset="100%" stopColor="#f8fafc" />
+                                        <linearGradient id="star-frame-grad" x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.6" />
+                                            <stop offset="50%" stopColor="#ffffff" stopOpacity="1" />
+                                            <stop offset="100%" stopColor="#818cf8" stopOpacity="0.6" />
                                         </linearGradient>
-                                        <filter id="glow-star">
-                                            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-                                            <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                                        <filter id="star-glow" height="150%" width="150%" x="-25%" y="-25%">
+                                            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur" />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
                                         </filter>
                                     </defs>
-                                    {/* Corners */}
-                                    <path d="M10,50 L10,10 L50,10" stroke="url(#silver-grad)" strokeWidth="3" fill="none" filter="url(#glow-star)" />
-                                    <path d="M250,50 L250,10 L290,10" stroke="url(#silver-grad)" strokeWidth="3" fill="none" filter="url(#glow-star)" transform="scale(-1, 1) translate(-300, 0)" />
-                                    <path d="M10,450 L10,490 L50,490" stroke="url(#silver-grad)" strokeWidth="3" fill="none" filter="url(#glow-star)" />
-                                    <path d="M250,450 L250,490 L290,490" stroke="url(#silver-grad)" strokeWidth="3" fill="none" filter="url(#glow-star)" transform="scale(-1, 1) translate(-300, 0)" />
-                                    {/* Star Accents */}
-                                    <circle cx="10" cy="10" r="3" fill="#22d3ee" filter="url(#glow-star)" />
-                                    <circle cx="290" cy="10" r="3" fill="#22d3ee" filter="url(#glow-star)" />
-                                    <circle cx="10" cy="490" r="3" fill="#22d3ee" filter="url(#glow-star)" />
-                                    <circle cx="290" cy="490" r="3" fill="#22d3ee" filter="url(#glow-star)" />
+
+                                    {/* Main Continuous Elegant Border */}
+                                    <rect
+                                        x="3" y="3"
+                                        width="294" height="494"
+                                        rx="12" ry="12"
+                                        stroke="url(#star-frame-grad)"
+                                        strokeWidth="1.5"
+                                        fill="none"
+                                        filter="url(#star-glow)"
+                                    />
+
+                                    {/* Inner Delicate Line (Cosmic Thread) */}
+                                    <rect
+                                        x="10" y="10"
+                                        width="280" height="480"
+                                        rx="8" ry="8"
+                                        stroke="white"
+                                        strokeWidth="0.5"
+                                        strokeOpacity="0.4"
+                                        fill="none"
+                                    />
+
+                                    {/* Celtic/Cosmic Knots or Stars at midpoints */}
+                                    {/* Top Star */}
+                                    <path d="M150 0 L153 6 L159 9 L153 12 L150 18 L147 12 L141 9 L147 6 Z" fill="#fff" filter="url(#star-glow)" opacity="0.9" />
+                                    {/* Bottom Star */}
+                                    <path d="M150 482 L153 488 L159 491 L153 494 L150 500 L147 494 L141 491 L147 488 Z" fill="#fff" filter="url(#star-glow)" opacity="0.9" />
+
                                 </svg>
                             </div>
                         );

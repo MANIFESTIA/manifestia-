@@ -1,11 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useChat, Message } from '@ai-sdk/react';
 import { useVoice } from '@/hooks/useVoice';
 import { VoicePersona } from '@/lib/voice/voice-service';
 import { Mic, MicOff, Send, Sparkles, Volume2, Square, Globe, Settings, ArrowLeft, Headphones, X, ArrowUp, AudioWaveform } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/lib/UserContext';
 import VoiceSettings from '@/components/settings/VoiceSettings';
+import { getApiUrl } from '@/lib/api';
+
+interface Message {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+}
 
 // --- STT Hook (Web Speech API) ---
 const useSpeechToText = () => {
@@ -102,53 +108,47 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
         setInput(e.target.value);
     };
 
-    // Manual Send Message
+    // Send Message to API
     const sendMessage = async (message: string) => {
         if (!message.trim()) return;
 
-        console.log('📤 Mesaj gönderiliyor:', message);
         setLoading(true);
-        setInput(''); // Clear input immediately
+        setInput('');
 
-        // Add user message temporarily
         const userMsg: Message = { id: Date.now().toString(), role: 'user', content: message };
-        setMessages(prev => [...prev, userMsg]);
+        const updatedMessages = [...messages, userMsg];
+        setMessages(updatedMessages);
 
         try {
-            const response = await fetch('/api/chat', {
+            const response = await fetch(getApiUrl('api/chat'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message,
-                    sessionId: 'test-session'
+                    messages: updatedMessages.map(m => ({ role: m.role, content: m.content })),
+                    userProfile: {
+                        name: user?.name || 'Gezgin',
+                        sunSign: user?.sign || 'Bilinmiyor',
+                    }
                 })
             });
 
-            console.log('📥 API Response:', response.status);
-
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                console.error('❌ API Error Data:', errorData);
-                throw new Error(errorData.error || errorData.details || `API Hatası: ${response.status}`);
+                throw new Error(errorData.error || `API Hatası: ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('✅ Yanıt:', data);
 
-            // Add assistant message
             const assistantMsg: Message = { id: (Date.now() + 1).toString(), role: 'assistant', content: data.response };
-
             setMessages(prev => [...prev, assistantMsg]);
 
-            // Voice integration
             if (isVoiceMode) {
                 setVoiceStatus('SPEAKING');
                 speak(data.response, selectedPersona);
             }
 
-        } catch (error) {
-            console.error('❌ Chat error:', error);
-            // Optionally add error message to chat
+        } catch (error: any) {
+            console.error('Chat error:', error);
             setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: "Bir hata oluştu. Lütfen tekrar deneyin." }]);
         } finally {
             setLoading(false);
@@ -338,17 +338,7 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
                             ].map((question, idx) => (
                                 <button
                                     key={idx}
-                                    onClick={() => {
-                                        setInput(question);
-                                        // Small delay to ensure state update before submit
-                                        setTimeout(() => {
-                                            // Create a synthetic event
-                                            const syntheticEvent = {
-                                                preventDefault: () => { },
-                                            } as React.FormEvent<HTMLFormElement>;
-                                            handleSubmit(syntheticEvent);
-                                        }, 100);
-                                    }}
+                                    onClick={() => sendMessage(question)}
                                     className="p-4 text-xs md:text-sm text-left bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 rounded-2xl text-white/60 hover:text-white transition-all hover:-translate-y-1 duration-300"
                                 >
                                     {question}
