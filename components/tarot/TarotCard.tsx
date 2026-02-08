@@ -182,174 +182,168 @@ export default function TarotCard({
                 </div>
 
 
-                {/* ADAPTIVE PREMIUM FRAMES (CSS/SVG) */}
+                {/* UNIFIED PREMIUM FRAME SYSTEM */}
                 {(() => {
                     const lowerName = n.toLowerCase();
 
-                    // --- THE FOOL (Mecnun - Wind & Freedom) ---
-                    if (lowerName.includes("fool") || lowerName.includes("mecnun") || lowerName.includes("deli")) {
-                        return (
-                            <div className="absolute inset-0 z-50 pointer-events-none rounded-xl overflow-hidden">
-                                {/* Breezy Atmosphere */}
-                                <div className="absolute inset-0 rounded-xl shadow-[inset_0_0_30px_rgba(34,211,238,0.3)]" />
+                    // Configuration for Card Themes
+                    const cardThemes: { [key: string]: { stops: [string, string, string], glow: string, accent: string, bottomOpacity: number } } = {
+                        // 0. The Fool (Mecnun) - Cyan/Yellow/White
+                        fool: { stops: ["#22d3ee", "#facc15", "#ffffff"], glow: "#22d3ee", accent: "#facc15", bottomOpacity: 0.6 },
+                        mecnun: { stops: ["#22d3ee", "#facc15", "#ffffff"], glow: "#22d3ee", accent: "#facc15", bottomOpacity: 0.6 },
 
-                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" preserveAspectRatio="none">
+                        // 1. The Magician (Büyücü) - Gold/Magenta/Violet
+                        magician: { stops: ["#fbbf24", "#d946ef", "#8b5cf6"], glow: "#fbbf24", accent: "#d946ef", bottomOpacity: 0.8 },
+                        büyücü: { stops: ["#fbbf24", "#d946ef", "#8b5cf6"], glow: "#fbbf24", accent: "#d946ef", bottomOpacity: 0.8 },
+
+                        // 2. The High Priestess (Azize) - Blue/Silver/Purple
+                        priestess: { stops: ["#3b82f6", "#e2e8f0", "#a855f7"], glow: "#3b82f6", accent: "#e2e8f0", bottomOpacity: 0.7 },
+                        azize: { stops: ["#3b82f6", "#e2e8f0", "#a855f7"], glow: "#3b82f6", accent: "#e2e8f0", bottomOpacity: 0.7 },
+
+                        // 3. The Empress (İmparatoriçe) - Rose/Deep Pink/Emerald
+                        empress: { stops: ["#fbcfe8", "#f472b6", "#34d399"], glow: "#f472b6", accent: "#34d399", bottomOpacity: 0.7 },
+                        imparatoriçe: { stops: ["#fbcfe8", "#f472b6", "#34d399"], glow: "#f472b6", accent: "#34d399", bottomOpacity: 0.7 },
+
+                        // 4. The Emperor (İmparator) - Red/Orange/Slate
+                        emperor: { stops: ["#ef4444", "#f97316", "#374151"], glow: "#ef4444", accent: "#f97316", bottomOpacity: 0.8 },
+                        imparator: { stops: ["#ef4444", "#f97316", "#374151"], glow: "#ef4444", accent: "#f97316", bottomOpacity: 0.8 },
+
+                        // 5. The Hierophant (Aziz) - Light Gold/Bronze/Dark Wood
+                        hierophant: { stops: ["#fcd34d", "#b45309", "#78350f"], glow: "#fcd34d", accent: "#b45309", bottomOpacity: 0.9 },
+                        aziz: { stops: ["#fcd34d", "#b45309", "#78350f"], glow: "#fcd34d", accent: "#b45309", bottomOpacity: 0.9 },
+
+                        // 6. The Lovers (Aşıklar) - Neon Hot Pink/Magenta
+                        lovers: { stops: ["#ff66c4", "#ff0080", "#ff00ff"], glow: "#ff0080", accent: "#ff00ff", bottomOpacity: 0.9 },
+                        aşıklar: { stops: ["#ff66c4", "#ff0080", "#ff00ff"], glow: "#ff0080", accent: "#ff00ff", bottomOpacity: 0.9 },
+
+                        // 7. The Chariot (Araba) - Cyan/Silver/Blue
+                        chariot: { stops: ["#22d3ee", "#e2e8f0", "#3b82f6"], glow: "#06b6d4", accent: "#22d3ee", bottomOpacity: 0.8 },
+                        araba: { stops: ["#22d3ee", "#e2e8f0", "#3b82f6"], glow: "#06b6d4", accent: "#22d3ee", bottomOpacity: 0.8 },
+
+                        // 8. Strength (Güç) - Amber/Light Red/Gold
+                        strength: { stops: ["#f59e0b", "#fca5a5", "#fbbf24"], glow: "#f59e0b", accent: "#fbbf24", bottomOpacity: 0.8 },
+                        güç: { stops: ["#f59e0b", "#fca5a5", "#fbbf24"], glow: "#f59e0b", accent: "#fbbf24", bottomOpacity: 0.8 },
+                        aslan: { stops: ["#f59e0b", "#fca5a5", "#fbbf24"], glow: "#f59e0b", accent: "#fbbf24", bottomOpacity: 0.8 },
+
+                        // 9. The Hermit (Ermiş) - Indigo/Blue/White (Lantern light)
+                        hermit: { stops: ["#6366f1", "#1e1b4b", "#ffffff"], glow: "#6366f1", accent: "#ffffff", bottomOpacity: 0.8 },
+                        ermiş: { stops: ["#6366f1", "#1e1b4b", "#ffffff"], glow: "#6366f1", accent: "#ffffff", bottomOpacity: 0.8 },
+
+                        // 10. Wheel of Fortune (Kader Çarkı) - High Visibility GOLD
+                        wheel: { stops: ["#fcd34d", "#f59e0b", "#fcd34d"], glow: "#f59e0b", accent: "#ffffff", bottomOpacity: 1.0 },
+                        kader: { stops: ["#fcd34d", "#f59e0b", "#fcd34d"], glow: "#f59e0b", accent: "#ffffff", bottomOpacity: 1.0 },
+
+                        // 11. Justice (Adalet) - Silver/Blue/Red
+                        justice: { stops: ["#94a3b8", "#3b82f6", "#ef4444"], glow: "#94a3b8", accent: "#ef4444", bottomOpacity: 0.8 },
+                        adalet: { stops: ["#94a3b8", "#3b82f6", "#ef4444"], glow: "#94a3b8", accent: "#ef4444", bottomOpacity: 0.8 },
+
+                        // 12. The Hanged Man (Asılan Adam) - Teal/Purple/Blue
+                        hanged: { stops: ["#14b8a6", "#7c3aed", "#3b82f6"], glow: "#14b8a6", accent: "#7c3aed", bottomOpacity: 0.7 },
+                        asılan: { stops: ["#14b8a6", "#7c3aed", "#3b82f6"], glow: "#14b8a6", accent: "#7c3aed", bottomOpacity: 0.7 },
+
+                        // 13. Death (Ölüm) - White/Silver Spectral (No Red)
+                        death: { stops: ["#e2e8f0", "#ffffff", "#94a3b8"], glow: "#ffffff", accent: "#e2e8f0", bottomOpacity: 0.8 },
+                        ölüm: { stops: ["#e2e8f0", "#ffffff", "#94a3b8"], glow: "#ffffff", accent: "#e2e8f0", bottomOpacity: 0.8 },
+
+                        // 14. Temperance (Denge) - Smooth Gold/White/Amber
+                        temperance: { stops: ["#fcd34d", "#ffffff", "#d97706"], glow: "#fbbf24", accent: "#ffffff", bottomOpacity: 0.6 },
+                        denge: { stops: ["#fcd34d", "#ffffff", "#d97706"], glow: "#fbbf24", accent: "#ffffff", bottomOpacity: 0.6 },
+
+                        // 15. The Devil (Şeytan) - PURE PURPLE (Requested)
+                        devil: { stops: ["#d8b4fe", "#a855f7", "#581c87"], glow: "#a855f7", accent: "#d8b4fe", bottomOpacity: 1.0 },
+                        şeytan: { stops: ["#d8b4fe", "#a855f7", "#581c87"], glow: "#a855f7", accent: "#d8b4fe", bottomOpacity: 1.0 },
+
+                        // 16. The Tower (Yıkılan Kule) - Orange/Red/Grey
+                        tower: { stops: ["#f97316", "#dc2626", "#4b5563"], glow: "#f97316", accent: "#dc2626", bottomOpacity: 0.8 },
+                        kule: { stops: ["#f97316", "#dc2626", "#4b5563"], glow: "#f97316", accent: "#dc2626", bottomOpacity: 0.8 },
+
+                        // 17. The Star (Yıldız) - Cyan/White/Indigo (Updated to new frame)
+                        star: { stops: ["#22d3ee", "#ffffff", "#6366f1"], glow: "#22d3ee", accent: "#ffffff", bottomOpacity: 0.6 },
+                        yıldız: { stops: ["#22d3ee", "#ffffff", "#6366f1"], glow: "#22d3ee", accent: "#ffffff", bottomOpacity: 0.6 },
+
+                        // 18. The Moon (Ay) - Indigo/Blue/Silver
+                        moon: { stops: ["#4338ca", "#3b82f6", "#e2e8f0"], glow: "#6366f1", accent: "#e2e8f0", bottomOpacity: 0.8 },
+                        ay: { stops: ["#4338ca", "#3b82f6", "#e2e8f0"], glow: "#6366f1", accent: "#e2e8f0", bottomOpacity: 0.8 },
+
+                        // 19. The Sun (Güneş) - Yellow/Orange/Gold
+                        sun: { stops: ["#facc15", "#fb923c", "#fcd34d"], glow: "#facc15", accent: "#ffffff", bottomOpacity: 0.5 },
+                        güneş: { stops: ["#facc15", "#fb923c", "#fcd34d"], glow: "#facc15", accent: "#ffffff", bottomOpacity: 0.5 },
+
+                        // 20. Judgement (Mahkeme) - Red/Gold/Light Blue
+                        judgement: { stops: ["#ef4444", "#fbbf24", "#bae6fd"], glow: "#ef4444", accent: "#fbbf24", bottomOpacity: 0.7 },
+                        mahkeme: { stops: ["#ef4444", "#fbbf24", "#bae6fd"], glow: "#ef4444", accent: "#fbbf24", bottomOpacity: 0.7 },
+
+                        // 21. The World (Dünya) - Green/Blue/Gold
+                        world: { stops: ["#22c55e", "#3b82f6", "#fbbf24"], glow: "#22c55e", accent: "#fbbf24", bottomOpacity: 0.6 },
+                        dünya: { stops: ["#22c55e", "#3b82f6", "#fbbf24"], glow: "#22c55e", accent: "#fbbf24", bottomOpacity: 0.6 },
+                    };
+
+                    // MATCHING LOGIC
+                    let activeTheme = null;
+                    // Try exact match first
+                    for (const key in cardThemes) {
+                        if (lowerName.includes(key)) {
+                            activeTheme = cardThemes[key];
+                            break;
+                        }
+                    }
+
+                    // Fallback to Default Premium Gold if no specific theme found
+                    if (!activeTheme) {
+                        activeTheme = { stops: ["#fbbf24", "#d97706", "#fef3c7"], glow: "#fbbf24", accent: "#ffffff", bottomOpacity: 0.6 };
+                    }
+
+                    // RENDER UNIFIED FRAME
+                    return (
+                        <>
+                            <div className="absolute inset-x-0 top-0 bottom-16 z-50 pointer-events-none rounded-t-xl overflow-hidden">
+                                {/* Ambient Glow */}
+                                <div className="absolute inset-0 rounded-t-xl mix-blend-screen"
+                                    style={{ boxShadow: `inset 0 0 25px ${activeTheme.glow}66` }} // 66 = 40% hex opacity approx
+                                />
+
+                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 436" preserveAspectRatio="none">
                                     <defs>
-                                        <linearGradient id="fool-grad" x1="0" y1="0" x2="1" y2="1">
-                                            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.8" /> {/* Cyan */}
-                                            <stop offset="50%" stopColor="#facc15" stopOpacity="0.8" /> {/* Sun Yellow */}
-                                            <stop offset="100%" stopColor="#ffffff" stopOpacity="0.8" /> {/* White */}
+                                        <linearGradient id={`frame-grad-${n}`} x1="0" y1="0" x2="1" y2="1">
+                                            <stop offset="0%" stopColor={activeTheme.stops[0]} />
+                                            <stop offset="50%" stopColor={activeTheme.stops[1]} />
+                                            <stop offset="100%" stopColor={activeTheme.stops[2]} />
                                         </linearGradient>
-                                        <filter id="wind-blur">
-                                            <feGaussianBlur stdDeviation="2" />
-                                        </filter>
+                                        <filter id={`frame-blur-${n}`}><feGaussianBlur stdDeviation="1.5" /></filter>
                                     </defs>
 
-                                    {/* Main Frame - Playful & Open */}
+                                    {/* Unified 'Perfect' Geometry Frame - Hugs Edge with True Arcs */}
                                     <path
-                                        d="M10,20 Q150,-10 290,20 L290,480 Q150,510 10,480 Z"
-                                        stroke="url(#fool-grad)"
+                                        d="M1.5,435 L1.5,12 A10.5,10.5 0 0 1 12,1.5 L288,1.5 A10.5,10.5 0 0 1 298.5,12 L298.5,435"
+                                        stroke={`url(#frame-grad-${n})`}
+                                        strokeWidth="3"
+                                        fill="none"
+                                        filter={`url(#frame-blur-${n})`}
+                                    />
+
+                                    {/* Separator Line */}
+                                    <line
+                                        x1="5" y1="434" x2="295" y2="434"
+                                        stroke={activeTheme.stops[1]}
                                         strokeWidth="2"
-                                        fill="none"
-                                        filter="url(#wind-blur)"
-                                        opacity="0.6"
+                                        opacity={activeTheme.bottomOpacity}
                                     />
-                                    <rect
-                                        x="5" y="5"
-                                        width="290" height="490"
-                                        rx="15" ry="15"
-                                        stroke="url(#fool-grad)"
-                                        strokeWidth="2"
-                                        fill="none"
-                                    />
-
-                                    {/* Wind Swirls / Feathers */}
-                                    {/* Top Left Swirl */}
-                                    <path d="M-10,40 Q20,40 40,10" stroke="#fff" strokeWidth="2" fill="none" opacity="0.8" />
-                                    {/* Bottom Right Swirl */}
-                                    <path d="M310,460 Q280,460 260,490" stroke="#facc15" strokeWidth="2" fill="none" opacity="0.8" />
-
-                                    {/* Tiny 'Potential' Dots */}
-                                    <circle cx="20" cy="20" r="3" fill="#facc15" filter="url(#wind-blur)" />
-                                    <circle cx="280" cy="480" r="3" fill="#22d3ee" filter="url(#wind-blur)" />
                                 </svg>
                             </div>
-                        );
-                    }
 
-                    // --- THE STAR (Startlight & Cosmic Flow) ---
-                    if (lowerName.includes("star") || lowerName.includes("yıldız")) {
-                        return (
-                            <div className="absolute inset-0 z-50 pointer-events-none rounded-xl overflow-hidden">
-                                {/* Soft Inner Atmosphere */}
-                                <div className="absolute inset-0 rounded-xl shadow-[inset_0_0_40px_rgba(34,211,238,0.2)] mix-blend-screen" />
-
-                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" preserveAspectRatio="none">
-                                    <defs>
-                                        <linearGradient id="star-frame-grad" x1="0" y1="0" x2="1" y2="1">
-                                            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.6" />
-                                            <stop offset="50%" stopColor="#ffffff" stopOpacity="1" />
-                                            <stop offset="100%" stopColor="#818cf8" stopOpacity="0.6" />
-                                        </linearGradient>
-                                        <filter id="star-glow" height="150%" width="150%" x="-25%" y="-25%">
-                                            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                                            <feMerge>
-                                                <feMergeNode in="coloredBlur" />
-                                                <feMergeNode in="SourceGraphic" />
-                                            </feMerge>
-                                        </filter>
-                                    </defs>
-
-                                    {/* Main Continuous Elegant Border */}
-                                    <rect
-                                        x="3" y="3"
-                                        width="294" height="494"
-                                        rx="12" ry="12"
-                                        stroke="url(#star-frame-grad)"
-                                        strokeWidth="1.5"
-                                        fill="none"
-                                        filter="url(#star-glow)"
-                                    />
-
-                                    {/* Inner Delicate Line (Cosmic Thread) */}
-                                    <rect
-                                        x="10" y="10"
-                                        width="280" height="480"
-                                        rx="8" ry="8"
-                                        stroke="white"
-                                        strokeWidth="0.5"
-                                        strokeOpacity="0.4"
-                                        fill="none"
-                                    />
-
-                                    {/* Celtic/Cosmic Knots or Stars at midpoints */}
-                                    {/* Top Star */}
-                                    <path d="M150 0 L153 6 L159 9 L153 12 L150 18 L147 12 L141 9 L147 6 Z" fill="#fff" filter="url(#star-glow)" opacity="0.9" />
-                                    {/* Bottom Star */}
-                                    <path d="M150 482 L153 488 L159 491 L153 494 L150 500 L147 494 L141 491 L147 488 Z" fill="#fff" filter="url(#star-glow)" opacity="0.9" />
-
-                                </svg>
+                            {/* Bottom Text Area Frame */}
+                            <div className="absolute bottom-0 inset-x-0 h-16 pointer-events-none rounded-b-xl overflow-hidden z-50">
+                                <div
+                                    className="absolute inset-0 border-l-[3px] border-r-[3px] border-b-[3px] rounded-b-xl"
+                                    style={{ borderColor: `${activeTheme.stops[1]}80` }} // 50% opacity
+                                />
+                                <div
+                                    className="absolute inset-0 mix-blend-overlay"
+                                    style={{ background: `linear-gradient(to top, ${activeTheme.stops[1]}4D, transparent)` }}
+                                />
                             </div>
-                        );
-                    }
-
-                    // --- DEATH (Gotik & Dikenli) ---
-                    if (lowerName.includes("death") || lowerName.includes("ölüm")) {
-                        return (
-                            <div className="absolute inset-0 z-50 pointer-events-none rounded-xl overflow-hidden">
-                                <div className="absolute inset-0 border-[3px] border-slate-800/60 rounded-xl shadow-[inset_0_0_30px_rgba(0,0,0,0.8)]" />
-                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" preserveAspectRatio="none">
-                                    <defs>
-                                        <linearGradient id="death-grad" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#334155" />
-                                            <stop offset="50%" stopColor="#0f172a" />
-                                            <stop offset="100%" stopColor="#334155" />
-                                        </linearGradient>
-                                    </defs>
-                                    {/* Dark Thorns/Vines */}
-                                    <path d="M0,60 C10,30 30,10 60,0" stroke="#1e293b" strokeWidth="6" fill="none" />
-                                    <path d="M300,60 C290,30 270,10 240,0" stroke="#1e293b" strokeWidth="6" fill="none" />
-                                    <path d="M0,440 C10,470 30,490 60,500" stroke="#1e293b" strokeWidth="6" fill="none" />
-                                    <path d="M300,440 C290,470 270,490 240,500" stroke="#1e293b" strokeWidth="6" fill="none" />
-                                    {/* Inner Detail */}
-                                    <path d="M15,15 L285,15 L285,485 L15,485 Z" stroke="url(#death-grad)" strokeWidth="2" fill="none" />
-                                    <circle cx="15" cy="15" r="4" fill="#ef4444" opacity="0.4" />
-                                    <circle cx="285" cy="15" r="4" fill="#ef4444" opacity="0.4" />
-                                </svg>
-                            </div>
-                        );
-                    }
-
-                    // --- TEMPERANCE (Altın & Akışkan) ---
-                    if (lowerName.includes("temperance") || lowerName.includes("denge")) {
-                        return (
-                            <div className="absolute inset-0 z-50 pointer-events-none rounded-xl overflow-hidden">
-                                <div className="absolute inset-0 border-[2px] border-amber-400/20 rounded-xl shadow-[inset_0_0_15px_rgba(251,191,36,0.2)]" />
-                                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 500" preserveAspectRatio="none">
-                                    <defs>
-                                        <linearGradient id="gold-flow" x1="0" y1="0" x2="1" y2="1">
-                                            <stop offset="0%" stopColor="#fcd34d" />
-                                            <stop offset="50%" stopColor="#d97706" />
-                                            <stop offset="100%" stopColor="#fffbeb" />
-                                        </linearGradient>
-                                    </defs>
-                                    {/* Fluid Corners */}
-                                    <path d="M0,40 Q0,0 40,0 L80,0" stroke="url(#gold-flow)" strokeWidth="3" fill="none" />
-                                    <path d="M300,40 Q300,0 260,0 L220,0" stroke="url(#gold-flow)" strokeWidth="3" fill="none" />
-                                    <path d="M0,460 Q0,500 40,500 L80,500" stroke="url(#gold-flow)" strokeWidth="3" fill="none" />
-                                    <path d="M300,460 Q300,500 260,500 L220,500" stroke="url(#gold-flow)" strokeWidth="3" fill="none" />
-                                    {/* Inner decorative line */}
-                                    <rect x="12" y="12" width="276" height="476" rx="8" stroke="url(#gold-flow)" strokeWidth="1" fill="none" strokeOpacity="0.5" />
-                                </svg>
-                            </div>
-                        );
-                    }
-
-                    // --- DEFAULT GOLD FRAME (Other Cards) ---
-                    // The user asked to apply a nice frame to ALL cards eventually. For now, let's keep others simple or apply a default.
-                    // Let's apply a subtle default gold border to others if desired, or skip. User said "dediklerim için".
-
-                    return null;
+                        </>
+                    );
                 })()}
 
             </div>
