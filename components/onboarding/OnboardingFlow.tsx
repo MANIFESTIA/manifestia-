@@ -242,16 +242,16 @@ export default function OnboardingFlow() {
                         exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
                         className="text-center space-y-8 z-10 glass-panel p-12 rounded-3xl max-w-lg mx-4"
                     >
-                        <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="inline-block p-4 rounded-full border border-manifest-primary/30 bg-white/5 backdrop-blur-md"
-                        >
-                            <Sparkles className="w-12 h-12 text-manifest-primary text-glow" />
-                        </motion.div>
+                        <div className="inline-block mb-4">
+                            <img
+                                src="/logo-ankh.png"
+                                alt="Manifest Logo"
+                                className="w-40 h-40 object-contain drop-shadow-[0_0_25px_rgba(234,179,8,0.4)]"
+                            />
+                        </div>
 
                         <div>
-                            <h1 className="text-5xl md:text-6xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-200 to-amber-200 text-glow mb-4">TheManifest</h1>
+                            <h1 className="text-5xl md:text-6xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-[#f4d49c] to-[#92563d] drop-shadow-[0_0_15px_rgba(244,212,156,0.5)] mb-4">TheManifest</h1>
                             <p className="text-manifest-muted text-xl font-light">Evrenden sana bir mesaj var ✨</p>
                         </div>
 
