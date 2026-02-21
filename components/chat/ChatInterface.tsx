@@ -389,6 +389,14 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
                             className="flex-1 bg-transparent border-none outline-none text-white placeholder-white/40 min-h-[44px] max-h-32 text-[16px] leading-[20px] font-normal"
                             value={input}
                             onChange={handleInputChange}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    if (input.trim() && !isLoading) {
+                                        sendMessage(input);
+                                    }
+                                }
+                            }}
                             placeholder="Evrene mesaj gönder..."
                             disabled={isListening || isLoading}
                         />
