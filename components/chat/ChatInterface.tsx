@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/lib/UserContext';
 import VoiceSettings from '@/components/settings/VoiceSettings';
 import { getApiUrl } from '@/lib/api';
+import { TypewriterText } from './TypewriterText';
 
 interface Message {
     id: string;
@@ -347,7 +348,7 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
                 )}
 
                 <AnimatePresence>
-                    {messages.map((m: Message) => (
+                    {messages.map((m: Message, index) => (
                         <motion.div
                             key={m.id}
                             initial={{ opacity: 0, y: 10 }}
@@ -358,12 +359,20 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
                                 ? 'bg-[#2f2f2f] text-white rounded-br-sm'
                                 : 'bg-transparent text-white/90'
                                 }`}>
-                                {m.role === 'assistant' && (
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-manifest-primary to-blue-600 flex items-center justify-center absolute -left-10 top-0">
-                                        <Sparkles className="w-4 h-4 text-white" />
-                                    </div>
+                                {m.role === 'assistant' ? (
+                                    <>
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-manifest-primary to-blue-600 flex items-center justify-center absolute -left-10 top-0">
+                                            <Sparkles className="w-4 h-4 text-white" />
+                                        </div>
+                                        {index === messages.length - 1 ? (
+                                            <TypewriterText text={m.content} onComplete={() => scrollRef.current?.scrollIntoView({ behavior: 'smooth' })} />
+                                        ) : (
+                                            <p className="whitespace-pre-wrap">{m.content}</p>
+                                        )}
+                                    </>
+                                ) : (
+                                    <p className="whitespace-pre-wrap">{m.content}</p>
                                 )}
-                                <p className="whitespace-pre-wrap">{m.content}</p>
                             </div>
                         </motion.div>
                     ))}
