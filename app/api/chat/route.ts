@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { prisma } from '@/lib/prisma';
 import { ProfileManager } from '@/lib/user-profile-manager';
+import { getAstrologicalContext } from '@/lib/astrology-api';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -19,32 +20,36 @@ export async function POST(req: Request) {
             userMessage = lastMsg.content || lastMsg.message || '';
         }
 
-        console.log('📨 Gelen mesaj:', userMessage);
-
         if (!userMessage || userMessage.trim() === '') {
-            return NextResponse.json({
-                error: 'Mesaj boş olamaz'
-            }, { status: 400 });
+            return NextResponse.json({ error: 'Mesaj boş olamaz' }, { status: 400 });
         }
 
-        // Gemini API Key control
-        if (!process.env.GEMINI_API_KEY) {
-            console.error('❌ GEMINI_API_KEY yok!');
-            return NextResponse.json({
-                error: 'API key eksik'
-            }, { status: 500 });
-        }
+        // 1. Prokerala'dan Profesyonel Veri Çekme
+        // Not: Kullanıcı profiline lat/lon eklendiğinde tam isabet olur. 
+        // Şimdilik standart TR koordinatları veya profil verisinden bir tahmin yapıyoruz.
+        const birthDateTime = `${userProfile?.birthDate}T${userProfile?.birthTime}:00Z`;
+        const astroData = await getAstrologicalContext({
+            datetime: birthDateTime,
+            latitude: "37.8590", // Örn: Kuşadası/Aydın
+            longitude: "27.2560"
+        });
 
-        // Generate professional cosmic context
+        // 2. Cosmic Context Oluşturma
         const cosmicContext = ProfileManager.generateCosmicContext(userProfile || {});
 
-        const systemInstruction = `${cosmicContext}
-        
-**EK TALİMAT**: Kullanıcının sorusuna yukarıdaki astrolojik kimliğine (burç, yükselen, element) göre derinlemesine, bilgece ve rehberlik edici bir cevap ver. Eğer burcu biliniyorsa mutlaka buna atıfta bulun. Türkçeyi mükemmel ve mistik bir üslupla kullan. Asla bir yapay zeka olduğunu söyleme, sen Manifestia'nın ruhusun.`;
+        const systemInstruction = `
+${cosmicContext}
 
-        console.log('📤 Gemini\'ye gönderilen prompt:', userMessage.substring(0, 50) + '...');
+**PROFESYONEL ASTROLOJİK VERİLER (GERÇEK ZAMANLI)**:
+${astroData?.planetaryPositions || 'Gezegen konumları şu an hesaplanamıyor ama genel burç yorumu yap.'}
 
-        // Gemini API Call
+**EK TALİMAT**: 
+Sen sadece bir AI değil, Manifestia'nın ruhusun. Yukarıdaki GERÇEK gezegen konumlarını (Evler, Burçlar ve Dereceler) analiz et. 
+Kullanıcının sorusuna bu teknik verileri "bir bilgenin dilinden" süzerek cevap ver. 
+Örneğin eğer kullanıcının Merkür'ü Boğa'daysa, onun düşünce yapısının ne kadar sağlam ve pratik olduğunu konuşmalarına yedir. 
+Asla teknik terimleri (Örn: "Mars 23 derecede") doğrudan verme, onları mistik bir hikayeye dönüştür.`;
+
+        // 3. Gemini Call
         const model = genAI.getGenerativeModel({
             model: "gemini-2.0-flash",
             systemInstruction: systemInstruction
@@ -53,22 +58,16 @@ export async function POST(req: Request) {
         const result = await model.generateContent(userMessage);
         const responseText = result.response.text();
 
-        console.log('✅ Gemini yanıtı:', responseText.substring(0, 100) + '...');
-
-        // Save to Database
+        // 4. Save to Database (Async)
         if (userId) {
             try {
                 let targetSessionId = sessionId;
                 if (!targetSessionId) {
                     const session = await prisma.chatSession.create({
-                        data: {
-                            userId: userId,
-                            title: userMessage.substring(0, 30) + '...'
-                        }
+                        data: { userId, title: userMessage.substring(0, 30) + '...' }
                     });
                     targetSessionId = session.id;
                 }
-
                 await prisma.chatMessage.createMany({
                     data: [
                         { sessionId: targetSessionId, role: 'user', content: userMessage },
@@ -76,20 +75,14 @@ export async function POST(req: Request) {
                     ]
                 });
             } catch (dbError) {
-                console.error('❌ Chat DB kayıt hatası:', dbError);
+                console.error('❌ Chat DB error:', dbError);
             }
         }
 
-        return NextResponse.json({
-            content: responseText,
-            role: 'assistant'
-        });
+        return NextResponse.json({ content: responseText, role: 'assistant' });
 
     } catch (error: any) {
         console.error('❌ Chat API hatası:', error);
-        return NextResponse.json({
-            error: 'Bir hata oluştu',
-            details: error.message
-        }, { status: 500 });
+        return NextResponse.json({ error: 'Bir hata oluştu', details: error.message }, { status: 500 });
     }
 }
