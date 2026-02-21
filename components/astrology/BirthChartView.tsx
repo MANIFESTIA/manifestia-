@@ -35,11 +35,24 @@ export default function BirthChartView({ onClose }: BirthChartViewProps) {
     // Form State
     const [formData, setFormData] = useState({
         name: user?.name || '',
-        birthDate: '',
-        birthTime: '',
-        birthPlace: '',
+        birthDate: user?.birthDate || '',
+        birthTime: user?.birthTime || '',
+        birthPlace: user?.birthCity || '',
         unknownTime: false
     });
+
+    // Auto-fill from user context when user changes
+    React.useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                name: user.name || prev.name,
+                birthDate: user.birthDate || prev.birthDate,
+                birthTime: user.birthTime || prev.birthTime,
+                birthPlace: user.birthCity || prev.birthPlace
+            }));
+        }
+    }, [user]);
 
     const [result, setResult] = useState<ChartData | null>(null);
     const [error, setError] = useState<string | null>(null);
