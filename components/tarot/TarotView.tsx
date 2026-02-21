@@ -8,6 +8,7 @@ import { Sparkles, RefreshCw, X, Stars, Diamond, History, Layers } from 'lucide-
 import { useUser } from '@/lib/UserContext';
 import { useCosmicMemory } from '@/hooks/useCosmicMemory';
 import TarotCard from './TarotCard';
+import CardDeck from './CardDeck';
 import CosmicBackground from '../layout/CosmicBackground';
 import DiamondConfirmModal from '@/components/economy/DiamondConfirmModal';
 import { Lock } from 'lucide-react';
@@ -219,6 +220,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
     const processReading = async (cards: TarotCardType[]) => {
         setSelectedCard(cards[0]); // For visual anchor during loading
         setStep('revealing');
+        const startTime = Date.now();
 
         try {
             // API İsteği
@@ -243,10 +245,10 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
             const result = await response.json();
             setReading(result);
 
-            // Auto-Save (Included in Service - Front-end side backup logic removed as API handles it now)
-            // But we keep local state update for 'CosmicMemory' hook if needed, but redundant now.
-
-            setTimeout(() => setStep('reading'), 3000); // Reveal animasyonu süresi
+            // Toplam süreyi 3 saniyeye tamamla (Eğer API daha yavaşsa anında geç)
+            const elapsed = Date.now() - startTime;
+            const remainingDelay = Math.max(0, 3000 - elapsed);
+            setTimeout(() => setStep('reading'), remainingDelay);
 
         } catch (e) {
             console.error("Tarot API Hatası:", e);
@@ -256,7 +258,10 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                 suggestion: "Biraz sessiz kalıp niyetine odaklanman iyi gelebilir."
             };
             setReading(fallbackResult);
-            setTimeout(() => setStep('reading'), 3000);
+
+            const elapsed = Date.now() - startTime;
+            const remainingDelay = Math.max(0, 3000 - elapsed);
+            setTimeout(() => setStep('reading'), remainingDelay);
         }
     };
 
@@ -473,53 +478,11 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                                 </p>
                             </div>
 
-                            <div className="relative w-full max-w-4xl h-[500px] flex items-center justify-center mt-4 md:mt-10 scale-[0.6] sm:scale-75 md:scale-90 origin-center perspective-1000">
-                                {shuffledDeck.map((card, i) => {
-                                    // Circular Layout Math
-                                    const total = shuffledDeck.length;
-                                    const radius = 180; // Radius of the circle
-                                    const angleDeg = (360 / total) * i; // Angle for this card
-                                    const angleRad = (angleDeg - 90) * (Math.PI / 180); // Subtract 90 to start from top
-
-                                    // Position
-                                    const x = Math.cos(angleRad) * radius;
-                                    const y = Math.sin(angleRad) * radius;
-
-                                    // Rotation: Card should point outwards
-                                    // AngleDeg is 0 at top (after -90 shift in math), so rotation should match angleDeg
-                                    const rotation = angleDeg;
-
-                                    return (
-                                        <motion.div
-                                            key={card.id}
-                                            className="absolute w-28 h-48 sm:w-32 sm:h-56 transform-gpu cursor-pointer"
-                                            initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
-                                            animate={{
-                                                x: x,
-                                                y: y,
-                                                rotate: rotation,
-                                                opacity: 1,
-                                                scale: 1,
-                                                zIndex: i
-                                            }}
-                                            transition={{
-                                                type: "spring",
-                                                stiffness: 60,
-                                                damping: 15,
-                                                delay: i * 0.05
-                                            }}
-                                            whileHover={{
-                                                scale: 1.3,
-                                                zIndex: 100,
-                                                transition: { duration: 0.2 }
-                                            }}
-                                            onClick={() => checkQuotaAndReveal(card)}
-                                        >
-                                            <TarotCard className="w-full h-full shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] transition-shadow" />
-                                        </motion.div>
-                                    );
-                                })}
-                            </div>
+                            <CardDeck
+                                cards={shuffledDeck}
+                                onPick={checkQuotaAndReveal}
+                                isFree={isFree}
+                            />
                         </motion.div>
                     )}
 

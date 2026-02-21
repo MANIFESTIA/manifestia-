@@ -139,7 +139,7 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
 
             const data = await response.json();
 
-            const assistantMsg: Message = { id: (Date.now() + 1).toString(), role: 'assistant', content: data.response };
+            const assistantMsg: Message = { id: (Date.now() + 1).toString(), role: 'assistant', content: data.content };
             setMessages(prev => [...prev, assistantMsg]);
 
             if (isVoiceMode) {

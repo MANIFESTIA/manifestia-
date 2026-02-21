@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
         }
         
         Tonun pozitif, mistik ve derin olsun. Asla negatif yorum yapma.
+        Dil: Türkçe.
         `;
 
         const result = await model.generateContent([

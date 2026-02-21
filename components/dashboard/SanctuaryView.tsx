@@ -40,7 +40,7 @@ export default function SanctuaryView() {
         try {
             const saved = localStorage.getItem(`manifestia_rituals_${user.id}_${today}`);
             if (saved) ritualBonus = Math.min(JSON.parse(saved).length * 10, 20);
-        } catch {}
+        } catch { }
 
         return Math.min(100, loginBonus + streakBonus + ritualBonus);
     }, [user]);
@@ -141,9 +141,13 @@ export default function SanctuaryView() {
 
                     <div
                         onClick={() => setShowProfile(true)}
-                        className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center border border-white/20 ring-1 ring-white/10 cursor-pointer hover:scale-105 transition backdrop-blur-sm"
+                        className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center border border-white/20 ring-1 ring-white/10 cursor-pointer hover:scale-105 transition backdrop-blur-sm overflow-hidden"
                     >
-                        <span className="text-sm font-medium text-white">{user?.name?.charAt(0)}</span>
+                        {user?.avatar ? (
+                            <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="text-sm font-medium text-white">{user?.name?.charAt(0)}</span>
+                        )}
                     </div>
                 </div>
             </header>

@@ -7,32 +7,32 @@ export async function generateRitualAI(emotion: string, duration: number = 2): P
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
     const prompt = `
-    You are a grand mystic and spiritual guide. Create a personalized meditation ritual for a user who is feeling: "${emotion}".
-    The ritual should last approximately ${duration} minutes.
+    Sen ulu bir mistik ve ruhsal rehbersin. Şu an "${emotion}" hisseden bir kullanıcı için kişiselleştirilmiş bir meditasyon ritüeli oluştur.
+    Ritüel yaklaşık ${duration} dakika sürmeli.
 
-    Return ONLY a JSON object matching this structure (no markdown, no code blocks):
+    SADECE aşağıdaki yapıya uygun bir JSON nesnesi döndür (markdown veya kod bloğu kullanma):
     {
-        "title": "Short, mystical title (Turkish)",
-        "description": "One sentence comforting description (Turkish)",
-        "longDescription": "Detailed explanation of why this ritual helps (Turkish)",
-        "iconName": "One of: 'Flame', 'Sun', 'Moon', 'Wind'",
-        "color": "Tailwind gradient string (e.g., 'from-blue-500 to-purple-600')",
-        "audioTrack": "One of: '/sounds/zen.ogg', '/sounds/cosmos.ogg', '/sounds/amazon.ogg', '/sounds/528hz-ambient.mp3'",
+        "title": "Kısa, mistik başlık",
+        "description": "Tek cümlelik rahatlatıcı açıklama",
+        "longDescription": "Bu ritüelin neden yardımcı olduğuna dair detaylı açıklama",
+        "iconName": "Şunlardan biri: 'Flame', 'Sun', 'Moon', 'Wind'",
+        "color": "Tailwind gradyan stringi (örn: 'from-blue-500 to-purple-600')",
+        "audioTrack": "Şunlardan biri: '/sounds/zen.ogg', '/sounds/cosmos.ogg', '/sounds/amazon.ogg', '/sounds/528hz-ambient.mp3'",
         "steps": [
             {
-                "text": "Instruction for this step (Turkish)",
-                "duration": number (seconds),
-                "animation": "One of: 'breathe', 'focus', 'stars'"
+                "text": "Bu adım için talimat (Türkçe)",
+                "duration": sayı (saniye),
+                "animation": "Şunlardan biri: 'breathe', 'focus', 'stars'"
             }
         ]
     }
 
-    Rules:
-    - 'breathe': Used for breathing exercises.
-    - 'focus': Used for visualization or holding a thought.
-    - 'stars': Used for opening or closing cosmic connection.
-    - Total duration of steps should be roughly ${duration * 60} seconds.
-    - Language: Turkish.
+    Kurallar:
+    - 'breathe': Nefes egzersizleri için.
+    - 'focus': Görselleştirme veya bir düşünceye odaklanma için.
+    - 'stars': Kozmik bağlantı açılış veya kapanışı için.
+    - Adımların toplam süresi kabaca ${duration * 60} saniye olmalı.
+    - Dil: Tamamen Türkçe.
     `;
 
     try {
