@@ -24,15 +24,22 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Mesaj boş olamaz' }, { status: 400 });
         }
 
-        // 1. Prokerala'dan Profesyonel Veri Çekme
-        // Not: Kullanıcı profiline lat/lon eklendiğinde tam isabet olur. 
-        // Şimdilik standart TR koordinatları veya profil verisinden bir tahmin yapıyoruz.
-        const birthDateTime = `${userProfile?.birthDate}T${userProfile?.birthTime}:00Z`;
-        const astroData = await getAstrologicalContext({
-            datetime: birthDateTime,
-            latitude: "37.8590", // Örn: Kuşadası/Aydın
-            longitude: "27.2560"
-        });
+        // 1. Prokerala'dan Profesyonel Veri Çekme - Daha Güvenli Hale Getirildi
+        let astroData = null;
+        if (process.env.PROKERALA_CLIENT_ID && userProfile?.birthDate && userProfile?.birthTime) {
+            try {
+                const birthDateTime = `${userProfile.birthDate}T${userProfile.birthTime}:00Z`;
+                astroData = await getAstrologicalContext({
+                    datetime: birthDateTime,
+                    latitude: userProfile.latitude || "37.8590",
+                    longitude: userProfile.longitude || "27.2560"
+                });
+            } catch (err) {
+                console.error("Prokerala call failed, continuing without professional data:", err);
+            }
+        } else {
+            console.warn("⚠️ Prokerala credentials or user birth data missing. Check Environment Variables!");
+        }
 
         // 2. Cosmic Context Oluşturma
         const cosmicContext = ProfileManager.generateCosmicContext(userProfile || {});
