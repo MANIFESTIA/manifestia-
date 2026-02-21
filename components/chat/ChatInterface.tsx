@@ -125,10 +125,8 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     messages: updatedMessages.map(m => ({ role: m.role, content: m.content })),
-                    userProfile: {
-                        name: user?.name || 'Gezgin',
-                        sunSign: user?.sign || 'Bilinmiyor',
-                    }
+                    userProfile: user,
+                    userId: user?.id
                 })
             });
 

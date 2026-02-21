@@ -68,9 +68,13 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
     const [showPaywall, setShowPaywall] = useState(false);
     const { updateUser } = useUser();
 
-    // Body Scroll Lock
+    // Body Scroll Lock & API Warmup
     useEffect(() => {
         document.body.style.overflow = 'hidden';
+
+        // Silently warm up the Tarot API to prevent first-call lag
+        fetch(getApiUrl('api/tarot?warmup=true')).catch(() => { });
+
         return () => {
             document.body.style.overflow = 'unset';
         };
@@ -615,6 +619,7 @@ export default function TarotView({ onClose }: { onClose: () => void }) {
                                                     setReading(null);
                                                     setSelectedCard(null);
                                                     setSelectedCards([]);
+                                                    setEnergyLevel(0);
                                                 }}
                                                 className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white font-medium tracking-widest transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group text-sm md:text-base"
                                             >
