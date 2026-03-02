@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '@/lib/UserContext';
 import { UserProfile } from '@/types';
-import { Star, ChevronRight, Moon, Sun, MapPin, Sparkles, ArrowRight, Lock, Mail, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Star, ChevronRight, Moon, Sun, MapPin, Sparkles, ArrowRight, Lock, Mail, AlertCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getApiUrl } from '@/lib/api';
@@ -25,6 +25,8 @@ export default function OnboardingFlow() {
     const [cosmicMessage, setCosmicMessage] = useState<string>("");
     const [loading, setLoading] = useState(false);
     const [registerError, setRegisterError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(false);
 
     const handleNext = async () => {
         if (step === 1) {
@@ -129,6 +131,11 @@ export default function OnboardingFlow() {
     const handleRegister = async () => {
         if (!formData.email || !formData.password) {
             setRegisterError('Lütfen e-posta ve şifre gir.');
+            return;
+        }
+
+        if (!termsAccepted) {
+            setRegisterError("Lütfen Gizlilik Politikası ve Kullanım Şartları'nı kabul et.");
             return;
         }
 
@@ -310,16 +317,43 @@ export default function OnboardingFlow() {
                             <div className="space-y-1">
                                 <label className="text-xs font-medium text-manifest-muted/80 ml-1">Şifre</label>
                                 <div className="bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
-                                    <Lock className="text-white/50 w-5 h-5" />
+                                    <Lock className="text-white/50 w-5 h-5 shrink-0" />
                                     <input
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="Güçlü bir şifre"
                                         value={formData.password}
                                         onChange={(e) => updateField('password', e.target.value)}
                                         className="bg-transparent w-full outline-none text-white font-light"
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="text-white/50 hover:text-white/80 transition-colors shrink-0"
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                    </button>
                                 </div>
                             </div>
+                        </div>
+
+                        <div className="flex items-start gap-2 text-sm mt-2">
+                            <input
+                                type="checkbox"
+                                id="onboarding-terms"
+                                checked={termsAccepted}
+                                onChange={(e) => setTermsAccepted(e.target.checked)}
+                                className="mt-1 shrink-0 bg-transparent border border-white/20 rounded accent-manifest-primary w-4 h-4 cursor-pointer"
+                            />
+                            <label htmlFor="onboarding-terms" className="text-white/70 font-light leading-snug">
+                                <Link href="/privacy" target="_blank" className="text-purple-400 hover:text-purple-300 hover:underline">
+                                    Gizlilik Politikası
+                                </Link>
+                                {' ve '}
+                                <Link href="/terms" target="_blank" className="text-purple-400 hover:text-purple-300 hover:underline">
+                                    Kullanım Şartları
+                                </Link>
+                                'nı okudum ve kabul ediyorum.
+                            </label>
                         </div>
 
                         {registerError && (

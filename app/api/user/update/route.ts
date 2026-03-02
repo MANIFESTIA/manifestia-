@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -16,9 +17,14 @@ export async function POST(req: Request) {
         const dataToUpdate: any = {};
 
         for (const key of Object.keys(updates)) {
-            if (allowedFields.includes(key)) {
+            if (allowedFields.includes(key) && updates[key] !== undefined) {
                 dataToUpdate[key] = updates[key];
             }
+        }
+
+        if (updates.newPassword && updates.newPassword.trim() !== '') {
+            const hashedPassword = await bcrypt.hash(updates.newPassword, 10);
+            dataToUpdate.password = hashedPassword;
         }
 
         // If nothing to update

@@ -3,7 +3,7 @@ import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getApiUrl } from '@/lib/api';
 import { useUser } from '@/lib/UserContext';
-import { LogOut, X, User, BookOpen, Star, Camera, Upload, Calendar, MapPin, Clock, Moon, Edit2, Check, Save, ArrowUpCircle } from 'lucide-react';
+import { LogOut, X, User, BookOpen, Star, Camera, Upload, Calendar, MapPin, Clock, Moon, Edit2, Check, Save, ArrowUpCircle, Trash2 } from 'lucide-react';
 
 
 interface ProfileSettingsProps {
@@ -80,7 +80,8 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
         name: '',
         birthDate: '',
         birthTime: '',
-        birthCity: ''
+        birthCity: '',
+        newPassword: ''
     });
 
     useEffect(() => {
@@ -89,7 +90,8 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
                 name: user.name || '',
                 birthDate: user.birthDate || '',
                 birthTime: user.birthTime || '',
-                birthCity: user.birthCity || ''
+                birthCity: user.birthCity || '',
+                newPassword: ''
             });
         }
     }, [user]);
@@ -112,6 +114,30 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
         if (confirm("Kozmik kayıtlardan çıkış yapmak istiyor musun?")) {
             logout();
             onClose();
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        if (confirm("Hesabını kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz ve tüm verilerin silinecektir.")) {
+            try {
+                const res = await fetch(getApiUrl('api/user/delete'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user?.id })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert("Hesabın başarıyla silindi. Kozmik yolların açık olsun.");
+                    logout();
+                    onClose();
+                } else {
+                    alert(data.error || "Hesap silinirken bir hata oluştu.");
+                }
+            } catch (error) {
+                alert("Bağlantı hatası: Hesap silinemedi.");
+            }
         }
     };
 
@@ -167,7 +193,8 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
                     name: user.name || '',
                     birthDate: user.birthDate || '',
                     birthTime: user.birthTime || '',
-                    birthCity: user.birthCity || ''
+                    birthCity: user.birthCity || '',
+                    newPassword: ''
                 });
             }
         } else {
@@ -347,6 +374,22 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
                             )}
                         </div>
 
+                        {isEditing && (
+                            <div className="flex items-center justify-between text-sm text-manifest-muted/80 border-b border-white/5 pb-2">
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-purple-400" />
+                                    <span>Yeni Şifre</span>
+                                </div>
+                                <input
+                                    type="password"
+                                    value={editForm.newPassword}
+                                    onChange={(e) => setEditForm({ ...editForm, newPassword: e.target.value })}
+                                    className="bg-black/20 text-white rounded px-2 py-1 text-xs text-right border border-white/10 focus:border-manifest-primary/50 outline-none max-w-[120px]"
+                                    placeholder="Değiştirmek için yazın"
+                                />
+                            </div>
+                        )}
+
                         <div className="flex items-center justify-between text-sm text-manifest-muted/80 pt-1">
                             <div className="flex items-center gap-2">
                                 <Moon className="w-4 h-4 text-purple-400" />
@@ -386,12 +429,25 @@ export default function ProfileSettings({ onClose, onOpenJournal }: ProfileSetti
                         onClick={handleLogout}
                         className="w-full p-4 rounded-xl bg-red-500/10 border border-red-500/10 hover:bg-red-500/20 hover:border-red-500/30 transition-all flex items-center gap-4 group mt-6"
                     >
-                        <div className="p-2 rounded-lg bg-red-500/20 text-red-400 group-hover:scale-110 transition-transform">
+                        <div className="p-2 rounded-lg bg-red-500/20 text-red-500 group-hover:scale-110 transition-transform">
                             <LogOut className="w-5 h-5" />
                         </div>
                         <div className="flex-1 text-left">
-                            <h4 className="font-medium text-red-200">Çıkış Yap</h4>
-                            <p className="text-xs text-red-200/60">Oturumu sonlandır</p>
+                            <h4 className="font-medium text-red-400">Çıkış Yap</h4>
+                            <p className="text-xs text-red-400/60">Oturumu sonlandır</p>
+                        </div>
+                    </button>
+
+                    <button
+                        onClick={handleDeleteAccount}
+                        className="w-full p-4 rounded-xl bg-transparent border border-white/5 hover:bg-red-900/30 hover:border-red-900/50 transition-all flex items-center gap-4 group mt-2"
+                    >
+                        <div className="p-2 rounded-lg bg-transparent text-manifest-muted group-hover:bg-red-900/40 group-hover:text-red-500 group-hover:scale-110 transition-all">
+                            <Trash2 className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1 text-left">
+                            <h4 className="font-medium text-manifest-muted group-hover:text-red-500 transition-colors">Hesabı Sil</h4>
+                            <p className="text-xs text-manifest-muted/60 group-hover:text-red-500/60 transition-colors">Kalıcı olarak temizle</p>
                         </div>
                     </button>
                 </div>
