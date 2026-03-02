@@ -136,6 +136,25 @@ export default function RegisterPage() {
                         </div>
                     </div>
 
+                    <div className="flex items-start gap-2 text-sm mt-4">
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            required
+                            className="mt-1 shrink-0 bg-transparent border border-white/20 rounded accent-purple-500 w-4 h-4 cursor-pointer"
+                        />
+                        <label htmlFor="terms" className="text-white/70">
+                            <Link href="/privacy" className="text-purple-400 hover:underline">
+                                Gizlilik Politikası
+                            </Link>
+                            {' ve '}
+                            <Link href="/terms" className="text-purple-400 hover:underline">
+                                Kullanım Şartları
+                            </Link>
+                            'nı okudum ve kabul ediyorum.
+                        </label>
+                    </div>
+
                     {status === 'error' && (
                         <div className="flex items-center gap-2 text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-500/20">
                             <AlertCircle className="w-4 h-4 shrink-0" />

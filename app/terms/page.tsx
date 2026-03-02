@@ -1,79 +1,98 @@
 import React from 'react';
-import { Scale, AlertCircle, FileText, ArrowLeft, CheckCircle } from 'lucide-react';
-import Link from 'next/link';
 
-export default function TermsOfService() {
+export default function TermsPage() {
     return (
-        <div className="min-h-screen bg-[#0F0F12] text-white p-6 md:p-12 font-sans">
-            <div className="max-w-4xl mx-auto">
-                <Link href="/" className="inline-flex items-center gap-2 text-manifest-muted hover:text-white mb-8 transition-colors">
-                    <ArrowLeft className="w-5 h-5" />
-                    <span>Ana Sayfaya Dön</span>
-                </Link>
+        <div className="min-h-screen bg-gradient-to-b from-purple-900 to-pink-900 p-8">
+            <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl">
+                <h1 className="text-3xl font-bold text-white mb-6">Kullanım Şartları</h1>
+                <p className="text-white/80 mb-4">TheManifest - Kozmik Rehberin</p>
 
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
-                        <Scale className="w-8 h-8 text-indigo-400" />
-                    </div>
-                    <div>
-                        <h1 className="text-3xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-blue-200">
-                            Kullanım Koşulları
-                        </h1>
-                        <p className="text-manifest-muted text-sm mt-1">Son Güncelleme: 5 Şubat 2026</p>
-                    </div>
-                </div>
-
-                <div className="space-y-8 text-gray-300 leading-relaxed">
-                    <section className="bg-white/5 border border-white/5 rounded-2xl p-6 md:p-8">
-                        <h2 className="text-xl font-bold text-white mb-4">
-                            1. Hizmetin Niteliği
-                        </h2>
-                        <p className="mb-4">
-                            TheManifest ("Uygulama"), eğlence ve kişisel gelişim amaçlı bir astroloji, tarot ve spiritüel rehberlik uygulamasıdır.
-                        </p>
-                        <div className="flex items-start gap-3 p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
-                            <AlertCircle className="w-6 h-6 text-orange-400 flex-shrink-0" />
-                            <p className="text-sm text-orange-200">
-                                <strong>Yasal Uyarı:</strong> Uygulama tarafından sunulan içerikler, tavsiyeler ve öngörüler profesyonel tıbbi, hukuki veya finansal danışmanlık yerine geçmez. Hayati kararlarınızda lütfen uzmanlara danışınız.
-                            </p>
-                        </div>
-                    </section>
-
-                    <section className="bg-white/5 border border-white/5 rounded-2xl p-6 md:p-8">
-                        <h2 className="text-xl font-bold text-white mb-4">
-                            2. Üyelik ve Hesap Güvenliği
-                        </h2>
-                        <ul className="list-disc pl-5 space-y-2 text-sm">
-                            <li>Uygulamayı kullanmak için 18 yaşından büyük olmanız gerekmektedir.</li>
-                            <li>Hesap bilgilerinizin güvenliğinden siz sorumlusunuz.</li>
-                            <li>Tek bir kullanıcı hesabının birden fazla kişi tarafından paylaşılması yasaktır.</li>
-                        </ul>
-                    </section>
-
-                    <section className="bg-white/5 border border-white/5 rounded-2xl p-6 md:p-8">
-                        <h2 className="text-xl font-bold text-white mb-4">
-                            3. Ödemeler ve Şartlar
-                        </h2>
-                        <p className="mb-4 text-sm">
-                            Uygulama içi satın alımlar (Elmaslar, premium özellikler) Apple App Store ve Google Play Store üzerinden gerçekleştirilir. İadeler, ilgili mağazanın politikalarına tabidir.
+                <div className="prose prose-invert max-w-none text-white/90 space-y-6">
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">1. Hizmet Tanımı</h2>
+                        <p>
+                            TheManifest (www.themanifest.co), kişiselleştirilmiş astroloji, doğum haritası ve yapay zeka destekli tarot rehberliği sunan dijital bir platformdur. Kullanıcılar hesap oluşturarak sağladığımız bu eğlence ve kişisel gelişim araçlarından yararlanabilirler.
                         </p>
                     </section>
 
-                    <section className="bg-white/5 border border-white/5 rounded-2xl p-6 md:p-8">
-                        <h2 className="text-xl font-bold text-white mb-4">
-                            4. Davranış Kuralları
-                        </h2>
-                        <p className="mb-2 text-sm">Aşağıdaki eylemler kesinlikle yasaktır:</p>
-                        <ul className="list-disc pl-5 space-y-2 text-sm text-gray-400">
-                            <li>Uygulamanın tersine mühendislik ile çözülmeye çalışılması.</li>
-                            <li>Otomatik botlar veya scriptler ile veri çekilmesi.</li>
-                            <li>Diğer kullanıcılara rahatsızlık verici davranışlar.</li>
-                        </ul>
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">2. Kullanım Şartları ve Ön Koşullar</h2>
+                        <p>
+                            Hizmetlerimizi kullanarak veya sitemize erişim sağlayarak burada yer alan şartları okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan edersiniz. ABD'nin COPPA yasaları başta olmak üzere uluslararası standartları gözetmekteyiz; bu sebeple TheManifest'i kullanabilmek için en az 13 yaşında olmanız gerekmektedir.
+                        </p>
                     </section>
-                </div>
 
-                <div className="mt-12 text-center text-xs text-manifest-muted/50 border-t border-white/5 pt-8">
-                    &copy; 2026 TheManifest. Hizmeti kullanarak bu koşulları kabul etmiş sayılırsınız.
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">3. Kullanıcı Hesabı ve Sorumlulukları</h2>
+                        <p>
+                            Kullanıcı hesabı oluşturulurken sunulan verilerin doğruluğu tamamen kullanıcının sorumluluğundadır. Hesap bilgilerinizin gizliliğinden veya şifrenizin üçüncü şahıslar ile paylaşılmasından doğabilecek zararlardan uygulamamız sorumlu değildir.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">4. Abonelik ve Ödemeler</h2>
+                        <p>TheManifest aşağıdaki üyelik modellerini desteklemektedir:</p>
+                        <ul className="list-disc pl-5 mt-2 space-y-1">
+                            <li><strong>Free (Ücretsiz) Abonelik:</strong> Günlük 1 tarot çekimi ve temel harita özellikleri sunulur.</li>
+                            <li><strong>Pro Abonelik:</strong> Sınırsız tarot imkanı ve yapay zeka tarafından sağlanan özel gelişmiş sohbet özellikleri barındırır.</li>
+                        </ul>
+                        <p className="mt-2">Ödemeler belirlenen hizmet sağlayıcılar üzerinden tahsil edilecek olup, aboneliğinizi dilediğiniz fatura döneminden önce iptal edebilirsiniz.</p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">5. İptal ve İade</h2>
+                        <p>
+                            Sunduğumuz dijital abonelik koşullarına göre, hizmetlerden yararlanmaktan vazgeçtiğiniz durumlarda 14 gün içinde cayma ve iade hakkınız mevcuttur. Eğer hizmet (kişiselleştirilmiş dijital ürün / anında kullanım) satın alımdan sonra aktif bir şekilde kullanılmış ve tüketilmiş ise iade değerlendirme sonuçları değişiklik gösterebilir.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">6. Fikri Mülkiyet</h2>
+                        <p>
+                            TheManifest marka ismi, sitede bulunan tüm tasarım öğeleri, algoritmik hesaplamalar, logolar ve yazılım yapısı bütünüyle TheManifest'e ait olup koruma altındadır. Kodların kopyalanması veya tasarımların ticari kullanım amacıyla yeniden dağıtılması yasaktır.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">7. Sorumluluk Reddi (Disclaimer)</h2>
+                        <p>
+                            TheManifest tarafından sunulan astrolojik analizler veya tarot yorumları yalnızca eğlence ve kişisel gelişim amaçlıdır. Verilen mesajlar, öngörüler ve yapay zeka tavsiyeleri; hiçbir koşulda profesyonel <strong>tıbbi, hukuki veya finansal tavsiye</strong> yerine geçmez. Sistemden alınan sonuçlar üzerinden alacağınız kararlar tamamen size aittir, oluşabilecek sonuçlardan yapımcı firma sorumlu tutulamaz.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">8. Yasaklanan Kullanımlar</h2>
+                        <p>
+                            Uygulamamızı yasadışı, zarar verici ve tehdit içerikli bir şekilde kullanılamaz. Açıklanmış zafiyet aramak, ters mühendislik, platform aracılığıyla spam mesajlar oluşturmak ya da sahte hesaplar ile suistimale yeltenmek açıkça yasaklanmıştır.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">9. Hesap Askıya Alma ve Kapatma</h2>
+                        <p>
+                            TheManifest; platform kurallarını, şartları, yasal mevzuatı veya nezaket kurallarını ihlal eden hesapları önceden uyarı yapmaksızın dondurma veya geri alınamaz şekilde kalıcı olarak kapatma hakkını saklı tutar.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">10. Değişiklikler</h2>
+                        <p>
+                            Mevcut hizmet şartları önceden haber verilmeksizin değiştirilebilir veya güncellenebilir. Güncel sürümler yayımlandıkları tarihten itibaren platformda bulunan tüm kullanıcılar için geçerli sayılır.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 className="text-xl font-semibold text-purple-300">11. İletişim</h2>
+                        <p>
+                            Soru, görüş, destek ve iletişim için belirlenmiş kanalımızı kullanarak bizlere ulaşabilirsiniz:
+                            <br /><br />
+                            <strong>E-posta:</strong> businessthemanifest@gmail.com
+                        </p>
+                    </section>
+
+                    <p className="text-sm text-white/50 border-t border-white/20 pt-6 mt-8">
+                        Son Güncelleme: 15 Şubat 2025
+                    </p>
                 </div>
             </div>
         </div>

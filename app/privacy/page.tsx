@@ -1,80 +1,109 @@
 import React from 'react';
-import { Shield, Lock, Eye, FileText, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
 
-export default function PrivacyPolicy() {
-    return (
-        <div className="min-h-screen bg-[#0F0F12] text-white p-6 md:p-12 font-sans">
-            <div className="max-w-4xl mx-auto">
-                <Link href="/" className="inline-flex items-center gap-2 text-manifest-muted hover:text-white mb-8 transition-colors">
-                    <ArrowLeft className="w-5 h-5" />
-                    <span>Ana Sayfaya Dön</span>
-                </Link>
+export default function PrivacyPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-purple-900 to-pink-900 p-8">
+      <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg rounded-xl p-8 shadow-2xl">
+        <h1 className="text-3xl font-bold text-white mb-6">Gizlilik Politikası</h1>
+        <p className="text-white/80 mb-4">TheManifest - Kozmik Rehberin</p>
+        
+        <div className="prose prose-invert max-w-none text-white/90 space-y-6">
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">1. Giriş</h2>
+            <p>
+              TheManifest ("Kozmik Rehberin" veya "Uygulama") olarak, www.themanifest.co web sitemizi ve mobil uygulamamızı ziyaret eden kullanıcılarımızın gizliliğine ve kişisel verilerinin korunmasına büyük önem veriyoruz. Kişiselleştirilmiş Astroloji ve Tarot Uygulaması hizmetlerimizi sunarken, Kişisel Verilerin Korunması Kanunu (KVKK) ve Genel Veri Koruma Yönetmeliği (GDPR) kapsamında veri sorumlusu sıfatı ile hareket etmekteyiz.
+            </p>
+          </section>
 
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
-                        <Shield className="w-8 h-8 text-purple-400" />
-                    </div>
-                    <div>
-                        <h1 className="text-3xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 to-pink-200">
-                            Gizlilik Politikası
-                        </h1>
-                        <p className="text-manifest-muted text-sm mt-1">Son Güncelleme: 5 Şubat 2026</p>
-                    </div>
-                </div>
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">2. Toplanan Veriler</h2>
+            <p>
+              Size kişiselleştirilmiş bir deneyim sunabilmek amacıyla aşağıdaki kişisel verilerinizi toplamaktayız:
+            </p>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li><strong>Kimlik ve İletişim Bilgileri:</strong> İsim, e-posta adresi, hesap şifresi.</li>
+              <li><strong>Astrolojik ve Kişisel Bilgiler:</strong> Doğum tarihi, doğum saati, doğum yeri bilgileri.</li>
+              <li><strong>Kullanım Verileri:</strong> Uygulama içi etkileşimleriniz, tercihleriniz.</li>
+            </ul>
+          </section>
 
-                <div className="space-y-8 text-gray-300 leading-relaxed">
-                    <section className="bg-white/5 border border-white/5 rounded-2xl p-6 md:p-8">
-                        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                            <Lock className="w-5 h-5 text-purple-400" />
-                            1. Veri Toplama ve Kullanım
-                        </h2>
-                        <p className="mb-4">
-                            TheManifest ("Uygulama") olarak, gizliliğinize önem veriyoruz. Hizmetlerimizi sunabilmek için aşağıdaki bilgileri topluyoruz:
-                        </p>
-                        <ul className="list-disc pl-5 space-y-2 text-sm">
-                            <li><strong>Kişisel Bilgiler:</strong> Adınız, doğum tarihiniz, doğum saatiniz ve doğum yeriniz (Astroloji haritası oluşturmak için gereklidir).</li>
-                            <li><strong>Hesap Bilgileri:</strong> E-posta adresiniz ve şifreniz (Güvenli giriş için).</li>
-                            <li><strong>Kullanım Verileri:</strong> Günlük girişleriniz, aura analiz sonuçlarınız ve tarot okumalarınız (Size kişiselleştirilmiş bir deneyim sunmak için saklanır).</li>
-                        </ul>
-                    </section>
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">3. Verilerin Kullanım Amaçları</h2>
+            <p>Topladığımız veriler yasalara uygun bir şekilde ve şu amaçlarla kullanılmaktadır:</p>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li>Doğum haritası hesaplamalarını doğru bir şekilde yapabilmek.</li>
+              <li>Sizin için kişiselleştirilmiş tarot ve astroloji yorumları sunabilmek.</li>
+              <li>Yapay zeka (AI) destekli sohbet ve rehberlik hizmeti sağlamak.</li>
+              <li>Uygulama içindeki hesap yönetimi ve güvenliği sağlamak.</li>
+            </ul>
+          </section>
 
-                    <section className="bg-white/5 border border-white/5 rounded-2xl p-6 md:p-8">
-                        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                            <Eye className="w-5 h-5 text-cyan-400" />
-                            2. Verilerinizin Güvenliği
-                        </h2>
-                        <p className="mb-4">
-                            Verileriniz endüstri standardı şifreleme yöntemleri ile korunmaktadır. Doğum haritası ve diğer kişisel verileriniz asla 3. taraflarla paylaşılmaz veya satılmaz.
-                        </p>
-                        <p className="text-sm">
-                            Yapay zeka analizleri için gönderilen veriler anonimleştirilerek işlenir ve model eğitimi için kullanılmaz.
-                        </p>
-                    </section>
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">4. Veri Güvenliği</h2>
+            <p>
+              Verileriniz Neon PostgreSQL veritabanımızda güvenli bir şekilde saklanmakta olup, veri güvenliğini sağlamak amacıyla uyguladığımız bazı tedbirler şunlardır:
+            </p>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li>Tüm bağlantılar <strong>HTTPS</strong> protokolü üzerinden şifreli bir biçimde sağlanmaktadır.</li>
+              <li>Kullanıcı şifreleri tek yönlü şifreleme algoritması olan <strong>bcrypt</strong> ile şifrelenmektedir.</li>
+              <li>Veritabanına erişimler güvenli, kısıtlanmış ve denetimli tutulmaktadır.</li>
+            </ul>
+          </section>
 
-                    <section className="bg-white/5 border border-white/5 rounded-2xl p-6 md:p-8">
-                        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                            <FileText className="w-5 h-5 text-pink-400" />
-                            3. Haklarınız
-                        </h2>
-                        <p className="mb-4">
-                            Kullanıcı olarak aşağıdaki haklara sahipsiniz:
-                        </p>
-                        <ul className="list-disc pl-5 space-y-2 text-sm">
-                            <li>Hesabınızı ve tüm verilerinizi dilediğiniz zaman silme.</li>
-                            <li>Hangi verilerin saklandığını öğrenme ve talep etme.</li>
-                            <li>Yanlış bilgilerin düzeltilmesini isteme.</li>
-                        </ul>
-                        <p className="mt-4 text-sm text-manifest-muted">
-                            Bu talepleriniz için <strong>support@manifestia.app</strong> adresinden bizimle iletişime geçebilirsiniz.
-                        </p>
-                    </section>
-                </div>
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">5. Üçüncü Taraf Paylaşımlar (API)</h2>
+            <p>
+              Kişiselleştirilmiş içerik ve AI destekli sohbet imkanları sunabilmek amacıyla <strong>Google Gemini API</strong> altyapısını kullanıyoruz. Sisteme girilen kullanıcı girdileri, uygulamanın amacına uygun yanıtlar ve deneyimler oluşturmak için ilgili altyapıyla anonimleştirilerek paylaşılabilir. Harici olarak kullanıcı bilgileri, onayınız olmadan reklam veya pazarlama amaçlı üçüncü şahıslara satılmaz ve devredilmez.
+            </p>
+          </section>
 
-                <div className="mt-12 text-center text-xs text-manifest-muted/50 border-t border-white/5 pt-8">
-                    &copy; 2026 TheManifest. Tüm hakları saklıdır.
-                </div>
-            </div>
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">6. Çerezler (Cookies)</h2>
+            <p>
+              Uygulamamıza giriş yaptığınızda güvenli bir oturum sağlamak için NextAuth session yapısını kullanıyoruz. Çerezler, kullanıcı deneyimini iyileştirmek, giriş sürecini hızlandırmak ve oturum yönetimini sorunsuz bir şekilde yerine getirmek amacıyla kullanılmaktadır.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">7. Kullanıcı Hakları (KVKK & GDPR Uyumlu)</h2>
+            <p>KVKK Madde 11 ve GDPR gereğince sistemimize kayıtlı olan her kullanıcının hakları şunlardır:</p>
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme,</li>
+              <li>Kişisel verileriniz işlenmişse buna ilişkin bilgi veya bir kopyasını talep etme (Veri Taşınabilirliği),</li>
+              <li>Verilerinizin eksik veya yanlış işlenmesi durumunda düzeltilmesini isteme,</li>
+              <li>Verilerinizle ilgili yasal şartlar oluştuğunda silinmesini (Unutulma Hakkı) veya yok edilmesini talep etme.</li>
+            </ul>
+            <p className="mt-2 text-white/80">Bu haklarınızı kullanmak için iletişim adresimizden bizimle iletişime geçebilirsiniz.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">8. Veri Saklama Süresi</h2>
+            <p>
+              Kişisel bilgileriniz, sunduğumuz hizmetlerden faydalandığınız veya yasal saklama zorunluluğumuz bulunan süre boyunca saklanır. Hesabınızı kapattığınız takdirde verileriniz yasal çerçevede en kısa sürede kalıcı olarak silinir.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">9. Değişiklikler</h2>
+            <p>
+              TheManifest, bu Gizlilik Politikası'nda zaman zaman değişiklik yapma hakkını saklı tutar. Değişiklikler sitemizde yayınlandığı an yürürlüğe girer.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-purple-300">10. İletişim</h2>
+            <p>
+              Veri koruması ile ilgili her türlü soru, işlem talepleri veya şikayetleriniz için aşağıdaki mail kanalı ile bize ulaşabilirsiniz:
+              <br /><br />
+              <strong>E-posta adresi:</strong> businessthemanifest@gmail.com
+            </p>
+          </section>
+
+          <p className="text-sm text-white/50 border-t border-white/20 pt-6 mt-8">
+            Son Güncelleme: 15 Şubat 2025
+          </p>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
